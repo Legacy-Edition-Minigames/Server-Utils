@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "package": "net.kyrptonaught.serverutils.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "bigstructures.StructureBlockEntityMixin",
+    "bigstructures.StructureMixin",
+    "bigstructures.UpdateStructureBlockPacketMixin",
+    "playerlockdown.ServerPlayerInteractionManager",
+    "scoreboardsuffix.ServerPlayerEntityMixin",
+    "scoreboardsuffix.ServerScoreboardMixin",
+    "switchableresourcepacks.ResourcePackStatusMixin",
+    "takeeverything.ItemEntityMixin",
+    "takeeverything.ScreenHandlerMixin",
+    "dropevent.ServerPlayNetworkHandlerMixin"
+  ],
+  "client": [
+    "bigstructures.StructureBlockEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
