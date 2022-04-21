@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "id": "serverutils",
-  "version": "0.0.7-1.17",
+  "version": "0.0.8-1.17",
   "name": "Server Utils",
-  "description": "Allows the changing of a players velocity through a command!",
+  "description": "A group of utilities for servers",
   "authors": [
     "kyrptonaught"
   ],
   "contact": {
-    "homepage": "https://github.com/kyrptonaught/playerlockdown",
-    "sources": "https://github.com/kyrptonaught/playerlockdown"
+    "homepage": "https://github.com/kyrptonaught/Server-Utils",
+    "sources": "https://github.com/kyrptonaught/Server-Utils"
   },
   "license": "MIT",
   "icon": "assets/serverutils/icon.png",
@@ -21,7 +21,7 @@
   },
   "mixins": [
     {
-      "config": "playerlockdown.mixins.json",
+      "config": "serverutils.mixins.json",
       "environment": "*"
     }
   ],
