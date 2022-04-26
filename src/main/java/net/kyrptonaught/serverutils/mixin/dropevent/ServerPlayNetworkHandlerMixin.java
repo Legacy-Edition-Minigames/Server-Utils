@@ -3,7 +3,6 @@ package net.kyrptonaught.serverutils.mixin.dropevent;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;

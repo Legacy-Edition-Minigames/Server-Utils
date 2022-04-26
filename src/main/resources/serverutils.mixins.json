@@ -6,13 +6,14 @@
     "bigstructures.StructureBlockEntityMixin",
     "bigstructures.StructureMixin",
     "bigstructures.UpdateStructureBlockPacketMixin",
+    "chesttracker.ChestBlockMixin",
+    "dropevent.ServerPlayNetworkHandlerMixin",
     "playerlockdown.ServerPlayerInteractionManager",
     "scoreboardsuffix.ServerPlayerEntityMixin",
     "scoreboardsuffix.ServerScoreboardMixin",
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
-    "takeeverything.ScreenHandlerMixin",
-    "dropevent.ServerPlayNetworkHandlerMixin"
+    "takeeverything.ScreenHandlerMixin"
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin"
