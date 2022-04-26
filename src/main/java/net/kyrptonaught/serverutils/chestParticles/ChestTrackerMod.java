@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -57,10 +58,17 @@ public class ChestTrackerMod {
                             return 1;
                         }))
                 .then(CommandManager.literal("fillChests")
-                        .executes(context -> {
-                            usedChest.clear();
-                            return 1;
-                        }))
+                        .then(CommandManager.literal("all")
+                                .executes(context -> {
+                                    usedChest.clear();
+                                    return 1;
+                                }))
+                        .then(CommandManager.argument("chestpos", BlockPosArgumentType.blockPos())
+                                .executes(context -> {
+                                    BlockPos chestpos = BlockPosArgumentType.getBlockPos(context, "chestpos");
+                                    usedChest.remove(chestpos);
+                                    return 1;
+                                })))
                 .then(CommandManager.literal("scoreboardObjective").then(CommandManager.argument("scoreboardObjective", StringArgumentType.word())
                         .executes(context -> {
                             scoreboardObjective = StringArgumentType.getString(context, "scoreboardObjective");
