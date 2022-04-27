@@ -28,7 +28,7 @@ import java.util.Random;
 
 public class ChestTrackerMod {
     public static HashMap<String, HashSet<BlockPos>> playerUsedChests = new HashMap<>();
-    public static HashMap<BlockPos, HashSet<String>> usedChest = new HashMap<>();
+    public static HashMap<BlockPos, Long> chestsWParticle = new HashMap<>();
     public static boolean enabled = true;
     public static String scoreboardObjective;
 
@@ -39,7 +39,6 @@ public class ChestTrackerMod {
             }
             return ActionResult.PASS;
         });
-
         CommandRegistrationCallback.EVENT.register(ChestTrackerMod::registerCommand);
     }
 
@@ -58,15 +57,12 @@ public class ChestTrackerMod {
                             return 1;
                         }))
                 .then(CommandManager.literal("fillChests")
-                        .then(CommandManager.literal("all")
-                                .executes(context -> {
-                                    usedChest.clear();
-                                    return 1;
-                                }))
                         .then(CommandManager.argument("chestpos", BlockPosArgumentType.blockPos())
                                 .executes(context -> {
                                     BlockPos chestpos = BlockPosArgumentType.getBlockPos(context, "chestpos");
-                                    usedChest.remove(chestpos);
+                                    long end = System.currentTimeMillis() + 40000;//40 seconds
+                                    chestsWParticle.put(chestpos, end);
+                                    chestsWParticle.put(getSecondHalf(context.getSource().getWorld(), chestpos), end);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("scoreboardObjective").then(CommandManager.argument("scoreboardObjective", StringArgumentType.word())
@@ -78,7 +74,7 @@ public class ChestTrackerMod {
 
     public static void reset(MinecraftServer server) {
         playerUsedChests.clear();
-        usedChest.clear();
+        chestsWParticle.clear();
         ServerScoreboard scoreboard = server.getScoreboard();
         server.getPlayerManager().getPlayerList().forEach(player -> {
             scoreboard.getPlayerScore(player.getEntityName(), scoreboard.getObjective(scoreboardObjective)).setScore(0);
@@ -86,26 +82,43 @@ public class ChestTrackerMod {
     }
 
     public static void addChestForPlayer(PlayerEntity player, BlockPos pos) {
-        BlockState state = player.world.getBlockState(pos);
-        if (state.get(ChestBlock.CHEST_TYPE) == ChestType.LEFT) pos = pos.offset(ChestBlock.getFacing(state));
+        BlockPos secondHalf = getSecondHalf(player.world, pos);
+
+        chestsWParticle.remove(pos);
+        chestsWParticle.remove(secondHalf);
 
         String uuid = player.getUuidAsString();
-
-        usedChest.computeIfAbsent(pos, k -> new HashSet<>()).add(uuid);
         playerUsedChests.computeIfAbsent(uuid, k -> new HashSet<>()).add(pos);
+        playerUsedChests.computeIfAbsent(uuid, k -> new HashSet<>()).add(secondHalf);
 
         ServerScoreboard scoreboard = (ServerScoreboard) player.getScoreboard();
         scoreboard.getPlayerScore(player.getEntityName(), scoreboard.getObjective(scoreboardObjective)).setScore(playerUsedChests.get(uuid).size());
     }
 
     public static void spawnParticleTick(World world, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
-        if (state.get(ChestBlock.CHEST_TYPE) == ChestType.LEFT) pos = pos.offset(ChestBlock.getFacing(state));
-        if (enabled && !ChestTrackerMod.usedChest.containsKey(pos)) {
+        if (isChestPosValid(pos)) {
             Random random = world.getRandom();
-
             //((ServerWorld) world).spawnParticles(ParticleTypes.COMPOSTER, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0.0, 1, 0.0, 1);
             ((ServerWorld) world).spawnParticles(ParticleTypes.GLOW, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, .2, 0.0, 1);
-            //((ServerWorld) world).spawnParticles(ParticleTypes.LANDING_OBSIDIAN_TEAR, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, .2, 0.0, 1);
+            //((ServerWorld) world).spawnParticles(new VibrationParticleEffect(new Vibration(pos, new BlockPositionSource(pos.up(2)),1)), (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, .2, 0.0, 1);
         }
+    }
+
+    public static BlockPos getSecondHalf(World world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        if (state.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE)
+            return pos.offset(ChestBlock.getFacing(state));
+        return pos;
+    }
+
+    public static boolean isChestPosValid(BlockPos pos) {
+        if (enabled && chestsWParticle.containsKey(pos)) {
+            if (System.currentTimeMillis() > chestsWParticle.get(pos)) {
+                chestsWParticle.remove(pos);
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }
