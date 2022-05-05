@@ -3,7 +3,7 @@ package net.kyrptonaught.serverutils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
-import net.kyrptonaught.serverutils.chestParticles.ChestTrackerMod;
+import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
@@ -12,6 +12,7 @@ import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepa
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.kyrptonaught.serverutils.velocitymodifier.VelocityCommandMod;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
+import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
 import net.minecraft.util.Identifier;
 
 public class ServerUtilsMod implements ModInitializer {
@@ -30,6 +31,8 @@ public class ServerUtilsMod implements ModInitializer {
         DropEventMod.onInitialize();
         HealthCMDMod.onInitialize();
         ChestTrackerMod.onInitialize();
+        WaterFreezer.onInitialize();
+
         configManager.load();
 
         registerPresence();

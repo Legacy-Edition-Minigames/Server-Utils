@@ -13,7 +13,9 @@
     "scoreboardsuffix.ServerScoreboardMixin",
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
-    "takeeverything.ScreenHandlerMixin"
+    "takeeverything.ScreenHandlerMixin",
+    "waterFreezer.FlowableFluidMixin",
+    "waterFreezer.FluidBlockMixin",
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin"

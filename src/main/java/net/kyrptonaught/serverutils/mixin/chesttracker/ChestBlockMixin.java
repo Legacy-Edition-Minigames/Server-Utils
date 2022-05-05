@@ -1,6 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.chesttracker;
 
-import net.kyrptonaught.serverutils.chestParticles.ChestTrackerMod;
+import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntityTicker;

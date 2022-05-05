@@ -1,4 +1,4 @@
-package net.kyrptonaught.serverutils.chestParticles;
+package net.kyrptonaught.serverutils.chestTracker;
 
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -99,7 +99,7 @@ public class ChestTrackerMod {
         if (isChestPosValid(pos)) {
             Random random = world.getRandom();
             //((ServerWorld) world).spawnParticles(ParticleTypes.COMPOSTER, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0.0, 1, 0.0, 1);
-            ((ServerWorld) world).spawnParticles(ParticleTypes.GLOW, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, .2, 0.0, 1);
+            ((ServerWorld) world).spawnParticles(ParticleTypes.WAX_OFF, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, .2, 0.0, 1);
             //((ServerWorld) world).spawnParticles(new VibrationParticleEffect(new Vibration(pos, new BlockPositionSource(pos.up(2)),1)), (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, .2, 0.0, 1);
         }
     }
