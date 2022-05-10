@@ -17,9 +17,11 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -35,7 +37,8 @@ public class ChestTrackerMod {
     public static void onInitialize() {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (enabled && world.getBlockState(hitResult.getBlockPos()).getBlock() instanceof ChestBlock) {
-                addChestForPlayer(player, hitResult.getBlockPos());
+                if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).interactionManager.getGameMode() != GameMode.SPECTATOR)
+                    addChestForPlayer(player, hitResult.getBlockPos());
             }
             return ActionResult.PASS;
         });
