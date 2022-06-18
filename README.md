@@ -168,9 +168,11 @@ Clear will reset it for all players and disable it if its enabled globally
 
 ## Ride command
 
-This module adds one command: `/ride`
+This module adds one command: `/ride <selector>`
 
-i havent gotten the chance to test this, ill write a readme for it when i can
+The `<selector>` argument determines what entity the entity executing the command will start riding
+
+This command can be used with `/execute as` to force any entity to ride another entity
 
 ## Water Freezer
 
