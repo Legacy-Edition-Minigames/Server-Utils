@@ -6,6 +6,7 @@ import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
+import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
@@ -34,6 +35,7 @@ public class ServerUtilsMod implements ModInitializer {
         ChestTrackerMod.onInitialize();
         WaterFreezer.onInitialize();
         RideMod.onInitialize();
+        PanoramaViewer.onInitialize();
         configManager.load();
 
         registerPresence();

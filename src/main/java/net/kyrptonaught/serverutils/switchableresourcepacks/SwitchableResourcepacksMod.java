@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.object.builder.v1.advancement.CriterionRegistry;
+import net.fabricmc.fabric.mixin.object.builder.CriteriaAccessor;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -42,9 +43,9 @@ public class SwitchableResourcepacksMod {
             System.out.println("[" + MOD_ID + "]: Generated example resourcepack config");
         }
 
-        STARTED = CriterionRegistry.register(new CustomCriterion("started"));
-        FINISHED = CriterionRegistry.register(new CustomCriterion("finished"));
-        FAILED = CriterionRegistry.register(new CustomCriterion("failed"));
+        STARTED = CriteriaAccessor.callRegister(new CustomCriterion("started"));
+        FINISHED = CriteriaAccessor.callRegister(new CustomCriterion("finished"));
+        FAILED = CriteriaAccessor.callRegister(new CustomCriterion("failed"));
     }
 
     public static ResourcePackConfig getConfig() {

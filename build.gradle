@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.11-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -22,15 +22,8 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation 'blue.endless:jankson:1.2.1'
-	include 'blue.endless:jankson:1.2.1'
-
-	modImplementation ('net.kyrptonaught:kyrptconfig:1.4.5-1.18'){
-		transitive(false)
-	}
-	include ('net.kyrptonaught:kyrptconfig:1.4.5-1.18'){
-		transitive(false)
-	}
+	modImplementation ('net.kyrptonaught:kyrptconfig:1.4.6-1.18')
+	include ('net.kyrptonaught:kyrptconfig:1.4.6-1.18')
 }
 
 processResources {
