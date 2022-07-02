@@ -12,6 +12,6 @@ public class TakeEverythingConfig implements AbstractConfigFile {
 
     public boolean worksInSpectator = false;
 
-    public static transient final HashSet<String> SWAP_IGNORE_ENCHANTS = new HashSet<>();
+    public static HashSet<String> SWAP_IGNORE_ENCHANTS = new HashSet<>();
 
 }

@@ -6,19 +6,22 @@ public class FrameCounter {
 
     public int frame;
 
-    public boolean mainFrameCounter;
-
-    public FrameCounter(int maxFrames, boolean isMainFrameCounter) {
+    public FrameCounter(int maxFrames) {
         this.maxFrames = maxFrames;
         frame = maxFrames;
-        this.mainFrameCounter = isMainFrameCounter;
     }
 
-    public void tick(boolean isMain) {
-        if (mainFrameCounter && !isMain) return;
-        if (!doesTick()) return;
+    private boolean canTick = false;
+
+    public void readyForFirstTick() {
+        canTick = true;
+    }
+
+    public void tick() {
+        if (!canTick || !doesTick()) return;
         frame--;
         if (frame < 0) frame = maxFrames;
+        canTick = false;
     }
 
     public boolean doesTick() {

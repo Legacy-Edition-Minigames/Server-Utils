@@ -8,56 +8,34 @@ import net.minecraft.text.Text;
 public class Padder {
     public int paddingSize;
     public int lastPaddedFrame = -1;
-    FrameCounter frameCounter;
 
     public Text paddedText;
 
-    public Padder(FrameCounter frameCounter, int paddingSize) {
-        this.frameCounter = frameCounter;
+    public Padder(int paddingSize) {
         this.paddingSize = paddingSize;
     }
 
-    public void updatePadding() {
+    public void updatePadding(FrameCounter frameCounter) {
         if (frameCounter.frame == lastPaddedFrame) return;
-        this.paddedText = generatePadding();
+        this.paddedText = generatePadding(frameCounter.frame);
         this.lastPaddedFrame = frameCounter.frame;
     }
 
-    public boolean dosePad() {
+    public boolean doesPad() {
         return paddingSize > 0;
     }
 
-    private MutableText generatePadding() {
-        if (paddingSize == 0 || !frameCounter.doesTick())
+    private MutableText generatePadding(int frame) {
+        if (!doesPad())
             return (MutableText) LiteralText.EMPTY;
 
-        String padding = switch (paddingSize) {
-            case 1 -> "\uF821";
-            case 2 -> "\uF822";
-            case 3 -> "\uF823";
-            case 4 -> "\uF824";
-            case 5 -> "\uF825";
-            case 6 -> "\uF826";
-            case 7 -> "\uF827";
-            case 8 -> "\uF828";
-            case 16 -> "\uF829";
-            case 32 -> "\uF82A";
-            case 64 -> "\uF82B";
-            case 128 -> "\uF82C";
-            case 512 -> "\uF82D";
-            case 1024 -> "\uF82E";
-            default -> "";
-        };
-
-        padding = padding.repeat(frameCounter.frame);
-        //padding = smartPad(frameCounter.frame * paddingSize, "");
-        //System.out.println(frameCounter.frame + " " + padding.length());
+        String padding = smartPad(frame * paddingSize, "");
         return new LiteralText(padding);
     }
 
-    private String smartPad(int frames, String output) {
-        if (frames >= 1024) return smartPad(frames - 1024, output + "\uF82E");
-        if (frames >= 512) return smartPad(frames - 512, output + "\uF82D");
+    public static String smartPad(int frames, String output) {
+        //if (frames >= 1024) return smartPad(frames - 1024, output + "\uF82E");
+        //if (frames >= 512) return smartPad(frames - 512, output + "\uF82D");
         if (frames >= 128) return smartPad(frames - 128, output + "\uF82C");
         if (frames >= 64) return smartPad(frames - 64, output + "\uF82B");
         if (frames >= 32) return smartPad(frames - 32, output + "\uF82A");
@@ -75,8 +53,8 @@ public class Padder {
     }
 
     public MutableText padOutput(Text input) {
-        Style style = Style.EMPTY;
-        //style.withFont(panoramaEntry.parsedText.displayText.getStyle().getFont());
-        return paddedText.copy().setStyle(input.getStyle()).append(input);
+        Style style = Style.EMPTY.withFont(input.getStyle().getFont());
+        MutableText text = paddedText.copy().setStyle(style);
+        return text.append(input);
     }
 }
