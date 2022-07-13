@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public class TNTLighter {
     public static String MOD_ID = "tntlighter";
-    public static boolean ENABLED = true;
+    public static boolean ENABLED = false;
 
     public static void onInitialize() {
         CommandRegistrationCallback.EVENT.register(TNTLighter::registerCommand);

@@ -15,9 +15,10 @@
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
     "takeeverything.ScreenHandlerMixin",
+    "tntlighter.TNTBlockMixin",
+    "tntlighter.TntEntityMixin",
     "waterFreezer.FlowableFluidMixin",
-    "waterFreezer.FluidBlockMixin",
-    "tntlighter.TNTBlockMixin"
+    "waterFreezer.FluidBlockMixin"
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin"
