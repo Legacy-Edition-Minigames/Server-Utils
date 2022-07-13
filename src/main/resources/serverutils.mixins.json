@@ -16,7 +16,8 @@
     "takeeverything.ItemEntityMixin",
     "takeeverything.ScreenHandlerMixin",
     "waterFreezer.FlowableFluidMixin",
-    "waterFreezer.FluidBlockMixin"
+    "waterFreezer.FluidBlockMixin",
+    "tntlighter.TNTBlockMixin"
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin"

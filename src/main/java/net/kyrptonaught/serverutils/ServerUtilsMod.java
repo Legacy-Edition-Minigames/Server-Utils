@@ -12,6 +12,7 @@ import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
+import net.kyrptonaught.serverutils.tntlighter.TNTLighter;
 import net.kyrptonaught.serverutils.velocitymodifier.VelocityCommandMod;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
 import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
@@ -36,6 +37,7 @@ public class ServerUtilsMod implements ModInitializer {
         WaterFreezer.onInitialize();
         RideMod.onInitialize();
         PanoramaViewer.onInitialize();
+        TNTLighter.onInitialize();
         configManager.load();
 
         registerPresence();
