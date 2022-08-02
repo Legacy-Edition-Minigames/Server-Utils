@@ -31,7 +31,7 @@ public abstract class TNTBlockMixin extends Block {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (world != null && placer != null && TNTLighter.ENABLED) {
+        if (world != null && TNTLighter.ENABLED) {
             primeTnt(world, pos, placer);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
         }
@@ -39,7 +39,7 @@ public abstract class TNTBlockMixin extends Block {
 
     @Inject(method = "onDestroyedByExplosion", at = @At("HEAD"), cancellable = true)
     public void preventReignite(World world, BlockPos pos, Explosion explosion, CallbackInfo ci) {
-        if (world != null && explosion.getCausingEntity() instanceof PlayerEntity && TNTLighter.ENABLED) {
+        if (world != null && TNTLighter.ENABLED) {
             ci.cancel();
         }
     }

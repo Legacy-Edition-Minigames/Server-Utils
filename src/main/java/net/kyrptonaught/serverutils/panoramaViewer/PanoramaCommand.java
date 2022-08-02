@@ -104,7 +104,8 @@ public class PanoramaCommand {
             bossBar = bossMan.add(new Identifier(PanoramaViewer.MOD_ID, panorama.panoramaName), panorama.text);
         }
 
-        bossBar.addPlayers(players);
+        for (ServerPlayerEntity player : players)
+            bossBar.addPlayer(player);
         return 1;
     }
 }
