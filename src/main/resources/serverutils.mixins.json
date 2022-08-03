@@ -18,7 +18,8 @@
     "tntlighter.TNTBlockMixin",
     "tntlighter.TntEntityMixin",
     "waterFreezer.FlowableFluidMixin",
-    "waterFreezer.FluidBlockMixin"
+    "waterFreezer.FluidBlockMixin",
+    "tntlauncher.ExplosionMixin"
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin"

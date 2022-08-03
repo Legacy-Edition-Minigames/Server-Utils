@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
@@ -17,9 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TntEntity.class)
 public abstract class TntEntityMixin extends Entity {
-
-    @Shadow
-    private @Nullable LivingEntity causingEntity;
 
     public TntEntityMixin(EntityType<?> type, World world) {
         super(type, world);

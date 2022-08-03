@@ -106,6 +106,7 @@ public class PanoramaCommand {
 
         for (ServerPlayerEntity player : players)
             bossBar.addPlayer(player);
+
         return 1;
     }
 }
