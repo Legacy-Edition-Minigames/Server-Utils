@@ -44,17 +44,11 @@ public class PanoramaCommand {
         }
         cmd.then(startCmd);
 
-        cmd.then(CommandManager.literal("clear").executes(context -> {
-            BossBarManager bossMan = context.getSource().getServer().getBossBarManager();
-            for (String panoramaName : PanoramaViewer.panoramaEntries.keySet()) {
-                CommandBossBar bossBar = bossMan.get(new Identifier(PanoramaViewer.MOD_ID, panoramaName));
-                if (bossBar != null) {
-                    bossBar.clearPlayers();
-                    bossMan.remove(bossBar);
-                }
-            }
-            return 1;
-        }));
+        cmd.then(CommandManager.literal("clear")
+                .executes(context -> executeClear(context, Collections.singleton(context.getSource().getPlayer())))//clears just player
+                .then(CommandManager.argument("player", EntityArgumentType.players())
+                        .executes(context -> executeClear(context, EntityArgumentType.getPlayers(context, "player"))))//clears selector
+                .then(CommandManager.literal("all").executes(context -> executeClear(context, null))));//clears all
 
         /*
         cmd.then(CommandManager.literal("testlen")
@@ -78,6 +72,23 @@ public class PanoramaCommand {
                         })));
          */
         dispatcher.register(cmd);
+    }
+
+    public static int executeClear(CommandContext<ServerCommandSource> commandContext, Collection<ServerPlayerEntity> players) {
+        BossBarManager bossMan = commandContext.getSource().getServer().getBossBarManager();
+        for (String panoramaName : PanoramaViewer.panoramaEntries.keySet()) {
+            CommandBossBar bossBar = bossMan.get(new Identifier(PanoramaViewer.MOD_ID, panoramaName));
+            if (bossBar != null) {
+                if (players == null)
+                    bossBar.clearPlayers();
+                else
+                    players.forEach(bossBar::removePlayer);
+
+                if (bossBar.getPlayers().size() == 0)
+                    bossMan.remove(bossBar);
+            }
+        }
+        return 1;
     }
 
     public static int getScoreBoard(CommandContext<ServerCommandSource> commandContext, String panoramaName, Collection<ServerPlayerEntity> players) throws CommandSyntaxException {
