@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Explosion.class)
 public abstract class ExplosionMixin {
-
+ /*
     @Shadow
     @Final
     private @Nullable Entity entity;
@@ -42,4 +42,5 @@ public abstract class ExplosionMixin {
             return instance.add(x, y, z);
         return instance.add(x, y, z);
     }
+*/
 }
