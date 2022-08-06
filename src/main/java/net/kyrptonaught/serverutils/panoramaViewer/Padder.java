@@ -9,7 +9,7 @@ public class Padder {
     public int paddingSize;
     public int lastPaddedFrame = -1;
 
-    public Text paddedText;
+    public Text paddedText = LiteralText.EMPTY;
 
     public Padder(int paddingSize) {
         this.paddingSize = paddingSize;
@@ -34,8 +34,8 @@ public class Padder {
     }
 
     public static String smartPad(int frames, String output) {
-        //if (frames >= 1024) return smartPad(frames - 1024, output + "\uF82E");
-        //if (frames >= 512) return smartPad(frames - 512, output + "\uF82D");
+        //if (frames >= 1024) return smartPad(frames - 1024, output + "\uF82E"); //these are broken in the font
+        //if (frames >= 512) return smartPad(frames - 512, output + "\uF82D"); //these are broken in the font
         if (frames >= 128) return smartPad(frames - 128, output + "\uF82C");
         if (frames >= 64) return smartPad(frames - 64, output + "\uF82B");
         if (frames >= 32) return smartPad(frames - 32, output + "\uF82A");

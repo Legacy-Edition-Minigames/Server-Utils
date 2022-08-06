@@ -28,6 +28,10 @@ public class Panorama {
         padder.updatePadding(frameCounter);
     }
 
+    public Text getPaddedText() {
+        return padder.padOutput(text);
+    }
+
     private MutableText parseToText(String text) {
         try {
             return Objects.requireNonNullElseGet(Text.Serializer.fromJson(text), () -> new LiteralText(text));

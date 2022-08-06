@@ -50,7 +50,7 @@ public class PanoramaViewer {
                 if (!panorama.frameCounter.doesTick() || bossBar == null || bossBar.getPlayers().size() == 0) continue;
 
                 panorama.tickFrameCounter();
-                bossBar.setName(panorama.padder.padOutput(panorama.text));
+                bossBar.setName(panorama.getPaddedText());
             }
         });
     }

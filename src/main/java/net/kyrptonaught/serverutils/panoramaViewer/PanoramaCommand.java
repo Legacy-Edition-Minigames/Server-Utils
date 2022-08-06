@@ -112,7 +112,7 @@ public class PanoramaCommand {
         BossBarManager bossMan = commandContext.getSource().getServer().getBossBarManager();
         CommandBossBar bossBar = bossMan.get(new Identifier(PanoramaViewer.MOD_ID, panorama.panoramaName));
         if (bossBar == null) {
-            bossBar = bossMan.add(new Identifier(PanoramaViewer.MOD_ID, panorama.panoramaName), panorama.text);
+            bossBar = bossMan.add(new Identifier(PanoramaViewer.MOD_ID, panorama.panoramaName), panorama.getPaddedText());
         }
 
         for (ServerPlayerEntity player : players)
