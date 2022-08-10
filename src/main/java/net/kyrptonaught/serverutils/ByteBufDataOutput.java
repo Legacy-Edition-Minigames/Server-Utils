@@ -1,4 +1,4 @@
-package net.kyrptonaught.serverutils.velocityserverswitch;
+package net.kyrptonaught.serverutils;
 
 import net.minecraft.network.PacketByteBuf;
 
@@ -33,6 +33,8 @@ public class ByteBufDataOutput extends OutputStream {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
+        super.close();
+        dataOutputStream.close();
     }
 }

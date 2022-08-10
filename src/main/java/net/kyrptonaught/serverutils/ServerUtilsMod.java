@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
+import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
@@ -38,6 +39,7 @@ public class ServerUtilsMod implements ModInitializer {
         RideMod.onInitialize();
         PanoramaViewer.onInitialize();
         TNTLighter.onInitialize();
+        BrandBlocker.onInitialize();
         configManager.load();
 
         registerPresence();

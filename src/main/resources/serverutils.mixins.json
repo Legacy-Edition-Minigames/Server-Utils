@@ -7,6 +7,7 @@
     "bigstructures.StructureBlockEntityMixin",
     "bigstructures.StructureMixin",
     "bigstructures.UpdateStructureBlockPacketMixin",
+    "brandblocker.ServerPlayNetworkHandlerMixin",
     "chesttracker.ChestBlockMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
     "playerlockdown.ServerPlayerInteractionManager",
@@ -15,11 +16,11 @@
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
     "takeeverything.ScreenHandlerMixin",
+    "tntlauncher.ExplosionMixin",
     "tntlighter.TNTBlockMixin",
     "tntlighter.TntEntityMixin",
     "waterFreezer.FlowableFluidMixin",
-    "waterFreezer.FluidBlockMixin",
-    "tntlauncher.ExplosionMixin"
+    "waterFreezer.FluidBlockMixin"
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin"
