@@ -9,7 +9,7 @@ import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
-import net.kyrptonaught.serverutils.protocolVersionChecker.ProtocolVersionChecker;
+import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
@@ -41,7 +41,7 @@ public class ServerUtilsMod implements ModInitializer {
         PanoramaViewer.onInitialize();
         TNTLighter.onInitialize();
         BrandBlocker.onInitialize();
-        ProtocolVersionChecker.onInitialize();
+        ScoreboardPlayerInfo.onInitialize();
 
         configManager.load();
         registerPresence();

@@ -23,11 +23,11 @@
     "waterFreezer.FluidBlockMixin"
   ],
   "server": [
-    "protocolversionchecker.ServerHandshakeNetworkHandlerMixin"
+    "scoreboardplayerinfo.ServerHandshakeNetworkHandlerMixin"
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin",
-    "protocolversionchecker.LocalServerHandshakeNetworkHandlerMixin"
+    "scoreboardplayerinfo.LocalServerHandshakeNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
