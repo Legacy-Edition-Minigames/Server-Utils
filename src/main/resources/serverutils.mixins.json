@@ -22,8 +22,12 @@
     "waterFreezer.FlowableFluidMixin",
     "waterFreezer.FluidBlockMixin"
   ],
+  "server": [
+    "protocolversionchecker.ServerHandshakeNetworkHandlerMixin"
+  ],
   "client": [
-    "bigstructures.StructureBlockEntityRendererMixin"
+    "bigstructures.StructureBlockEntityRendererMixin",
+    "protocolversionchecker.LocalServerHandshakeNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

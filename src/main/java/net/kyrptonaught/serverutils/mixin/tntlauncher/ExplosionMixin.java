@@ -1,18 +1,7 @@
 package net.kyrptonaught.serverutils.mixin.tntlauncher;
 
-import net.kyrptonaught.serverutils.tntlauncher.TntLauncher;
-import net.minecraft.enchantment.ProtectionEnchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.TntEntity;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Explosion.class)
 public abstract class ExplosionMixin {
