@@ -10,8 +10,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 
 public class ScoreboardPlayerInfo {

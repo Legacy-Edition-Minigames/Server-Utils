@@ -27,7 +27,7 @@ public abstract class LocalServerHandshakeNetworkHandlerMixin {
         server.execute(() -> {
             if (packet.getIntendedState() == NetworkState.LOGIN) {
                 int protocol = packet.getProtocolVersion();
-                ScoreboardPlayerInfo.addClientConnectionProtocol(getConnection(),protocol);
+                ScoreboardPlayerInfo.addClientConnectionProtocol(getConnection(), protocol);
             }
         });
     }

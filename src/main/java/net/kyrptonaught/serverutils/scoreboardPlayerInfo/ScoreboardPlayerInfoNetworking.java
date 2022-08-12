@@ -1,7 +1,6 @@
 package net.kyrptonaught.serverutils.scoreboardPlayerInfo;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.kyrptonaught.serverutils.takeEverything.TakeEverythingHelper;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.minecraft.util.Identifier;
 

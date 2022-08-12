@@ -7,6 +7,7 @@
     "bigstructures.StructureBlockEntityMixin",
     "bigstructures.StructureMixin",
     "bigstructures.UpdateStructureBlockPacketMixin",
+    "brandblocker.PlayerManagerMixin",
     "brandblocker.ServerPlayNetworkHandlerMixin",
     "chesttracker.ChestBlockMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
