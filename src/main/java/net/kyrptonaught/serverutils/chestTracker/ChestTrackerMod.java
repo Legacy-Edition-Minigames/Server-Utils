@@ -6,9 +6,11 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +38,7 @@ public class ChestTrackerMod {
 
     public static void onInitialize() {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (enabled && world.getBlockState(hitResult.getBlockPos()).getBlock() instanceof ChestBlock) {
+            if (enabled && world.getBlockState(hitResult.getBlockPos()).getBlock() instanceof BlockEntityProvider) {
                 if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).interactionManager.getGameMode() != GameMode.SPECTATOR)
                     addChestForPlayer(player, hitResult.getBlockPos());
             }
@@ -98,19 +100,19 @@ public class ChestTrackerMod {
         scoreboard.getPlayerScore(player.getEntityName(), scoreboard.getObjective(scoreboardObjective)).setScore(playerUsedChests.get(uuid).size());
     }
 
-    public static void spawnParticleTick(World world, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
+    public static void spawnParticleTick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         if (isChestPosValid(pos)) {
             Random random = world.getRandom();
-            //((ServerWorld) world).spawnParticles(ParticleTypes.COMPOSTER, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0.0, 1, 0.0, 1);
             ((ServerWorld) world).spawnParticles(ParticleTypes.WAX_OFF, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, 4, 0.0, 1);
-            //((ServerWorld) world).spawnParticles(new VibrationParticleEffect(new Vibration(pos, new BlockPositionSource(pos.up(2)),1)), (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, .2, 0.0, 1);
         }
     }
 
     public static BlockPos getSecondHalf(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
-        if (state.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE)
-            return pos.offset(ChestBlock.getFacing(state));
+        if (state.getBlock() instanceof ChestBlock) {
+            if (state.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE)
+                return pos.offset(ChestBlock.getFacing(state));
+        }
         return pos;
     }
 
@@ -123,5 +125,13 @@ public class ChestTrackerMod {
             return true;
         }
         return false;
+    }
+
+    public static BlockEntityTicker<BlockEntity> wrapTicker(BlockEntityTicker<BlockEntity> ticker) {
+        return (world, pos, state, blockEntity) -> {
+            if (ticker != null)
+                ticker.tick(world, pos, state, blockEntity);
+            spawnParticleTick(world, pos, state, blockEntity);
+        };
     }
 }
