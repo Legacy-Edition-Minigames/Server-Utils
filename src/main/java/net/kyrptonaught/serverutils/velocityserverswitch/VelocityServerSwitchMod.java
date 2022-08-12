@@ -14,7 +14,6 @@ import net.minecraft.util.Identifier;
 public class VelocityServerSwitchMod {
     public static Identifier BUNGEECORD_ID = new Identifier("bungeecord", "main");
 
-
     public static void onInitialize() {
         CommandRegistrationCallback.EVENT.register(VelocityServerSwitchMod::register);
     }
@@ -25,11 +24,15 @@ public class VelocityServerSwitchMod {
                 .then(CommandManager.argument("servername", StringArgumentType.word())
                         .executes((commandContext) -> {
                             String servername = StringArgumentType.getString(commandContext, "servername");
-                            ByteBufDataOutput output = new ByteBufDataOutput(new PacketByteBuf(Unpooled.buffer()));
+                            try (ByteBufDataOutput output = new ByteBufDataOutput(new PacketByteBuf(Unpooled.buffer()))) {
 
-                            output.writeUTF("Connect");
-                            output.writeUTF(servername);
-                            ServerPlayNetworking.send(commandContext.getSource().getPlayer(), BUNGEECORD_ID, output.getBuf());
+                                output.writeUTF("Connect");
+                                output.writeUTF(servername);
+                                ServerPlayNetworking.send(commandContext.getSource().getPlayer(), BUNGEECORD_ID, output.getBuf());
+                            } catch (Exception e) {
+                                System.out.println("Failed to send switch packet");
+                                e.printStackTrace();
+                            }
                             return 1;
                         })));
     }

@@ -10,10 +10,9 @@ import java.util.*;
 
 public class SuffixFormat {
 
-    String[] input;
-
     public List<Suffix> scoreboardSuffixes = new ArrayList<>();
     public HashSet<String> scoreboardNames = Sets.newHashSet();
+    String[] input;
 
     public void format() {
         Arrays.stream(input).forEach(s -> {
