@@ -14,6 +14,7 @@
     "playerlockdown.ServerPlayerInteractionManager",
     "scoreboardsuffix.ServerPlayerEntityMixin",
     "scoreboardsuffix.ServerScoreboardMixin",
+    "serverMetadataSpoofer.ServerMetadataMixin",
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
     "takeeverything.ScreenHandlerMixin",
