@@ -22,6 +22,26 @@ public class BrandBlocker {
         return (BrandBlockerConfig) ServerUtilsMod.configManager.getConfig(MOD_ID);
     }
 
+    public static Text isBlockedBrand(String brand) {
+        BrandBlockerConfig config = getConfig();
+        if (config.blockedBrands.containsKey(brand)) return getKickMsg(config.blockedBrands.get(brand));
+
+        if (config.blockedBrandsRegex.size() == 0) return null;
+        for (BrandBlockerConfig.BrandEntry brandEntry : config.blockedBrandsRegex)
+            if (brandEntry.matchesRegex(brand)) return getKickMsg(brandEntry.kickMsg);
+
+        return null;
+    }
+
+    private static Text getKickMsg(String msg) {
+        if (msg.equals("$KICKMSG$")) msg = getConfig().kickMsg;
+        try {
+            return Text.Serializer.fromJson(msg);
+        } catch (Exception ignored) {
+            return Text.of(msg);
+        }
+    }
+
     public static void kickVelocity(ServerPlayerEntity player, ClientConnection connection, Text msg) {
         try (ByteBufDataOutput output = new ByteBufDataOutput(new PacketByteBuf(Unpooled.buffer()))) {
             output.writeUTF("KickPlayer");

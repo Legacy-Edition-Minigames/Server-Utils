@@ -39,7 +39,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements SPNHDelayedJoinBr
     public void onCustomPayload(CustomPayloadC2SPacket packet, CallbackInfo ci) {
         if (packet.getChannel().equals(CustomPayloadC2SPacket.BRAND)) {
             String brand = packet.getData().readString();
-            Text msg = BrandBlocker.getConfig().isBlockedBrand(brand);
+            Text msg = BrandBlocker.isBlockedBrand(brand);
             server.execute(() -> {
                 if (msg != null) {
                     System.out.println("[BrandBlock] " + player.getEntityName() + " attempted to join with the blocked client brand: " + brand);
