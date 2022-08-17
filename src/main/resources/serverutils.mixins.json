@@ -10,6 +10,7 @@
     "brandblocker.PlayerManagerMixin",
     "brandblocker.ServerPlayNetworkHandlerMixin",
     "chesttracker.AbstractBlockStateMixin",
+    "cpslimiter.ServerPlayNetworkHandlerMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
     "playerlockdown.ServerPlayerInteractionManager",
     "scoreboardsuffix.ServerPlayerEntityMixin",

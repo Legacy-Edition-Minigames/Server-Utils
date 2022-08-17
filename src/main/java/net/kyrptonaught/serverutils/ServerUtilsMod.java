@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
+import net.kyrptonaught.serverutils.cpslimiter.CPSLimiter;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
@@ -42,6 +43,7 @@ public class ServerUtilsMod implements ModInitializer {
         TNTLighter.onInitialize();
         BrandBlocker.onInitialize();
         ScoreboardPlayerInfo.onInitialize();
+        CPSLimiter.onInitialize();
 
         configManager.load();
         registerPresence();
