@@ -1,12 +1,10 @@
 package net.kyrptonaught.serverutils.brandBlocker;
 
 import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
-import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class BrandBlockerConfig implements AbstractConfigFile {
