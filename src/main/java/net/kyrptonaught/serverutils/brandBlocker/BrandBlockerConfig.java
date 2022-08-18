@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.brandBlocker;
 
+import blue.endless.jankson.Comment;
 import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
 
 import java.util.ArrayList;
@@ -9,8 +10,13 @@ import java.util.regex.Pattern;
 
 public class BrandBlockerConfig implements AbstractConfigFile {
 
+    @Comment("Brand strings to block")
     public final HashMap<String, String> blockedBrands = new HashMap<>();
+
+    @Comment("Brand Regex to block")
     public final List<BrandEntry> blockedBrandsRegex = new ArrayList<>();
+
+    @Comment("Default kick message")
     public final String kickMsg = "This client brand is not allowed";
 
 
