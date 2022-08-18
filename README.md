@@ -179,3 +179,54 @@ This command can be used with `/execute as` to force any entity to ride another 
 This module adds one command: `/waterFreezer freeze true/false`
 
 Setting it to true will disable all interactions with liquids, water and lava. This will allow you to have water and lava exist next to each other without them turning into stone/obsidian/cobblestone.
+
+## Panorama Renderer
+
+Uses bossbars and custom fonts to render a full screen panorama to the client
+
+More info needed
+
+## TNT Lighter
+
+This module adds one command: `/tntlighter enable true/false`
+
+While enabled, TNT will instantly be ignited when placed and cause no block damage upon exploding
+
+## Brand Blocker
+
+This module allows you to block clients based on their client brand. Brands can be blocked based on a string, or by Regex
+
+If a client joins with a blocked brand, they will be kicked with a brand specific reason. Brand Blocker also supports delaying the "Player has joined" message until after they pass the brand check, and hides the  
+"Player has left" message upon being kicked.
+
+Config:
+
+    "blockedBrands": {  - complete brand strings to block
+    "forge": "$KICKMSG$", - specify the brand and the kick msg. $KICKMSG$ will use the default msg.
+    "vanilla": "Bad Brand"
+    },
+    "blockedBrandsRegex": [ - match brands using regex
+        {
+            "regex": "fab\\S+" - regular expression to test the brand.
+            "kickMsg": "kick me plz" - kick msg. Same rules apply.
+        },
+        {
+            "regex": "for\\S+" -
+            "kickMsg": "kick me plz"
+        }
+    ],
+    "kickMsg": "This client brand is not allowed" - default kick msg.
+
+## Scoreboard Player Info
+
+This module automatically sets a scoreboard value for all players with info about their client.
+
+Currently, has:
+
+* serverutils.mcprotocolversion - represents the client's protocol verison. See [wiki](https://minecraft.fandom.com/wiki/Protocol_version)
+* serverutils.haslemclient - Set to 1 if LEMClientHelper was detected by the client, unset if not.
+* serverutils.hasoptifine - Uses LEMClientHelper to detect if optifine is installed, will only function if the client also has LCH. Set to 1 if optifine was detected, 0 if not. Or unset if not checked.
+
+## Server Metadata Spoofer
+
+This module spoofs the connected player info in the server metadata being sent to clients viewing the server in the multiplayer screen. The player list size is increased to 16 from 12, and colors the player's names based on their team color.
