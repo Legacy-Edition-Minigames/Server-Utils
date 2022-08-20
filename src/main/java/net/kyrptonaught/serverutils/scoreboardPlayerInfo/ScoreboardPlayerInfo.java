@@ -18,6 +18,7 @@ public class ScoreboardPlayerInfo {
     private static final CustomObjective protocolObjective = new CustomObjective("mcprotocolversion", "Client MC Protocol Version");
     private static final CustomObjective hasOptifineObjective = new CustomObjective("hasoptifine", "Client has Optifine");
     private static final CustomObjective hasLEMClientObjective = new CustomObjective("haslemclient", "Client has LEMClientHelper");
+    private static final CustomObjective hasControllerModObjective = new CustomObjective("hascontroller", "Client has Controller Mod");
 
     private final static HashMap<ClientConnection, Integer> connectionProtocolVersion = new HashMap<>();
 
@@ -58,5 +59,9 @@ public class ScoreboardPlayerInfo {
 
     public static void setHasOptifine(MinecraftServer server, PlayerEntity player, boolean hasOptifine) {
         hasOptifineObjective.setScoreboardScore(server.getScoreboard(), player, hasOptifine ? 1 : 0);
+    }
+
+    public static void setHasControllerMod(MinecraftServer server, PlayerEntity player, boolean hasController) {
+        hasControllerModObjective.setScoreboardScore(server.getScoreboard(), player, hasController ? 1 : 0);
     }
 }

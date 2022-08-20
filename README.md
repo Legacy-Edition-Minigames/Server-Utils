@@ -225,7 +225,10 @@ Currently, has:
 
 * serverutils.mcprotocolversion - represents the client's protocol verison. See [wiki](https://minecraft.fandom.com/wiki/Protocol_version)
 * serverutils.haslemclient - Set to 1 if LEMClientHelper was detected by the client, unset if not.
-* serverutils.hasoptifine - Uses LEMClientHelper to detect if optifine is installed, will only function if the client also has LCH. Set to 1 if optifine was detected, 0 if not. Or unset if not checked.
+
+The following will only function and be set if LEMClientHelper is installed on the client. 
+* serverutils.hasoptifine - Set to 1 if optifine was detected, 0 if not. Or unset if not checked.
+* serverutils.hascontroller - Set to 1 if a controller mod was detected, 0 if not. Currently recognises MidnightControls, LambdaControls, Controllable, Controller Support Mod
 
 ## Server Metadata Spoofer
 

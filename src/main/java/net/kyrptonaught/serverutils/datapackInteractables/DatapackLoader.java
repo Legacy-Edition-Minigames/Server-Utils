@@ -26,7 +26,6 @@ public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
 
     @Override
     public void reload(ResourceManager manager) {
-        System.out.println("reload");
         DatapackInteractables.clear();
         Collection<Identifier> resources = manager.findResources(ID.getPath(), (string) -> string.endsWith(".json"));
         for (Identifier id : resources) {

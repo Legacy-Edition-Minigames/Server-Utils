@@ -10,6 +10,7 @@ import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.cpslimiter.CPSLimiter;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
+import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
@@ -18,6 +19,7 @@ import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
+import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.kyrptonaught.serverutils.tntlighter.TNTLighter;
 import net.kyrptonaught.serverutils.velocitymodifier.VelocityCommandMod;
@@ -53,6 +55,8 @@ public class ServerUtilsMod implements ModInitializer {
         CPSLimiter.onInitialize();
         DatapackInteractables.onInitialize();
         ChatDisabler.onInitialize();
+        DimensionLoaderMod.onInitialize();
+        SyncedKeybinds.onInitialize();
 
         configManager.load();
         registerPresence();

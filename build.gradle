@@ -14,6 +14,7 @@ repositories {
 	maven { url 'https://maven.fabricmc.net' }
 	maven { url "https://maven.kyrptonaught.dev" }
 	maven { url "https://maven.terraformersmc.com/releases" }
+	//maven { url = 'https://maven.nucleoid.xyz/' }
 }
 
 dependencies {
@@ -24,6 +25,9 @@ dependencies {
 
 	modImplementation ('net.kyrptonaught:kyrptconfig:1.4.6-1.18')
 	include ('net.kyrptonaught:kyrptconfig:1.4.6-1.18')
+
+	modImplementation 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.18.2'
+	include 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.18.2'
 }
 
 processResources {
