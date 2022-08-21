@@ -25,4 +25,9 @@ public class CustomObjective {
         ScoreboardObjective objective = scoreboard.getObjective(objName);
         scoreboard.getPlayerScore(player.getEntityName(), objective).setScore(score);
     }
+
+    public void resetScore(Scoreboard scoreboard, PlayerEntity player) {
+        ScoreboardObjective objective = scoreboard.getObjective(objName);
+        scoreboard.getPlayerScore(player.getEntityName(), objective).clearScore();
+    }
 }

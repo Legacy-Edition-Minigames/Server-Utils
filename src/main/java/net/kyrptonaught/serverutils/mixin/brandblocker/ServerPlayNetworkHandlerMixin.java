@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.mixin.brandblocker;
 
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.brandBlocker.duckInterface.SPNHDelayedJoinBroadcast;
+import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -39,6 +40,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements SPNHDelayedJoinBr
     public void onCustomPayload(CustomPayloadC2SPacket packet, CallbackInfo ci) {
         if (packet.getChannel().equals(CustomPayloadC2SPacket.BRAND)) {
             String brand = packet.getData().readString();
+            ScoreboardPlayerInfo.checkBrand(server, player, brand);
             Text msg = BrandBlocker.isBlockedBrand(brand);
             server.execute(() -> {
                 if (msg != null) {

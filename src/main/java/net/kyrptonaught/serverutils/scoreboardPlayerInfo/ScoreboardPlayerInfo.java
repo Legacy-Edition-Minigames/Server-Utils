@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.scoreboardPlayerInfo;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
@@ -9,6 +10,8 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
@@ -19,6 +22,8 @@ public class ScoreboardPlayerInfo {
     private static final CustomObjective hasOptifineObjective = new CustomObjective("hasoptifine", "Client has Optifine");
     private static final CustomObjective hasLEMClientObjective = new CustomObjective("haslemclient", "Client has LEMClientHelper");
     private static final CustomObjective hasControllerModObjective = new CustomObjective("hascontroller", "Client has Controller Mod");
+    private static final CustomObjective fabricClientObjective = new CustomObjective("fabricclient", "Client is using Fabric");
+    private static final CustomObjective forgeClientObjective = new CustomObjective("forgeclient", "Client is using Forge");
 
     private final static HashMap<ClientConnection, Integer> connectionProtocolVersion = new HashMap<>();
 
@@ -27,6 +32,7 @@ public class ScoreboardPlayerInfo {
 
         ServerLifecycleEvents.SERVER_STARTED.register(ScoreboardPlayerInfo::registerScoreboardOBJs);
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onPlayerConnect(server, handler));
+
     }
 
     public static void registerScoreboardOBJs(MinecraftServer server) {
@@ -40,13 +46,31 @@ public class ScoreboardPlayerInfo {
         protocolObjective.addToScoreboard(scoreboard);
         hasOptifineObjective.addToScoreboard(scoreboard);
         hasLEMClientObjective.addToScoreboard(scoreboard);
+        fabricClientObjective.addToScoreboard(scoreboard);
+        forgeClientObjective.addToScoreboard(scoreboard);
     }
 
     public static void onPlayerConnect(MinecraftServer server, ServerPlayNetworkHandler handler) {
+        //Scoreboard scoreboard = server.getScoreboard();
+        //protocolObjective.resetScore(scoreboard, handler.player);
+        //hasOptifineObjective.resetScore(scoreboard, handler.player);
+        //hasLEMClientObjective.resetScore(scoreboard, handler.player);
+        //fabricClientObjective.resetScore(scoreboard, handler.player);
+        //forgeClientObjective.resetScore(scoreboard, handler.player);
+
         if (connectionProtocolVersion.containsKey(handler.connection)) {
             int protocolVersion = connectionProtocolVersion.remove(handler.connection);
             protocolObjective.setScoreboardScore(server.getScoreboard(), handler.player, protocolVersion);
         }
+
+        if (ServerPlayNetworking.canSend(handler, new Identifier("fabric:registry/sync")))
+            setFabricClient(server, handler.player, true);
+
+    }
+
+    public static void checkBrand(MinecraftServer server, ServerPlayerEntity player, String brand) {
+        if (brand.contains("forge"))
+            setForgeClient(server, player, true);
     }
 
     public static void addClientConnectionProtocol(ClientConnection connection, int protocol) {
@@ -63,5 +87,13 @@ public class ScoreboardPlayerInfo {
 
     public static void setHasControllerMod(MinecraftServer server, PlayerEntity player, boolean hasController) {
         hasControllerModObjective.setScoreboardScore(server.getScoreboard(), player, hasController ? 1 : 0);
+    }
+
+    public static void setFabricClient(MinecraftServer server, PlayerEntity player, boolean fabricClient) {
+        fabricClientObjective.setScoreboardScore(server.getScoreboard(), player, fabricClient ? 1 : 0);
+    }
+
+    public static void setForgeClient(MinecraftServer server, PlayerEntity player, boolean forgeClient) {
+        forgeClientObjective.setScoreboardScore(server.getScoreboard(), player, forgeClient ? 1 : 0);
     }
 }
