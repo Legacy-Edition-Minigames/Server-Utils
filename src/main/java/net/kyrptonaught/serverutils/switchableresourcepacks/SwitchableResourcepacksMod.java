@@ -56,6 +56,7 @@ public class SwitchableResourcepacksMod {
         for (String packname : rpOptionHashMap.keySet()) {
             cmd.then(CommandManager.literal(packname)
                     .then(CommandManager.argument("player", EntityArgumentType.players())
+                            .requires((source) -> source.hasPermissionLevel(2))
                             .executes(commandContext -> execute(commandContext, packname, EntityArgumentType.getPlayers(commandContext, "player"))))
                     .executes(commandContext -> execute(commandContext, packname, Collections.singleton(commandContext.getSource().getPlayer()))));
         }

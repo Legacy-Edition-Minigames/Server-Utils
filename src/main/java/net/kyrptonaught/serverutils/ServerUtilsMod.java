@@ -52,7 +52,7 @@ public class ServerUtilsMod implements ModInitializer {
         TNTLighter.onInitialize();
         BrandBlocker.onInitialize();
         ScoreboardPlayerInfo.onInitialize();
-        CPSLimiter.onInitialize();
+        //CPSLimiter.onInitialize();
         DatapackInteractables.onInitialize();
         ChatDisabler.onInitialize();
         DimensionLoaderMod.onInitialize();

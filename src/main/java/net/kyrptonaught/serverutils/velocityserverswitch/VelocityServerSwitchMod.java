@@ -20,7 +20,7 @@ public class VelocityServerSwitchMod {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
         dispatcher.register(CommandManager.literal("velocityserverswitch")
-                .requires((source) -> source.hasPermissionLevel(0))
+                .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.argument("servername", StringArgumentType.word())
                         .executes((commandContext) -> {
                             String servername = StringArgumentType.getString(commandContext, "servername");

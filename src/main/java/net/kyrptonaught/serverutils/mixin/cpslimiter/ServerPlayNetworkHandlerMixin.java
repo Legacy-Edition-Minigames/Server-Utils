@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = {"net.minecraft.server.network.ServerPlayNetworkHandler$1"})
 public class ServerPlayNetworkHandlerMixin {
 
+    /*
     @Shadow
     @Final
     ServerPlayNetworkHandler field_28963;
@@ -21,4 +22,5 @@ public class ServerPlayNetworkHandlerMixin {
         if (!CPSLimiter.isValidCPS(this.field_28963.player))
             ci.cancel();
     }
+     */
 }
