@@ -51,12 +51,12 @@ public class ScoreboardPlayerInfo {
     }
 
     public static void onPlayerConnect(MinecraftServer server, ServerPlayNetworkHandler handler) {
-        //Scoreboard scoreboard = server.getScoreboard();
-        //protocolObjective.resetScore(scoreboard, handler.player);
-        //hasOptifineObjective.resetScore(scoreboard, handler.player);
-        //hasLEMClientObjective.resetScore(scoreboard, handler.player);
-        //fabricClientObjective.resetScore(scoreboard, handler.player);
-        //forgeClientObjective.resetScore(scoreboard, handler.player);
+        Scoreboard scoreboard = server.getScoreboard();
+        protocolObjective.resetScore(scoreboard, handler.player);
+        hasOptifineObjective.resetScore(scoreboard, handler.player);
+        hasLEMClientObjective.resetScore(scoreboard, handler.player);
+        fabricClientObjective.resetScore(scoreboard, handler.player);
+        forgeClientObjective.resetScore(scoreboard, handler.player);
 
         if (connectionProtocolVersion.containsKey(handler.connection)) {
             int protocolVersion = connectionProtocolVersion.remove(handler.connection);

@@ -1,74 +1,91 @@
 package net.kyrptonaught.serverutils.dimensionLoader;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
-import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.function.CommandFunction;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
-import xyz.nucleoid.fantasy.RuntimeWorldHolder;
 import xyz.nucleoid.fantasy.mixin.MinecraftServerAccess;
 import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
+import java.util.Iterator;
+import java.util.Map;
 
 public class DimensionLoaderMod {
     public static String MOD_ID = "dimensionloader";
 
-    private static final HashMap<Identifier, RuntimeWorldHolder> loadedWorlds = new HashMap<>();
+    public static final HashMap<Identifier, CustomDimHolder> loadedWorlds = new HashMap<>();
 
     public static void onInitialize() {
-        CommandRegistrationCallback.EVENT.register(DimensionLoaderMod::registerCommand);
+        ServerTickEvents.START_SERVER_TICK.register(DimensionLoaderMod::serverTickWorldAdd);
+        CommandRegistrationCallback.EVENT.register(DimensionLoaderCommand::registerCommand);
     }
 
-    public static boolean loadDimension(MinecraftServer server, Identifier id, Identifier dimID) {
-        Fantasy fantasy = Fantasy.get(server);
-
-        if (loadedWorlds.containsKey(id))
-            unLoadDimension(server, id);
+    public static Text loadDimension(MinecraftServer server, Identifier id, Identifier dimID, Collection<CommandFunction> functions) {
+        if (loadedWorlds.containsKey(id)) {
+            return new LiteralText("Dim already registered");
+        }
 
         DimensionType dimensionType = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(dimID);
         if (dimensionType == null) {
-            System.out.println("No Dim ID found");
-            return false;
+
+            return new LiteralText("No Dimension Type found");
         }
 
         if (!backupArenaMap(server, id, dimID)) {
-            System.out.println("Failed creating temp directory");
-            return false;
+
+            return new LiteralText("Failed creating temp directory");
         }
 
-        RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
-                .setDimensionType(dimensionType)
-                .setGenerator(new VoidChunkGenerator(RegistryEntry.of(server.getRegistryManager().get(Registry.BIOME_KEY).get(new Identifier("minecraft:plains")))));
-
-        loadedWorlds.put(id, fantasy.openTemporaryWorld(id, worldConfig, true));
-        return true;
+        loadedWorlds.put(id, new CustomDimHolder(id, dimID, functions));
+        return new LiteralText("Preparing Dimension");
     }
 
-    public static boolean unLoadDimension(MinecraftServer server, Identifier id) {
-        RuntimeWorldHolder holder = loadedWorlds.get(id);
-        if (holder != null && holder.wasRegistered()) {
-            holder.world.delete();
-            loadedWorlds.remove(id);
-            return true;
+    public static Text unLoadDimension(MinecraftServer server, Identifier id, Collection<CommandFunction> functions) {
+        CustomDimHolder holder = loadedWorlds.get(id);
+        if (holder == null)
+            return new LiteralText("Dimension not found");
+
+        holder.setFunctions(functions);
+        holder.scheduleToDelete();
+        return new LiteralText("Unloading Dimension");
+    }
+
+    public static void serverTickWorldAdd(MinecraftServer server) {
+        Fantasy fantasy = Fantasy.get(server);
+        Iterator<Map.Entry<Identifier, CustomDimHolder>> it = loadedWorlds.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Identifier, CustomDimHolder> pair = it.next();
+            CustomDimHolder holder = pair.getValue();
+
+            if (holder.scheduledDelete()) {
+                if (holder.deleteFinished(fantasy)) {
+                    holder.executeFunctions(server);
+                    it.remove();
+                }
+            } else if (!holder.wasRegistered()) {
+                DimensionType dimensionType = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(holder.copyFromID);
+                RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
+                        .setDimensionType(dimensionType)
+                        .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS)));
+
+                holder.register(fantasy.openTemporaryWorld(holder.dimID, worldConfig));
+                holder.executeFunctions(server);
+            }
         }
-        return false;
     }
 
     public static boolean backupArenaMap(MinecraftServer server, Identifier id, Identifier newWorld) {
@@ -85,41 +102,5 @@ public class DimensionLoaderMod {
 
     private static Path getWorldDir(Path worldDirectory, Identifier world) {
         return worldDirectory.resolve("dimensions").resolve(world.getNamespace()).resolve(world.getPath());
-    }
-
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
-        dispatcher.register(CommandManager.literal(MOD_ID)
-                .requires((source) -> source.hasPermissionLevel(2))
-                .then(CommandManager.literal("prepareDimension")
-                        .then(CommandManager.argument("id", IdentifierArgumentType.identifier())
-                                .then(CommandManager.argument("dimnid", IdentifierArgumentType.identifier())
-                                        .executes(context -> {
-                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "id");
-                                            Identifier dimId = IdentifierArgumentType.getIdentifier(context, "dimnid");
-
-                                            if (loadDimension(context.getSource().getServer(), id, dimId))
-                                                context.getSource().sendFeedback(new LiteralText("Dimension prepared"), false);
-                                            else
-                                                context.getSource().sendFeedback(new LiteralText("Error preparing dimension. See logs"), false);
-
-                                            return 1;
-                                        }))))
-                .then(CommandManager.literal("unload")
-                        .then(CommandManager.argument("id", IdentifierArgumentType.identifier())
-                                .suggests(DimensionLoaderMod::getLoadedSuggestions)
-                                .executes(context -> {
-                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "id");
-                                    if (unLoadDimension(context.getSource().getServer(), id)) {
-                                        context.getSource().sendFeedback(new LiteralText("Dimension unloaded"), false);
-                                    } else
-                                        context.getSource().sendFeedback(new LiteralText("Unable to unload Dimension"), false);
-
-                                    return 1;
-                                }))));
-    }
-
-    private static CompletableFuture<Suggestions> getLoadedSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        loadedWorlds.keySet().forEach(identifier -> builder.suggest(identifier.toString()));
-        return builder.buildFuture();
     }
 }
