@@ -14,6 +14,7 @@ public class FileHelper {
             return true;
         } catch (IOException exception) {
             System.out.println("Failed to delete directory: " + directory);
+            exception.printStackTrace();
         }
         return false;
     }
@@ -24,6 +25,7 @@ public class FileHelper {
             return true;
         } catch (IOException exception) {
             System.out.println("Failed to create directory: " + directory);
+            exception.printStackTrace();
         }
         return false;
     }
@@ -49,6 +51,7 @@ public class FileHelper {
             return true;
         } catch (IOException exception) {
             System.out.println("Failed to copy directory: " + source + " to: " + target);
+            exception.printStackTrace();
         }
         return false;
     }

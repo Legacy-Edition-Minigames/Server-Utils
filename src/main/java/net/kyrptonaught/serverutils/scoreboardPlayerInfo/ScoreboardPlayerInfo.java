@@ -78,22 +78,22 @@ public class ScoreboardPlayerInfo {
     }
 
     public static void setHasLEMClient(MinecraftServer server, PlayerEntity player, boolean hasLEMClient) {
-        hasLEMClientObjective.setScoreboardScore(server.getScoreboard(), player, hasLEMClient ? 1 : 0);
+        hasLEMClientObjective.setScoreboardScore(server.getScoreboard(), player, hasLEMClient ? 2 : 1);
     }
 
     public static void setHasOptifine(MinecraftServer server, PlayerEntity player, boolean hasOptifine) {
-        hasOptifineObjective.setScoreboardScore(server.getScoreboard(), player, hasOptifine ? 1 : 0);
+        hasOptifineObjective.setScoreboardScore(server.getScoreboard(), player, hasOptifine ? 2 : 1);
     }
 
     public static void setHasControllerMod(MinecraftServer server, PlayerEntity player, boolean hasController) {
-        hasControllerModObjective.setScoreboardScore(server.getScoreboard(), player, hasController ? 1 : 0);
+        hasControllerModObjective.setScoreboardScore(server.getScoreboard(), player, hasController ? 2 : 1);
     }
 
     public static void setFabricClient(MinecraftServer server, PlayerEntity player, boolean fabricClient) {
-        fabricClientObjective.setScoreboardScore(server.getScoreboard(), player, fabricClient ? 1 : 0);
+        fabricClientObjective.setScoreboardScore(server.getScoreboard(), player, fabricClient ? 2 : 1);
     }
 
     public static void setForgeClient(MinecraftServer server, PlayerEntity player, boolean forgeClient) {
-        forgeClientObjective.setScoreboardScore(server.getScoreboard(), player, forgeClient ? 1 : 0);
+        forgeClientObjective.setScoreboardScore(server.getScoreboard(), player, forgeClient ? 2 : 0);
     }
 }

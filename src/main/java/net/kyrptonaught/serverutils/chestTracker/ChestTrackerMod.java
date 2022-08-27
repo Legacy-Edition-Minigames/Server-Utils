@@ -103,7 +103,8 @@ public class ChestTrackerMod {
     public static void spawnParticleTick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         if (isChestPosValid(pos)) {
             Random random = world.getRandom();
-            ((ServerWorld) world).spawnParticles(ParticleTypes.WAX_OFF, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, 4, 0.0, 1);
+            if (random.nextInt(4) == 0)
+                ((ServerWorld) world).spawnParticles(ParticleTypes.WAX_OFF, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, 4, 0.0, 1);
         }
     }
 

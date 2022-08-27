@@ -41,18 +41,6 @@ public class DimensionLoaderCommand {
                                 .executes(context -> executeUnload(context, getID(context, "id"), CommandFunctionArgumentType.getFunctions(context, "callbackFunction"))))
                         .executes(context -> executeUnload(context, getID(context, "id"), null))));
 
-        GameRules.accept(new GameRules.Visitor() {
-            @Override
-            public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
-                literalArgumentBuilder.then(CommandManager.literal("setGamerule")
-                        .then(CommandManager.argument("id", IdentifierArgumentType.identifier())
-                                .suggests(DimensionLoaderCommand::getLoadedSuggestions)
-                                .then((CommandManager.literal(key.getName())
-                                        .executes(context -> executeQuery(context.getSource(), getID(context, "id"), key)))
-                                        .then(type.argument("value")
-                                                .executes(context -> executeSet(context, getID(context, "id"), key))))));
-            }
-        });
         dispatcher.register(literalArgumentBuilder);
     }
 
@@ -73,37 +61,5 @@ public class DimensionLoaderCommand {
     private static CompletableFuture<Suggestions> getLoadedSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         DimensionLoaderMod.loadedWorlds.keySet().forEach(identifier -> builder.suggest(identifier.toString()));
         return builder.buildFuture();
-    }
-
-    private static <T extends GameRules.Rule<T>> int executeSet(CommandContext<ServerCommandSource> context, Identifier id, GameRules.Key<T> key) {
-        ServerCommandSource serverCommandSource = context.getSource();
-        CustomDimHolder holder = DimensionLoaderMod.loadedWorlds.get(id);
-        if (holder == null) {
-            serverCommandSource.sendFeedback(new LiteralText("Dimension not found"), false);
-            return 1;
-        } else if (!holder.wasRegistered()) {
-            serverCommandSource.sendFeedback(new LiteralText("Dimension not initialized"), false);
-            return 1;
-        }
-
-        T rule = holder.world.asWorld().getGameRules().get(key);
-        rule.set(context, "value");
-        serverCommandSource.sendFeedback(new LiteralText("[" + id + "]: ").append(new TranslatableText("commands.gamerule.set", key.getName(), rule.toString())), true);
-        return rule.getCommandResult();
-    }
-
-    private static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource source, Identifier id, GameRules.Key<T> key) {
-        CustomDimHolder holder = DimensionLoaderMod.loadedWorlds.get(id);
-        if (holder == null) {
-            source.sendFeedback(new LiteralText("Dimension not found"), false);
-            return 1;
-        } else if (!holder.wasRegistered()) {
-            source.sendFeedback(new LiteralText("Dimension not initialized"), false);
-            return 1;
-        }
-
-        T rule = holder.world.asWorld().getGameRules().get(key);
-        source.sendFeedback(new LiteralText("[" + id + "]: ").append(new TranslatableText("commands.gamerule.query", key.getName(), rule.toString())), false);
-        return rule.getCommandResult();
     }
 }

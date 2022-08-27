@@ -41,12 +41,10 @@ public class DimensionLoaderMod {
 
         DimensionType dimensionType = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(dimID);
         if (dimensionType == null) {
-
             return new LiteralText("No Dimension Type found");
         }
 
         if (!backupArenaMap(server, id, dimID)) {
-
             return new LiteralText("Failed creating temp directory");
         }
 
@@ -80,6 +78,7 @@ public class DimensionLoaderMod {
                 DimensionType dimensionType = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(holder.copyFromID);
                 RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
                         .setDimensionType(dimensionType)
+                        .setMirrorOverworldGameRules(true)
                         .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS)));
 
                 holder.register(fantasy.openTemporaryWorld(holder.dimID, worldConfig));
@@ -104,3 +103,5 @@ public class DimensionLoaderMod {
         return worldDirectory.resolve("dimensions").resolve(world.getNamespace()).resolve(world.getPath());
     }
 }
+
+
