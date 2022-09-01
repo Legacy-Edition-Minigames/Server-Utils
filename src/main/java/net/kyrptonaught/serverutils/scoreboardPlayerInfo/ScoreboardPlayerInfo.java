@@ -8,12 +8,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class ScoreboardPlayerInfo {
     public static String MOD_ID = "scoreboardplayerinfo";
@@ -32,11 +34,10 @@ public class ScoreboardPlayerInfo {
 
         ServerLifecycleEvents.SERVER_STARTED.register(ScoreboardPlayerInfo::registerScoreboardOBJs);
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onPlayerConnect(server, handler));
-
     }
 
     public static void registerScoreboardOBJs(MinecraftServer server) {
-        Scoreboard scoreboard = server.getScoreboard();
+        ServerScoreboard scoreboard = server.getScoreboard();
         ScoreboardObjective[] objectives = scoreboard.getObjectives().toArray(ScoreboardObjective[]::new);
         for (int i = objectives.length - 1; i >= 0; i--) {
             if (objectives[i].getName().startsWith(ServerUtilsMod.MOD_ID + "."))
