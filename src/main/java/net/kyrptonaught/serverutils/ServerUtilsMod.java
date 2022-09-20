@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.serverutils.SpectateSqueaker.SpectateSqueakerMod;
+import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
@@ -58,6 +59,7 @@ public class ServerUtilsMod implements ModInitializer {
         DimensionLoaderMod.onInitialize();
         SyncedKeybinds.onInitialize();
         SpectateSqueakerMod.onInitialize();
+        AdvancementSyncMod.onInitialize();
 
         configManager.load();
         registerPresence();

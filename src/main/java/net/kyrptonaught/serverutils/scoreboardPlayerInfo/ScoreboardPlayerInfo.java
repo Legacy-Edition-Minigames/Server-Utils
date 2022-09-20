@@ -15,7 +15,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class ScoreboardPlayerInfo {
     public static String MOD_ID = "scoreboardplayerinfo";

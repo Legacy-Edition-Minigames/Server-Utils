@@ -11,10 +11,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.FunctionCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.GameRules;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
