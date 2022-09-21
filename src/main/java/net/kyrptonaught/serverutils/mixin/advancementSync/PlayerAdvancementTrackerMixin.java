@@ -1,6 +1,5 @@
 package net.kyrptonaught.serverutils.mixin.advancementSync;
 
-import com.google.common.base.Charsets;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.serialization.Dynamic;
@@ -11,8 +10,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.server.ServerAdvancementLoader;
-import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.io.*;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -85,47 +83,32 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
     @Shadow
     private @Nullable Advancement currentDisplayTab;
 
-    @Shadow
-    public abstract void save();
-
-    @Shadow
-    public abstract void reload(ServerAdvancementLoader advancementLoader);
-
-    @Shadow
-    @Final
-    private File advancementFile;
-
-    @Shadow
-    public abstract boolean grantCriterion(Advancement advancement, String criterionName);
-
-    @Shadow public abstract boolean revokeCriterion(Advancement advancement, String criterionName);
-
-    @Shadow protected abstract void beginTracking(Advancement advancement);
-
-    @Shadow protected abstract void updateDisplay(Advancement advancement);
-
     @Inject(method = "grantCriterion", at = @At("RETURN"))
     public void syncGrantedAdvancements(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
-        if(true) return;
-        AdvancementProgress advancementProgress = this.getProgress(advancement);
-        JsonObject advancementJson = new JsonObject();
-        JsonObject criterionJson = new JsonObject();
-        criterionJson.add(criterionName, advancementProgress.getCriterionProgress(criterionName).toJson());
-        advancementJson.add("criteria", advancementJson);
-        if (advancementProgress.isDone())
-            advancementJson.addProperty("done", true);
+        if (cir.getReturnValue()) {
+            AdvancementProgress advancementProgress = this.getProgress(advancement);
+            JsonObject advancementJson = new JsonObject();
+            JsonObject criterionJson = new JsonObject();
+            CriterionProgress progress = advancementProgress.getCriterionProgress(criterionName);
+            if (progress != null && progress.isObtained())
+                criterionJson.add(criterionName, progress.toJson());
+            advancementJson.add("criteria", criterionJson);
+            if (advancementProgress.isDone())
+                advancementJson.addProperty("done", true);
 
-        AdvancementSyncMod.syncGrantedAdvancement(this.owner, serializeToJson(advancement.getId(), advancementJson));
+            AdvancementSyncMod.syncGrantedAdvancement(this.owner, serializeToJson(advancement.getId(), advancementJson));
+        }
     }
 
     @Inject(method = "revokeCriterion", at = @At("RETURN"))
     public void syncRevokedAdvancements(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
-        if(true) return;
-        JsonObject object = new JsonObject();
-        object.addProperty("advancement", advancement.getId().toString());
-        object.addProperty("criteria", criterionName);
-        object.addProperty("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        AdvancementSyncMod.syncRevokedAdvancement(this.owner, GSON2.toJson(object));
+        if(cir.getReturnValue()) {
+            JsonObject object = new JsonObject();
+            object.addProperty("advancement", advancement.getId().toString());
+            object.addProperty("criteria", criterionName);
+            object.addProperty("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+            AdvancementSyncMod.syncRevokedAdvancement(this.owner, GSON2.toJson(object));
+        }
     }
 
     private static String serializeToJson(Identifier id, JsonObject advancementJson) {
@@ -137,21 +120,13 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
 
     @Override
     public void loadFromString(ServerAdvancementLoader advancementLoader, String json) {
-       advancementLoader.getAdvancements().forEach(advancement -> {
-           AdvancementProgress advancementProgress = getProgress(advancement);
-           if (advancementProgress.isAnyObtained())
-               for (String criterionName : advancementProgress.getObtainedCriteria()) {
-                   if (advancementProgress.reset(criterionName)) {
-                       this.beginTracking(advancement);
-                       this.progressUpdates.add(advancement);
-
-                   }
-                   if (!advancementProgress.isAnyObtained()) {
-                       this.updateDisplay(advancement);
-                   }
-           }
-       });
-
+        this.clearCriteria();
+        this.advancementToProgress.clear();
+        this.visibleAdvancements.clear();
+        this.visibilityUpdates.clear();
+        this.progressUpdates.clear();
+        this.dirty = true;
+        this.currentDisplayTab = null;
         Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, GSON2.fromJson(json, JsonObject.class));
         //if (!dynamic.get("DataVersion").asNumber().result().isPresent()) {
         //    dynamic = dynamic.set("DataVersion", dynamic.createInt(1343));
