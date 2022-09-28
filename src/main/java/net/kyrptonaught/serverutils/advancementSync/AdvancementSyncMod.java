@@ -66,7 +66,7 @@ public class AdvancementSyncMod {
     }
 
     public static String getUrl(String route, ServerPlayerEntity player) {
-        return getConfig().apiUrl + "/" + route + "/" + getConfig().secretKey + "/" + player.getUuidAsString();
+        return getConfig().getApiURL() + "/" + route + "/" + player.getUuidAsString();
     }
 
     public static HttpRequest buildPostRequest(String url, String json) {

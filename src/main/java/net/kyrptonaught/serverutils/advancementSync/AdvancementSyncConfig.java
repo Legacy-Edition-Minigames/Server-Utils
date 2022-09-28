@@ -8,4 +8,9 @@ public class AdvancementSyncConfig implements AbstractConfigFile {
     public String secretKey = "changeme";
 
     public boolean syncOnJoin = true;
+
+
+    public String getApiURL() {
+        return apiUrl + "/v0/" + secretKey;
+    }
 }
