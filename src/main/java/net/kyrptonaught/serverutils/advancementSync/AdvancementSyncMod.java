@@ -28,7 +28,6 @@ public class AdvancementSyncMod {
 
                     client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                             .thenAccept(stringHttpResponse -> {
-                                System.out.println(stringHttpResponse);
                                 if (!didRequestFail(stringHttpResponse)) {
                                     String json = stringHttpResponse.body();
                                     server.execute(() -> {
@@ -51,8 +50,7 @@ public class AdvancementSyncMod {
     public static void syncGrantedAdvancement(ServerPlayerEntity serverPlayerEntity, String json) {
         try {
             HttpRequest request = buildPostRequest(getUrl("addAdvancements", serverPlayerEntity), json);
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(stringHttpResponse -> System.out.println(stringHttpResponse + " : " + json));
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,8 +59,7 @@ public class AdvancementSyncMod {
     public static void syncRevokedAdvancement(ServerPlayerEntity serverPlayerEntity, String json) {
         try {
             HttpRequest request = buildPostRequest(getUrl("removeAdvancements", serverPlayerEntity), json);
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(stringHttpResponse -> System.out.println(stringHttpResponse + " : " + json));
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
