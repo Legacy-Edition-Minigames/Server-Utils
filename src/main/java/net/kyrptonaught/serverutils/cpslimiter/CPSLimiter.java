@@ -15,7 +15,6 @@ public class CPSLimiter {
     public static String MOD_ID = "cpslimiter";
 
     public static HashMap<UUID, ClickTimeStamps> playerLastPress = new HashMap<>();
-    private static final DecimalFormat df = new DecimalFormat("0.0");
 
     private static float smoothing, cpsLimit;
 
@@ -37,16 +36,8 @@ public class CPSLimiter {
 
     public static boolean isValidCPS(ServerPlayerEntity player) {
         UUID uuid = player.getUuid();
-        float cps = 1 / (playerLastPress.get(uuid).getCPS(smoothing));
 
-        MutableText text = new LiteralText("CPS: " + df.format(cps));
-
-        boolean passing = cps < cpsLimit;
-        if (!passing)
-            text.formatted(Formatting.RED);
-
-        player.sendMessage(text, true);
-        return passing;
+        return playerLastPress.get(uuid).isPassing(smoothing, cpsLimit);
     }
 
     public static CPSLimitConfig getConfig() {
@@ -57,15 +48,11 @@ public class CPSLimiter {
         long lastPressed = 0;
         float lastDif = 0;
 
-        public ClickTimeStamps() {
-
-        }
-
-        public float getCPS(float smoothing) {
+        public boolean isPassing(float smoothing, float limit) {
             long timeNow = System.currentTimeMillis();
             if (lastPressed == 0) {
                 lastPressed = timeNow;
-                return 1;
+                return true;
             }
 
             float dif = (timeNow - lastPressed) / 1000.0f;
@@ -75,9 +62,14 @@ public class CPSLimiter {
                 curAvg = (dif * smoothing) + (lastDif * (1 - smoothing));
             }
 
-            lastDif = dif;
-            lastPressed = timeNow;
-            return curAvg;
+            float cps = 1 / curAvg;
+            if (cps < limit) {
+                lastDif = dif;
+                lastPressed = timeNow;
+                return true;
+            }
+
+            return false;
         }
     }
 }
