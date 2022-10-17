@@ -2,16 +2,17 @@ package net.kyrptonaught.serverutils.takeEverything;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.TypedActionResult;
 
 import java.util.Collection;
@@ -43,12 +44,12 @@ public class TakeEverythingMod {
         });
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("takeeverything")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .executes(context -> {
                     if (!TakeEverythingHelper.takeEverything(context.getSource().getPlayer()))
-                        context.getSource().sendFeedback(new LiteralText("You must have an inventory open"), false);
+                        context.getSource().sendFeedback(Text.literal("You must have an inventory open"), false);
                     return 1;
                 })
                 .then(CommandManager.literal("enabled").then(CommandManager.argument("enabled", BoolArgumentType.bool())

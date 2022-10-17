@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class CustomObjective {
     private final String objName;
@@ -18,7 +18,7 @@ public class CustomObjective {
 
     public void addToScoreboard(Scoreboard scoreboard) {
         if (!scoreboard.containsObjective(objName))
-            scoreboard.addObjective(objName, ScoreboardCriterion.DUMMY, new LiteralText(displayName), ScoreboardCriterion.RenderType.INTEGER);
+            scoreboard.addObjective(objName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER);
     }
 
     public void setScoreboardScore(Scoreboard scoreboard, PlayerEntity player, int score) {

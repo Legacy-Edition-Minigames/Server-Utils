@@ -3,11 +3,7 @@ package net.kyrptonaught.serverutils.cpslimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.UUID;
 

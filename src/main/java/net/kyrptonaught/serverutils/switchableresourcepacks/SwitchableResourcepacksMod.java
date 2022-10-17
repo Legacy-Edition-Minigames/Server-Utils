@@ -3,14 +3,15 @@ package net.kyrptonaught.serverutils.switchableresourcepacks;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.mixin.object.builder.CriteriaAccessor;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +31,7 @@ public class SwitchableResourcepacksMod {
             rpOptionHashMap.put(rpOption.packname, rpOption);
         });
 
-        CommandRegistrationCallback.EVENT.register(SwitchableResourcepacksMod::register);
+        CommandRegistrationCallback.EVENT.register(SwitchableResourcepacksMod::registerCommand);
 
         if (getConfig().packs.size() == 0) {
             ResourcePackConfig.RPOption option = new ResourcePackConfig.RPOption();
@@ -51,7 +52,7 @@ public class SwitchableResourcepacksMod {
         return ((ResourcePackConfig) ServerUtilsMod.configManager.getConfig(MOD_ID));
     }
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         LiteralArgumentBuilder<ServerCommandSource> cmd = CommandManager.literal("loadresource").requires((source) -> source.hasPermissionLevel(0));
         for (String packname : rpOptionHashMap.keySet()) {
             cmd.then(CommandManager.literal(packname)
@@ -66,7 +67,7 @@ public class SwitchableResourcepacksMod {
     public static int execute(CommandContext<ServerCommandSource> commandContext, String packname, Collection<ServerPlayerEntity> players) {
         ResourcePackConfig.RPOption rpOption = rpOptionHashMap.get(packname);
         if (rpOption == null) {
-            commandContext.getSource().sendFeedback(new LiteralText("Packname: ").append(packname).append(" was not found"), false);
+            commandContext.getSource().sendFeedback(Text.literal("Packname: ").append(packname).append(" was not found"), false);
             return 1;
         }
         players.forEach(player -> {
@@ -76,9 +77,9 @@ public class SwitchableResourcepacksMod {
                 FAILED.revoke(player);
             }
 
-            player.sendResourcePackUrl(rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? new LiteralText(rpOption.message) : null);
+            player.sendResourcePackUrl(rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null);
         });
-        commandContext.getSource().sendFeedback(new LiteralText("Enabled pack: ").append(rpOption.packname), false);
+        commandContext.getSource().sendFeedback(Text.literal("Enabled pack: ").append(rpOption.packname), false);
         return 1;
     }
 }

@@ -1,13 +1,14 @@
 package net.kyrptonaught.serverutils.scoreboardsuffix;
 
 
-import blue.endless.jankson.Jankson;
+import com.google.gson.Gson;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -23,20 +24,20 @@ import java.util.Collections;
 
 public class ScoreboardSuffixMod {
     public static final String MOD_ID = "scoreboardsuffix";
-    public static final Jankson JANKSON = ServerUtilsMod.configManager.getJANKSON();
+    public static final Gson GSON = ServerUtilsMod.configManager.getGSON();
 
     public static PlayerSuffixStorage playerSuffixStorage;
 
     public static void onInitialize() {
         //String input = "{\"input\" : [\" ❤\", \"scoreboard=lives\", \" ⚔\", \"scoreboard=kills\"]}";
-        CommandRegistrationCallback.EVENT.register(ScoreboardSuffixMod::register);
+        CommandRegistrationCallback.EVENT.register(ScoreboardSuffixMod::registerCommand);
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             playerSuffixStorage = server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(PlayerSuffixStorage::fromNbt, PlayerSuffixStorage::new, MOD_ID);
         });
     }
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("setScoreboardSuffix")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.argument("format", StringArgumentType.greedyString())

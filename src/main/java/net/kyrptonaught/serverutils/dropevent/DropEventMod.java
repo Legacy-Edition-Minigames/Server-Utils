@@ -3,8 +3,9 @@ package net.kyrptonaught.serverutils.dropevent;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -18,7 +19,7 @@ public class DropEventMod {
         CommandRegistrationCallback.EVENT.register(DropEventMod::registerCommand);
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("dropevent")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("enabled").then(CommandManager.argument("enabled", BoolArgumentType.bool())

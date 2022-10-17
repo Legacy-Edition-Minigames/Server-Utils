@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.advancementSync;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.server.network.ServerPlayerEntity;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

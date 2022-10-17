@@ -1,6 +1,6 @@
 package net.kyrptonaught.serverutils.panoramaViewer;
 
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.entity.boss.BossBarManager;
@@ -28,7 +28,7 @@ public class PanoramaViewer {
 
         createPanoramasFromConfig();
 
-        CommandRegistrationCallback.EVENT.register(PanoramaCommand::register);
+        CommandRegistrationCallback.EVENT.register(PanoramaCommand::registerCommand);
 
         if (getConfig().autoEntries.size() == 0) {
             PanoramaConfig.AutoPanoramaEntry option = new PanoramaConfig.AutoPanoramaEntry();

@@ -2,7 +2,8 @@ package net.kyrptonaught.serverutils.tntlighter;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -14,7 +15,7 @@ public class TNTLighter {
         CommandRegistrationCallback.EVENT.register(TNTLighter::registerCommand);
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("tntlighter")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("enable").then(CommandManager.argument("enabled", BoolArgumentType.bool())

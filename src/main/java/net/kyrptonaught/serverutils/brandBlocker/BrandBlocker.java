@@ -46,7 +46,7 @@ public class BrandBlocker {
         try (ByteBufDataOutput output = new ByteBufDataOutput(new PacketByteBuf(Unpooled.buffer()))) {
             output.writeUTF("KickPlayer");
             output.writeUTF(player.getEntityName());
-            output.writeUTF(msg.asString());
+            output.writeUTF(msg.getString());
 
             ServerPlayNetworking.send(player, VelocityServerSwitchMod.BUNGEECORD_ID, output.getBuf());
         } catch (Exception e) {

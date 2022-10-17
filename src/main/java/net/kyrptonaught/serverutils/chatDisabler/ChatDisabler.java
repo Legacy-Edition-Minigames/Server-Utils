@@ -2,14 +2,13 @@ package net.kyrptonaught.serverutils.chatDisabler;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.network.MessageType;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Util;
+import net.minecraft.text.Text;
 
 public class ChatDisabler {
     public static String MOD_ID = "chatdisabler";
@@ -21,7 +20,7 @@ public class ChatDisabler {
         CommandRegistrationCallback.EVENT.register(ChatDisabler::registerCommand);
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("chatdisabler")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("enablechat")
@@ -41,7 +40,7 @@ public class ChatDisabler {
     }
 
     public static void broadcast(MinecraftServer server, String message) {
-        server.getPlayerManager().broadcast(new LiteralText(message), MessageType.SYSTEM, Util.NIL_UUID);
+        server.getPlayerManager().broadcast(Text.literal(message), false);
     }
 
     public static ChatDisablerConfig getConfig() {

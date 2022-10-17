@@ -27,6 +27,6 @@ public class SyncedKeybinds {
         System.out.println(keyPressed);
         SyncedKeybindsConfig.KeybindConfigItem keybind = getConfig().keybinds.get(keyPressed);
         if (keybind != null)
-            server.getCommandManager().execute(player.getCommandSource(), keybind.triggerCMD);
+            server.getCommandManager().executeWithPrefix(player.getCommandSource(), keybind.triggerCMD);
     }
 }

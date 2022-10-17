@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.entity.boss.BossBarManager;
@@ -13,7 +14,7 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Collection;
@@ -21,7 +22,7 @@ import java.util.Collections;
 
 public class PanoramaCommand {
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         LiteralArgumentBuilder<ServerCommandSource> cmd = CommandManager.literal("panorama")
                 .requires((source) -> source.hasPermissionLevel(2));
 
@@ -60,14 +61,14 @@ public class PanoramaCommand {
 
                                     for (int i = begin; i < end; i++) {
                                         String output = "a" + Padder.smartPad(i, "") + "a";
-                                        context.getSource().sendFeedback(new LiteralText(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
+                                        context.getSource().sendFeedback(Text.literal(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
                                     }
                                     return 1;
                                 }))
                         .executes(context -> {
                             int begin = IntegerArgumentType.getInteger(context, "begin");
                             String output = "a" + Padder.smartPad(begin, "") + "a";
-                            context.getSource().sendFeedback(new LiteralText(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
+                            context.getSource().sendFeedback(Text.literal(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
                             return 1;
                         })));
          */
@@ -105,7 +106,7 @@ public class PanoramaCommand {
 
     public static int execute(CommandContext<ServerCommandSource> commandContext, Panorama panorama, Collection<ServerPlayerEntity> players) {
         if (panorama == null) {
-            commandContext.getSource().sendFeedback(new LiteralText("Panorama was not found"), false);
+            commandContext.getSource().sendFeedback(Text.literal("Panorama was not found"), false);
             return 1;
         }
 

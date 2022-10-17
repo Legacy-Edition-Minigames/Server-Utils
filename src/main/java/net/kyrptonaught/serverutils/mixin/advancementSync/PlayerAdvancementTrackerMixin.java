@@ -102,7 +102,7 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
 
     @Inject(method = "revokeCriterion", at = @At("RETURN"))
     public void syncRevokedAdvancements(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
-        if(cir.getReturnValue()) {
+        if (cir.getReturnValue()) {
             JsonObject object = new JsonObject();
             object.addProperty("advancement", advancement.getId().toString());
             object.addProperty("criteria", criterionName);

@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.entity.Entity;
@@ -26,7 +27,7 @@ public class HealthCommand {
             DamageSource.DRAGON_BREATH, DamageSource.DRYOUT, DamageSource.SWEET_BERRY_BUSH, DamageSource.FREEZE, DamageSource.FALLING_STALACTITE,
             DamageSource.STALAGMITE};
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         LiteralArgumentBuilder<ServerCommandSource> healthCMD = CommandManager.literal("health")
                 .requires((source) -> source.hasPermissionLevel(2));
 

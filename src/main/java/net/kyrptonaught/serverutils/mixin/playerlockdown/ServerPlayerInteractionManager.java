@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.mixin.playerlockdown;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -22,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(net.minecraft.server.network.ServerPlayerInteractionManager.class)
-public class ServerPlayerInteractionManager {
+public abstract class ServerPlayerInteractionManager {
 
     @Shadow
     @Final
@@ -31,13 +32,13 @@ public class ServerPlayerInteractionManager {
     @Shadow
     protected ServerWorld world;
 
-    @Shadow
-    private GameMode gameMode;
+    @Shadow protected abstract void method_41250(BlockPos pos, boolean success, int sequence, String reason);
 
     @Inject(method = "processBlockBreakingAction", at = @At("HEAD"), cancellable = true)
-    public void preventBlockBreak(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, CallbackInfo ci) {
+    public void preventBlockBreak(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence, CallbackInfo ci) {
         if (PlayerLockdownMod.GLOBAL_LOCKDOWN || PlayerLockdownMod.LOCKEDDOWNPLAYERS.contains(player.getUuidAsString())) {
-            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "block action restricted"));
+            this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
+            this.method_41250(pos, false, sequence, "block action restricted");
             ci.cancel();
         }
     }

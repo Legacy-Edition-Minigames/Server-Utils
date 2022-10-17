@@ -1,11 +1,10 @@
 package net.kyrptonaught.serverutils.dimensionLoader;
 
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
@@ -36,30 +35,30 @@ public class DimensionLoaderMod {
 
     public static Text loadDimension(MinecraftServer server, Identifier id, Identifier dimID, Collection<CommandFunction> functions) {
         if (loadedWorlds.containsKey(id)) {
-            return new LiteralText("Dim already registered");
+            return Text.literal("Dim already registered");
         }
 
         DimensionType dimensionType = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(dimID);
         if (dimensionType == null) {
-            return new LiteralText("No Dimension Type found");
+            return Text.literal("No Dimension Type found");
         }
 
         if (!backupArenaMap(server, id, dimID)) {
-            return new LiteralText("Failed creating temp directory");
+            return Text.literal("Failed creating temp directory");
         }
 
         loadedWorlds.put(id, new CustomDimHolder(id, dimID, functions));
-        return new LiteralText("Preparing Dimension");
+        return Text.literal("Preparing Dimension");
     }
 
     public static Text unLoadDimension(MinecraftServer server, Identifier id, Collection<CommandFunction> functions) {
         CustomDimHolder holder = loadedWorlds.get(id);
         if (holder == null)
-            return new LiteralText("Dimension not found");
+            return Text.literal("Dimension not found");
 
         holder.setFunctions(functions);
         holder.scheduleToDelete();
-        return new LiteralText("Unloading Dimension");
+        return Text.literal("Unloading Dimension");
     }
 
     public static void serverTickWorldAdd(MinecraftServer server) {

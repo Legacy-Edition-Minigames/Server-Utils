@@ -2,7 +2,6 @@ package net.kyrptonaught.serverutils.scoreboardsuffix;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonParseException;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
@@ -18,7 +17,7 @@ public class SuffixFormat {
         Arrays.stream(input).forEach(s -> {
             if (s.contains("scoreboard=")) {
                 ScoreboardSuffix sbSuffix = new ScoreboardSuffix(s);
-                s = sbSuffix.displayText.asString();
+                s = sbSuffix.displayText.getString();
                 String scoreboardName = s.substring(s.indexOf("=") + 1);
                 sbSuffix.suffix = scoreboardName;
                 scoreboardSuffixes.add(sbSuffix);
@@ -35,10 +34,10 @@ public class SuffixFormat {
         public Suffix(String suffix) {
             this.suffix = suffix;
             try {
-                displayText = Objects.requireNonNullElseGet(Text.Serializer.fromJson(suffix), () -> new LiteralText(suffix));
+                displayText = Objects.requireNonNullElseGet(Text.Serializer.fromJson(suffix), () -> Text.literal(suffix));
             } catch (JsonParseException var4) {
                 //System.out.println("\"" + suffix + "\" created error: " + var4);
-                displayText = new LiteralText(suffix);
+                displayText = Text.literal(suffix);
             }
         }
     }
@@ -49,7 +48,7 @@ public class SuffixFormat {
         }
 
         public void updateText(int score) {
-            displayText = new LiteralText("" + score).setStyle(displayText.getStyle());
+            displayText = Text.literal("" + score).setStyle(displayText.getStyle());
         }
     }
 }

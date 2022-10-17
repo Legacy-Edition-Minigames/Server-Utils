@@ -1,6 +1,6 @@
 package net.kyrptonaught.serverutils.scoreboardsuffix;
 
-import blue.endless.jankson.api.SyntaxError;
+import com.google.gson.JsonSyntaxException;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
@@ -50,9 +50,9 @@ public class PlayerSuffixStorage extends PersistentState {
     public void setSuffixFormatInput(String input) {
         rawSuffixFormat = input;
         try {
-            suffixFormat = ScoreboardSuffixMod.JANKSON.fromJson(rawSuffixFormat, SuffixFormat.class);
+            suffixFormat = ScoreboardSuffixMod.GSON.fromJson(rawSuffixFormat, SuffixFormat.class);
             suffixFormat.format();
-        } catch (SyntaxError e) {
+        } catch (JsonSyntaxException e) {
             e.printStackTrace();
         }
     }

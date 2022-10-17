@@ -26,7 +26,7 @@ public class ServerPlayNetworkHandlerMixin {
     public void dropDis(PlayerActionC2SPacket packet, CallbackInfo ci) {
         if (DropEventMod.ENABLED && (packet.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM || packet.getAction() == PlayerActionC2SPacket.Action.DROP_ALL_ITEMS)) {
             if (player.getMainHandStack().isEmpty()) {
-                server.getCommandManager().execute(player.getCommandSource().withLevel(2).withSilent(), DropEventMod.getConfig().runCommand);
+                server.getCommandManager().executeWithPrefix(player.getCommandSource().withLevel(2).withSilent(), DropEventMod.getConfig().runCommand);
                 ci.cancel();
             }
         }

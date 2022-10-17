@@ -4,7 +4,7 @@ package net.kyrptonaught.serverutils.chestTracker;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -12,6 +12,7 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -23,12 +24,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 
 public class ChestTrackerMod {
     public static HashMap<String, HashSet<BlockPos>> playerUsedChests = new HashMap<>();
@@ -47,7 +48,7 @@ public class ChestTrackerMod {
         CommandRegistrationCallback.EVENT.register(ChestTrackerMod::registerCommand);
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("chesttracker")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("enabled").then(CommandManager.argument("enabled", BoolArgumentType.bool())

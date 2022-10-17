@@ -2,7 +2,7 @@ package net.kyrptonaught.serverutils;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.serverutils.SpectateSqueaker.SpectateSqueakerMod;
@@ -27,9 +27,10 @@ import net.kyrptonaught.serverutils.tntlighter.TNTLighter;
 import net.kyrptonaught.serverutils.velocitymodifier.VelocityCommandMod;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
 import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ServerUtilsMod implements ModInitializer {
@@ -67,13 +68,13 @@ public class ServerUtilsMod implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(ServerUtilsMod::registerCommand);
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("serverutils")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("reloadAllConfigs")
                         .executes(context -> {
                             ServerUtilsMod.configManager.load();
-                            context.getSource().sendFeedback(new LiteralText("Configs reloaded. Note: not all modules may reflect these changes"), false);
+                            context.getSource().sendFeedback(Text.literal("Configs reloaded. Note: not all modules may reflect these changes"), false);
                             return 1;
                         })));
     }

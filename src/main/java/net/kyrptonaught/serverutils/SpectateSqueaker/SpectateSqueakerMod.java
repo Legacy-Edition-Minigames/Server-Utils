@@ -1,7 +1,8 @@
 package net.kyrptonaught.serverutils.SpectateSqueaker;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -25,7 +26,7 @@ public class SpectateSqueakerMod {
         CommandRegistrationCallback.EVENT.register(SpectateSqueakerMod::registerCommand);
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("registerSpectateSqueak")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("set")

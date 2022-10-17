@@ -2,7 +2,8 @@ package net.kyrptonaught.serverutils.playerlockdown;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -20,10 +21,10 @@ public class PlayerLockdownMod {
 
 
     public static void onInitialize() {
-        CommandRegistrationCallback.EVENT.register(PlayerLockdownMod::register);
+        CommandRegistrationCallback.EVENT.register(PlayerLockdownMod::registerCommand);
     }
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean b) {
+    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("lockdown")
                 .requires((source) -> source.hasPermissionLevel(2))
 

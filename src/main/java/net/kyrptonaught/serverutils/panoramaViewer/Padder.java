@@ -1,6 +1,5 @@
 package net.kyrptonaught.serverutils.panoramaViewer;
 
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -9,7 +8,7 @@ public class Padder {
     public int paddingSize;
     public int lastPaddedFrame = -1;
 
-    public Text paddedText = LiteralText.EMPTY;
+    public MutableText paddedText = Text.empty();
 
     public Padder(int paddingSize) {
         this.paddingSize = paddingSize;
@@ -27,10 +26,10 @@ public class Padder {
 
     private MutableText generatePadding(int frame) {
         if (!doesPad())
-            return (MutableText) LiteralText.EMPTY;
+            return Text.empty();
 
         String padding = smartPad(frame * paddingSize, "");
-        return new LiteralText(padding);
+        return Text.literal(padding);
     }
 
     public static String smartPad(int frames, String output) {
