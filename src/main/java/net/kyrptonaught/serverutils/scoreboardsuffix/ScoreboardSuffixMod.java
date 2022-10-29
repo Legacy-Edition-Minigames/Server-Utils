@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.scoreboardsuffix;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -21,12 +22,15 @@ import java.util.Collections;
 
 public class ScoreboardSuffixMod extends Module {
     public static final String MOD_ID = "scoreboardsuffix";
-    public static final Gson GSON = ServerUtilsMod.config.getGSON();
+    public static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .setLenient()
+            .registerTypeAdapter(SuffixFormat.class, new SuffixFormat.SuffixFormatSerializer())
+            .create();
 
     public static PlayerSuffixStorage playerSuffixStorage;
 
     public void onInitialize() {
-        //String input = "{\"input\" : [\" ❤\", \"scoreboard=lives\", \" ⚔\", \"scoreboard=kills\"]}";
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             playerSuffixStorage = server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(PlayerSuffixStorage::fromNbt, PlayerSuffixStorage::new, MOD_ID);
         });

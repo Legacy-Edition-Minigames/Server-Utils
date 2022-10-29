@@ -1,10 +1,11 @@
 package net.kyrptonaught.serverutils.scoreboardsuffix;
 
 import com.google.common.collect.Sets;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class SuffixFormat {
@@ -25,6 +26,25 @@ public class SuffixFormat {
             } else
                 scoreboardSuffixes.add(new Suffix(s));
         });
+    }
+
+    public static class SuffixFormatSerializer implements JsonDeserializer<SuffixFormat> {
+
+        @Override
+        public SuffixFormat deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            SuffixFormat format = new SuffixFormat();
+
+            JsonArray array = jsonElement.getAsJsonObject().get("input").getAsJsonArray();
+            format.input = new String[array.size()];
+            for (int i = 0; i < array.size(); i++) {
+                JsonElement element = array.get(i);
+                if (element.isJsonObject())
+                    format.input[i] = element.getAsJsonObject().toString();
+                else
+                    format.input[i] = array.get(i).getAsString();
+            }
+            return format;
+        }
     }
 
     public static class Suffix {
