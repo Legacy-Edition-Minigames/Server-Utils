@@ -1,14 +1,18 @@
 package net.kyrptonaught.serverutils.dimensionLoader;
 
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
+import net.kyrptonaught.serverutils.Module;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -23,14 +27,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class DimensionLoaderMod {
+public class DimensionLoaderMod extends Module {
     public static String MOD_ID = "dimensionloader";
 
     public static final HashMap<Identifier, CustomDimHolder> loadedWorlds = new HashMap<>();
 
-    public static void onInitialize() {
+    @Override
+    public void onInitialize() {
         ServerTickEvents.START_SERVER_TICK.register(DimensionLoaderMod::serverTickWorldAdd);
-        CommandRegistrationCallback.EVENT.register(DimensionLoaderCommand::registerCommand);
+    }
+
+    @Override
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+        DimensionLoaderCommand.registerCommands(dispatcher);
     }
 
     public static Text loadDimension(MinecraftServer server, Identifier id, Identifier dimID, Collection<CommandFunction> functions) {
@@ -74,9 +83,12 @@ public class DimensionLoaderMod {
                     it.remove();
                 }
             } else if (!holder.wasRegistered()) {
-                DimensionType dimensionType = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(holder.copyFromID);
+                //I don't really understand how mc registry key/entry shit works, but this does somehow work
+                Registry<DimensionType> registry = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY);
+                RegistryEntry<DimensionType> entry = registry.getEntry(registry.getKey(registry.get(holder.copyFromID)).get()).get();
+
                 RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
-                        .setDimensionType(dimensionType)
+                        .setDimensionType(entry)
                         .setMirrorOverworldGameRules(true)
                         .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS)));
 
