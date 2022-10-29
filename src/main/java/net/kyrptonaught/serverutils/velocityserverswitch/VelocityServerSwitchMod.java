@@ -3,23 +3,18 @@ package net.kyrptonaught.serverutils.velocityserverswitch;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.serverutils.ByteBufDataOutput;
-import net.minecraft.command.CommandRegistryAccess;
+import net.kyrptonaught.serverutils.Constants;
+import net.kyrptonaught.serverutils.Module;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Identifier;
 
-public class VelocityServerSwitchMod {
-    public static Identifier BUNGEECORD_ID = new Identifier("bungeecord", "main");
+public class VelocityServerSwitchMod extends Module {
 
-    public static void onInitialize() {
-        CommandRegistrationCallback.EVENT.register(VelocityServerSwitchMod::registerCommand);
-    }
-
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    @Override
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("velocityserverswitch")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.argument("servername", StringArgumentType.word())
@@ -29,7 +24,7 @@ public class VelocityServerSwitchMod {
 
                                 output.writeUTF("Connect");
                                 output.writeUTF(servername);
-                                ServerPlayNetworking.send(commandContext.getSource().getPlayer(), BUNGEECORD_ID, output.getBuf());
+                                ServerPlayNetworking.send(commandContext.getSource().getPlayer(), Constants.BUNGEECORD_ID, output.getBuf());
                             } catch (Exception e) {
                                 System.out.println("Failed to send switch packet");
                                 e.printStackTrace();

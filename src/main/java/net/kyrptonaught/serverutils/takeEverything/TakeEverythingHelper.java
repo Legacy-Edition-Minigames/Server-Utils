@@ -14,11 +14,11 @@ import net.minecraft.sound.SoundEvent;
 
 public class TakeEverythingHelper {
     public static boolean takeEverything(ServerPlayerEntity player) {
-        if (!TakeEverythingMod.getConfig().Enabled || player.currentScreenHandler instanceof PlayerScreenHandler) {
+        if (!TakeEverythingMod.getConfigStatic().Enabled || player.currentScreenHandler instanceof PlayerScreenHandler) {
             return false;
         }
 
-        if (player.isSpectator() && !TakeEverythingMod.getConfig().worksInSpectator) {
+        if (player.isSpectator() && !TakeEverythingMod.getConfigStatic().worksInSpectator) {
             return false;
         }
 

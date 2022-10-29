@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.scoreboardPlayerInfo;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
@@ -16,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
-public class ScoreboardPlayerInfo {
+public class ScoreboardPlayerInfo extends Module {
     public static String MOD_ID = "scoreboardplayerinfo";
 
     private static final CustomObjective protocolObjective = new CustomObjective("mcprotocolversion", "Client MC Protocol Version");
@@ -28,7 +29,7 @@ public class ScoreboardPlayerInfo {
 
     private final static HashMap<ClientConnection, Integer> connectionProtocolVersion = new HashMap<>();
 
-    public static void onInitialize() {
+    public void onInitialize() {
         ScoreboardPlayerInfoNetworking.registerReceivePacket();
 
         ServerLifecycleEvents.SERVER_STARTED.register(ScoreboardPlayerInfo::registerScoreboardOBJs);

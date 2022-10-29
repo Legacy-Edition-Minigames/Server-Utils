@@ -8,9 +8,11 @@ import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
+import static net.kyrptonaught.serverutils.ServerUtilsMod.SyncedKeybindsModule;
+
 public class SyncedKeybindsNetworking {
-    public static final Identifier SYNC_KEYBINDS_PACKET = new Identifier(SyncedKeybinds.MOD_ID, "sync_keybinds_packet");
-    public static final Identifier KEYBIND_PRESSED_PACKET = new Identifier(SyncedKeybinds.MOD_ID, "keybind_pressed_packet");
+    public static final Identifier SYNC_KEYBINDS_PACKET = new Identifier(SyncedKeybindsModule.getMOD_ID(), "sync_keybinds_packet");
+    public static final Identifier KEYBIND_PRESSED_PACKET = new Identifier(SyncedKeybindsModule.getMOD_ID(), "keybind_pressed_packet");
 
     public static void registerReceivePacket() {
         ServerPlayNetworking.registerGlobalReceiver(KEYBIND_PRESSED_PACKET, (server, player, serverPlayNetworkHandler, packetByteBuf, packetSender) -> {

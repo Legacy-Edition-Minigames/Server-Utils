@@ -3,23 +3,15 @@ package net.kyrptonaught.serverutils.dropevent;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.command.CommandRegistryAccess;
+import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
-public class DropEventMod {
-
-    public static final String MOD_ID = "dropevent";
+public class DropEventMod extends ModuleWConfig<DropEventConfig> {
     public static boolean ENABLED = true;
 
-    public static void onInitialize() {
-        ServerUtilsMod.configManager.registerFile(MOD_ID, new DropEventConfig());
-        CommandRegistrationCallback.EVENT.register(DropEventMod::registerCommand);
-    }
-
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    @Override
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("dropevent")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("enabled").then(CommandManager.argument("enabled", BoolArgumentType.bool())
@@ -30,12 +22,13 @@ public class DropEventMod {
                 .then(CommandManager.literal("command").then(CommandManager.argument("command", StringArgumentType.greedyString())
                         .executes(context -> {
                             getConfig().runCommand = StringArgumentType.getString(context, "command");
-                            ServerUtilsMod.configManager.save(MOD_ID);
+                            saveConfig();
                             return 1;
                         }))));
     }
 
-    public static DropEventConfig getConfig() {
-        return (DropEventConfig) ServerUtilsMod.configManager.getConfig(MOD_ID);
+    @Override
+    public DropEventConfig createDefaultConfig() {
+        return new DropEventConfig();
     }
 }

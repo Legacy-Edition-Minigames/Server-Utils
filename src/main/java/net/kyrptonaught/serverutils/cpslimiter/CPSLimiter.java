@@ -1,32 +1,36 @@
 package net.kyrptonaught.serverutils.cpslimiter;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public class CPSLimiter {
-    public static String MOD_ID = "cpslimiter";
-
+public class CPSLimiter extends ModuleWConfig<CPSLimitConfig> {
     public static HashMap<UUID, ClickTimeStamps> playerLastPress = new HashMap<>();
 
     private static float smoothing, cpsLimit;
 
-    public static void onInitialize() {
-        ServerUtilsMod.configManager.registerFile(MOD_ID, new CPSLimitConfig());
-        ServerUtilsMod.configManager.load();
-        smoothing = (float) getConfig().smoothing;
-        cpsLimit = (float) getConfig().CPSLimit;
+    @Override
+    public void onConfigLoad(CPSLimitConfig config) {
+        smoothing = (float) config.smoothing;
+        cpsLimit = (float) config.CPSLimit;
+    }
 
+    @Override
+    public CPSLimitConfig createDefaultConfig() {
+        return new CPSLimitConfig();
+    }
+
+    @Override
+    public void onInitialize() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             playerLastPress.putIfAbsent(handler.player.getUuid(), new ClickTimeStamps());
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             playerLastPress.remove(handler.player.getUuid());
         });
-
         // summon entity for testing: /summon pig ~ ~ ~ {NoAI: 1b,Silent:1b,PersistenceRequired:1b,Invulnerable:1b}
     }
 
@@ -34,10 +38,6 @@ public class CPSLimiter {
         UUID uuid = player.getUuid();
 
         return playerLastPress.get(uuid).isPassing(smoothing, cpsLimit);
-    }
-
-    public static CPSLimitConfig getConfig() {
-        return (CPSLimitConfig) ServerUtilsMod.configManager.getConfig(MOD_ID);
     }
 
     public static class ClickTimeStamps {

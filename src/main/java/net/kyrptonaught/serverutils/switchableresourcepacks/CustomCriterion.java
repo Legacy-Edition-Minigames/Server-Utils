@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.switchableresourcepacks;
 
 import com.google.gson.JsonObject;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
@@ -14,7 +15,7 @@ public class CustomCriterion implements Criterion<CustomCriterion.Conditions> {
     private final Identifier ID;
 
     public CustomCriterion(String status) {
-        ID = new Identifier(SwitchableResourcepacksMod.MOD_ID, status);
+        ID = new Identifier(ServerUtilsMod.SwitchableResourcepacksModule.getMOD_ID(), status);
     }
 
     @Override

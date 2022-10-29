@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class HungerCommand {
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> healthCMD = CommandManager.literal("hunger")
                 .requires((source) -> source.hasPermissionLevel(2));
 

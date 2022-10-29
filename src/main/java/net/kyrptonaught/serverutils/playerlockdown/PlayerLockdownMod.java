@@ -2,8 +2,7 @@ package net.kyrptonaught.serverutils.playerlockdown;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.CommandRegistryAccess;
+import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -12,19 +11,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class PlayerLockdownMod {
-    public static final String MOD_ID = "playerlockdown";
-
+public class PlayerLockdownMod extends Module {
     public static boolean GLOBAL_LOCKDOWN = false;
 
     public static final HashSet<String> LOCKEDDOWNPLAYERS = new HashSet<>();
 
-
-    public static void onInitialize() {
-        CommandRegistrationCallback.EVENT.register(PlayerLockdownMod::registerCommand);
-    }
-
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("lockdown")
                 .requires((source) -> source.hasPermissionLevel(2))
 

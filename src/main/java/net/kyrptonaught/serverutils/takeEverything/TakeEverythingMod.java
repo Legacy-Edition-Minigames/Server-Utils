@@ -2,10 +2,9 @@ package net.kyrptonaught.serverutils.takeEverything;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
@@ -18,18 +17,20 @@ import net.minecraft.util.TypedActionResult;
 import java.util.Collection;
 
 
-public class TakeEverythingMod {
-    public static final String MOD_ID = "takeeverything";
+public class TakeEverythingMod extends ModuleWConfig<TakeEverythingConfig> {
 
-    public static void onInitialize() {
-        ServerUtilsMod.configManager.registerFile(MOD_ID, new TakeEverythingConfig());
-        CommandRegistrationCallback.EVENT.register(TakeEverythingMod::registerCommand);
+    public void onInitialize() {
         TakeEverythingNetworking.registerReceivePacket();
         registerItemUse();
     }
 
-    public static TakeEverythingConfig getConfig() {
-        return (TakeEverythingConfig) ServerUtilsMod.configManager.getConfig(MOD_ID);
+    @Override
+    public TakeEverythingConfig createDefaultConfig() {
+        return new TakeEverythingConfig();
+    }
+
+    public static TakeEverythingConfig getConfigStatic(){
+        return ServerUtilsMod.TakeEverythingModule.getConfig();
     }
 
     public static void registerItemUse() {
@@ -44,7 +45,7 @@ public class TakeEverythingMod {
         });
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("takeeverything")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .executes(context -> {
@@ -55,19 +56,19 @@ public class TakeEverythingMod {
                 .then(CommandManager.literal("enabled").then(CommandManager.argument("enabled", BoolArgumentType.bool())
                         .executes(context -> {
                             getConfig().Enabled = BoolArgumentType.getBool(context, "enabled");
-                            ServerUtilsMod.configManager.save(MOD_ID);
+                            saveConfig();
                             return 1;
                         })))
                 .then(CommandManager.literal("worksInSpectator").then(CommandManager.argument("worksInSpectator", BoolArgumentType.bool())
                         .executes(context -> {
                             getConfig().worksInSpectator = BoolArgumentType.getBool(context, "worksInSpectator");
-                            ServerUtilsMod.configManager.save(MOD_ID);
+                            saveConfig();
                             return 1;
                         })))
                 .then(CommandManager.literal("deleteItemNotDrop").then(CommandManager.argument("deleteItemNotDrop", BoolArgumentType.bool())
                         .executes(context -> {
                             getConfig().deleteItemNotDrop = BoolArgumentType.getBool(context, "deleteItemNotDrop");
-                            ServerUtilsMod.configManager.save(MOD_ID);
+                            saveConfig();
                             return 1;
                         })))
                 .then(CommandManager.literal("ignoreEnchants")

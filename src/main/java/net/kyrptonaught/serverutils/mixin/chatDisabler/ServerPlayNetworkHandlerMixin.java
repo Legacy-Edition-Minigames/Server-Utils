@@ -1,6 +1,8 @@
 package net.kyrptonaught.serverutils.mixin.chatDisabler;
 
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
+import net.kyrptonaught.serverutils.chatDisabler.ChatDisablerConfig;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,8 +22,9 @@ public class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onChatMessage", at = @At(value = "HEAD"), cancellable = true)
     public void dontSendMessage(ChatMessageC2SPacket packet, CallbackInfo ci) {
         if (!ChatDisabler.CHATENABLED) {
-            if (ChatDisabler.getConfig().informClientMSGNotSent)
-                this.player.sendMessage(Text.literal(ChatDisabler.getConfig().disabledResponse), false);
+            ChatDisablerConfig config = ServerUtilsMod.ChatDisabler.getConfig();
+            if (config.informClientMSGNotSent)
+                this.player.sendMessage(Text.literal(config.disabledResponse), false);
             ci.cancel();
         }
     }

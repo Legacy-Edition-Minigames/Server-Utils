@@ -1,8 +1,7 @@
 package net.kyrptonaught.serverutils.SpectateSqueaker;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.CommandRegistryAccess;
+import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -17,16 +16,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class SpectateSqueakerMod {
-    public static final String MOD_ID = "spectatesqueak";
+public class SpectateSqueakerMod extends Module {
     public static final HashMap<UUID, Identifier> playerSounds = new HashMap<>();
 
-    public static void onInitialize() {
+    public void onInitialize() {
         SpectateSqueakerNetworking.registerReceivePacket();
-        CommandRegistrationCallback.EVENT.register(SpectateSqueakerMod::registerCommand);
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("registerSpectateSqueak")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("set")

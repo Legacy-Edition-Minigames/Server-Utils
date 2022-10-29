@@ -1,10 +1,8 @@
 package net.kyrptonaught.serverutils.dropevent;
 
-import blue.endless.jankson.Comment;
-import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
+import net.kyrptonaught.serverutils.AbstractConfigFile;
 
-public class DropEventConfig implements AbstractConfigFile {
+public class DropEventConfig extends AbstractConfigFile {
 
-    @Comment("Command to be ran when the player attempts to drop with nothing in their hand")
     public String runCommand = "/say oopsie I dropped this";
 }

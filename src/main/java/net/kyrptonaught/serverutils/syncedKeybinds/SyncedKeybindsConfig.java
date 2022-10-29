@@ -1,11 +1,11 @@
 package net.kyrptonaught.serverutils.syncedKeybinds;
 
-import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
+import net.kyrptonaught.serverutils.AbstractConfigFile;
 import net.minecraft.network.PacketByteBuf;
 
 import java.util.HashMap;
 
-public class SyncedKeybindsConfig implements AbstractConfigFile {
+public class SyncedKeybindsConfig extends AbstractConfigFile {
 
     public HashMap<String, KeybindConfigItem> keybinds = new HashMap<>();
 

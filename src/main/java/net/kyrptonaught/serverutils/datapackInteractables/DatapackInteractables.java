@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.datapackInteractables;
 
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.kyrptonaught.serverutils.Module;
 import net.minecraft.block.Block;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.ActionResult;
@@ -11,13 +12,11 @@ import net.minecraft.util.registry.Registry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DatapackInteractables {
-    public static String MOD_ID = "interactables";
-
+public class DatapackInteractables extends Module {
     private static boolean isWhiteList;
     private static Set<Identifier> blockIds;
 
-    public static void onInitialize() {
+    public void onInitialize() {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DatapackLoader());
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player.isSpectator()) return ActionResult.PASS;

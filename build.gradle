@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -22,9 +22,6 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	modImplementation ('net.kyrptonaught:kyrptconfig:1.5.0-1.19')
-	include ('net.kyrptonaught:kyrptconfig:1.5.0-1.19')
 
 	modImplementation 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'
 	include 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'

@@ -1,18 +1,19 @@
 package net.kyrptonaught.serverutils.healthcmd;
 
+import com.mojang.brigadier.CommandDispatcher;
+import net.kyrptonaught.serverutils.Module;
+import net.minecraft.server.command.ServerCommandSource;
 
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-
-public class HealthCMDMod {
+public class HealthCMDMod extends Module {
     public enum ModType {
         ADD, SUB, SET
     }
 
     public static final String MOD_ID = "healthcmd";
 
-    public static void onInitialize() {
-        CommandRegistrationCallback.EVENT.register(HealthCommand::registerCommand);
-        CommandRegistrationCallback.EVENT.register(HungerCommand::registerCommand);
-        CommandRegistrationCallback.EVENT.register(SaturationCommand::registerCommand);
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+        HealthCommand.registerCommands(dispatcher);
+        HungerCommand.registerCommands(dispatcher);
+        SaturationCommand.registerCommands(dispatcher);
     }
 }

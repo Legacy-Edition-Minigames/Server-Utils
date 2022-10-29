@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.entity.boss.BossBarManager;
@@ -20,14 +19,16 @@ import net.minecraft.util.Identifier;
 import java.util.Collection;
 import java.util.Collections;
 
+import static net.kyrptonaught.serverutils.ServerUtilsMod.PanoramaViewerModule;
+
 public class PanoramaCommand {
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> cmd = CommandManager.literal("panorama")
                 .requires((source) -> source.hasPermissionLevel(2));
 
         LiteralArgumentBuilder<ServerCommandSource> startCmd = CommandManager.literal("start");
-        for (PanoramaConfig.AutoPanoramaEntry panoramaEntry : PanoramaViewer.getConfig().autoEntries) {
+        for (PanoramaConfig.AutoPanoramaEntry panoramaEntry : PanoramaViewerModule.getConfig().autoEntries) {
             startCmd.then(CommandManager.literal(panoramaEntry.panoramaName)
                     .then(CommandManager.argument("uiscaleOBJ", ScoreboardObjectiveArgumentType.scoreboardObjective())
                             .then(CommandManager.argument("isNight", BoolArgumentType.bool())

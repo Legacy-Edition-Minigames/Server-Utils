@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.serverutils.SpectateSqueaker.SpectateSqueakerMod;
 import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
@@ -22,58 +21,81 @@ import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
+import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybindsConfig;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.kyrptonaught.serverutils.tntlighter.TNTLighter;
-import net.kyrptonaught.serverutils.velocitymodifier.VelocityCommandMod;
+import net.kyrptonaught.serverutils.velocitymodifier.VelocityModifierModule;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
 import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.HashMap;
+
 public class ServerUtilsMod implements ModInitializer {
     public static String MOD_ID = "serverutils";
-    public static ConfigManager.MultiConfigManager configManager = new ConfigManager.MultiConfigManager(MOD_ID);
     public static Identifier PRESENCE_PACKET = new Identifier(MOD_ID, "presence");
+
+    public static ConfigManager config = new ConfigManager(MOD_ID);
+    public static HashMap<String, Module> modules = new HashMap<>();
+
+    public static WaterFreezer WaterFreezerModule = (WaterFreezer) registerModule("waterfreezer", new WaterFreezer());
+    public static Module VelocityServerSwitchMod = registerModule("velocityserverswitch", new VelocityServerSwitchMod());
+    public static Module VelocityModifierModule = registerModule("velocitycommand", new VelocityModifierModule());
+    public static Module TNTLighterModule = registerModule("tntlighter", new TNTLighter());
+    public static TakeEverythingMod TakeEverythingModule = (TakeEverythingMod) registerModule("takeeverything", new TakeEverythingMod());
+    public static SyncedKeybinds SyncedKeybindsModule = (SyncedKeybinds) registerModule("syncedkeybinds", new SyncedKeybinds());
+    public static Module SwitchableResourcepacksModule = registerModule("switchableresourcepacks", new SwitchableResourcepacksMod());
+    public static Module SpectatorSqueakModule = registerModule("spectatesqueak", new SpectateSqueakerMod());
+    public static Module ScoreboardSuffixModule = registerModule("scoreboardsuffix", new ScoreboardSuffixMod());
+    public static Module ScoreboardPlayerInfoModule = registerModule("scoreboardplayerinfo", new ScoreboardPlayerInfo());
+    public static Module RideModule = registerModule("ride", new RideMod());
+    public static Module PlayerLockdownModule = registerModule("playerlockdown", new PlayerLockdownMod());
+    public static PanoramaViewer PanoramaViewerModule = (PanoramaViewer) registerModule("panoramaviewer", new PanoramaViewer());
+    public static Module HealthCommandModule = registerModule("healthcmd", new HealthCMDMod());
+    public static DropEventMod DropEventModule = (DropEventMod) registerModule("dropevent", new DropEventMod());
+    public static Module DimensionLoaderModule = registerModule("dimensionloader", new DimensionLoaderMod());
+    public static Module DatapackInteractablesModule = registerModule("interactables", new DatapackInteractables());
+    public static Module CPSLimiterModule = registerModule("cpslimiter", new CPSLimiter());
+    public static Module ChestTrackerModule = registerModule("chesttracker", new ChestTrackerMod());
+    public static ChatDisabler ChatDisabler = (ChatDisabler) registerModule("chatdisabler", new ChatDisabler());
+    public static BrandBlocker BrandBlockerModule = (BrandBlocker) registerModule("brandblocker", new BrandBlocker());
+    public static AdvancementSyncMod AdvancementSyncModule = (AdvancementSyncMod) registerModule("advancementsync", new AdvancementSyncMod());
+
 
     @Override
     public void onInitialize() {
-        PlayerLockdownMod.onInitialize();
-        ScoreboardSuffixMod.onInitialize();
-        SwitchableResourcepacksMod.onInitialize();
-        TakeEverythingMod.onInitialize();
-        VelocityCommandMod.onInitialize();
-        VelocityServerSwitchMod.onInitialize();
-        DropEventMod.onInitialize();
-        HealthCMDMod.onInitialize();
-        ChestTrackerMod.onInitialize();
-        WaterFreezer.onInitialize();
-        RideMod.onInitialize();
-        PanoramaViewer.onInitialize();
-        TNTLighter.onInitialize();
-        BrandBlocker.onInitialize();
-        ScoreboardPlayerInfo.onInitialize();
-        CPSLimiter.onInitialize();
-        DatapackInteractables.onInitialize();
-        ChatDisabler.onInitialize();
-        DimensionLoaderMod.onInitialize();
-        SyncedKeybinds.onInitialize();
-        SpectateSqueakerMod.onInitialize();
-        AdvancementSyncMod.onInitialize();
-
-        configManager.load();
         registerPresence();
-        CommandRegistrationCallback.EVENT.register(ServerUtilsMod::registerCommand);
+
+        for (Module module : modules.values()) {
+            module.onInitialize();
+            if (module instanceof ModuleWConfig<?> moduleWConfig) {
+                moduleWConfig.setConfig(config.load(module.getMOD_ID(), moduleWConfig.getDefaultConfig()));
+                moduleWConfig.saveConfig();
+            }
+        }
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            registerCommand(dispatcher);
+            for (Module module : modules.values())
+                module.registerCommands(dispatcher);
+        });
     }
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+
+    public static Module registerModule(String MOD_ID, Module module) {
+        module.setMOD_ID(MOD_ID);
+        modules.put(MOD_ID, module);
+        return module;
+    }
+
+    public void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("serverutils")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("reloadAllConfigs")
                         .executes(context -> {
-                            ServerUtilsMod.configManager.load();
+
                             context.getSource().sendFeedback(Text.literal("Configs reloaded. Note: not all modules may reflect these changes"), false);
                             return 1;
                         })));

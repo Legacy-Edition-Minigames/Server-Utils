@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.advancementSync;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -10,12 +11,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-public class AdvancementSyncMod {
+public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
     public static String MOD_ID = "advancementsync";
     public static HttpClient client;
 
-    public static void onInitialize() {
-        ServerUtilsMod.configManager.registerFile(MOD_ID, new AdvancementSyncConfig());
+    @Override
+    public void onInitialize() {
         client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .followRedirects(HttpClient.Redirect.NORMAL)
@@ -43,10 +44,10 @@ public class AdvancementSyncMod {
         });
     }
 
-    public static AdvancementSyncConfig getConfig() {
-        return (AdvancementSyncConfig) ServerUtilsMod.configManager.getConfig(MOD_ID);
+    @Override
+    public AdvancementSyncConfig createDefaultConfig() {
+        return new AdvancementSyncConfig();
     }
-
 
     public static void syncGrantedAdvancement(ServerPlayerEntity serverPlayerEntity, String json) {
         try {
@@ -67,7 +68,7 @@ public class AdvancementSyncMod {
     }
 
     public static String getUrl(String route, ServerPlayerEntity player) {
-        return getConfig().getApiURL() + "/" + route + "/" + player.getUuidAsString();
+        return ServerUtilsMod.AdvancementSyncModule.getConfig().getApiURL() + "/" + route + "/" + player.getUuidAsString();
     }
 
     public static HttpRequest buildPostRequest(String url, String json) {
@@ -88,7 +89,7 @@ public class AdvancementSyncMod {
                 .build();
     }
 
-    public static boolean didRequestFail(HttpResponse<String> response) {
+    public boolean didRequestFail(HttpResponse<String> response) {
         return response == null || response.statusCode() != 200 || response.body().equalsIgnoreCase("failed");
     }
 }

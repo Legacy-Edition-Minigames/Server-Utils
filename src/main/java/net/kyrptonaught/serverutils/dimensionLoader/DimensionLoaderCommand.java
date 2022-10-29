@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -19,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class DimensionLoaderCommand {
 
-    public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal(DimensionLoaderMod.MOD_ID).requires(source -> source.hasPermissionLevel(2));
 
         literalArgumentBuilder.then(CommandManager.literal("prepareDimension")

@@ -4,7 +4,6 @@ import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -12,7 +11,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +30,8 @@ public abstract class ServerPlayerInteractionManager {
     @Shadow
     protected ServerWorld world;
 
-    @Shadow protected abstract void method_41250(BlockPos pos, boolean success, int sequence, String reason);
+    @Shadow
+    protected abstract void method_41250(BlockPos pos, boolean success, int sequence, String reason);
 
     @Inject(method = "processBlockBreakingAction", at = @At("HEAD"), cancellable = true)
     public void preventBlockBreak(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence, CallbackInfo ci) {

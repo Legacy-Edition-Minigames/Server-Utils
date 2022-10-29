@@ -1,15 +1,14 @@
 package net.kyrptonaught.serverutils.panoramaViewer;
 
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
-public class PanoramaViewer {
+public class PanoramaViewer extends ModuleWConfig<PanoramaConfig> {
     public static final String MOD_ID = "panoramaviewer";
 
     public static HashMap<String, Panorama> panoramaEntries = new HashMap<>();
@@ -17,30 +16,8 @@ public class PanoramaViewer {
     public static HashMap<String, FrameCounter> frameCounters = new HashMap<>();
     public static HashMap<String, Padder> padders = new HashMap<>();
 
-    public static void onInitialize() {
-        ServerUtilsMod.configManager.registerFile(MOD_ID, new PanoramaConfig());
-        ServerUtilsMod.configManager.load(MOD_ID);
-
-        for (String ui : getConfig().FrameCounts.keySet()) {
-            frameCounters.put(ui, new FrameCounter(getConfig().FrameCounts.get(ui)));
-            padders.put(ui, new Padder(getConfig().PaddingSize.get(ui)));
-        }
-
-        createPanoramasFromConfig();
-
-        CommandRegistrationCallback.EVENT.register(PanoramaCommand::registerCommand);
-
-        if (getConfig().autoEntries.size() == 0) {
-            PanoramaConfig.AutoPanoramaEntry option = new PanoramaConfig.AutoPanoramaEntry();
-            option.panoramaName = "example_panorama";
-            option.texts.put("1", "{\"text\":\"This is an example panorama\",\"font\":\"minecraft:default\"}");
-            option.texts.put("2", "{\"text\":\"This is an example panorama\",\"font\":\"minecraft:default\"}");
-            option.hasNightVariant = true;
-            getConfig().autoEntries.add(option);
-            ServerUtilsMod.configManager.save(MOD_ID);
-            System.out.println("[" + MOD_ID + "]: Generated example config");
-        }
-
+    @Override
+    public void onInitialize() {
         ServerTickEvents.START_SERVER_TICK.register(server -> {
             frameCounters.values().forEach(FrameCounter::readyForFirstTick);
 
@@ -55,7 +32,28 @@ public class PanoramaViewer {
         });
     }
 
-    public static void createPanoramasFromConfig() {
+    @Override
+    public void onConfigLoad(PanoramaConfig config) {
+        for (String ui : getConfig().FrameCounts.keySet()) {
+            frameCounters.put(ui, new FrameCounter(getConfig().FrameCounts.get(ui)));
+            padders.put(ui, new Padder(getConfig().PaddingSize.get(ui)));
+        }
+
+        createPanoramasFromConfig();
+
+        if (config.autoEntries.size() == 0) {
+            PanoramaConfig.AutoPanoramaEntry option = new PanoramaConfig.AutoPanoramaEntry();
+            option.panoramaName = "example_panorama";
+            option.texts.put("1", "{\"text\":\"This is an example panorama\",\"font\":\"minecraft:default\"}");
+            option.texts.put("2", "{\"text\":\"This is an example panorama\",\"font\":\"minecraft:default\"}");
+            option.hasNightVariant = true;
+            config.autoEntries.add(option);
+            saveConfig();
+            System.out.println("[" + MOD_ID + "]: Generated example config");
+        }
+    }
+
+    public void createPanoramasFromConfig() {
         getConfig().autoEntries.forEach(panoramaEntry -> panoramaEntry.texts.forEach((ui, text) -> {
             FrameCounter frameCounter = frameCounters.get(ui);
             Padder padder = padders.get(ui);
@@ -90,7 +88,8 @@ public class PanoramaViewer {
             System.out.println("Panorama: " + name + " has invalid padder");
     }
 
-    public static PanoramaConfig getConfig() {
-        return ((PanoramaConfig) ServerUtilsMod.configManager.getConfig(MOD_ID));
+    @Override
+    public PanoramaConfig createDefaultConfig() {
+        return new PanoramaConfig();
     }
 }

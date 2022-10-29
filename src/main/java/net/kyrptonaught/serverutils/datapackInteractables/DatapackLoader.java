@@ -12,13 +12,12 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
-    public static final Identifier ID = new Identifier(ServerUtilsMod.MOD_ID, DatapackInteractables.MOD_ID);
+    public static final Identifier ID = new Identifier(ServerUtilsMod.MOD_ID, ServerUtilsMod.DatapackInteractablesModule.getMOD_ID());
     private static final Gson GSON = (new GsonBuilder()).create();
 
     @Override

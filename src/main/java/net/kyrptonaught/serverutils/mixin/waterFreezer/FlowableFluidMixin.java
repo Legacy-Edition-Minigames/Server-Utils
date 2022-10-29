@@ -1,6 +1,5 @@
 package net.kyrptonaught.serverutils.mixin.waterFreezer;
 
-import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
@@ -12,16 +11,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static net.kyrptonaught.serverutils.ServerUtilsMod.WaterFreezerModule;
+
 @Mixin(FlowableFluid.class)
 public class FlowableFluidMixin {
 
     @Inject(method = "tryFlow", at = @At("HEAD"), cancellable = true)
     private void stopFlowing(WorldAccess world, BlockPos fluidPos, FluidState state, CallbackInfo ci) {
-        if (WaterFreezer.getConfig().FROZEN) ci.cancel();
+        if (WaterFreezerModule.getConfig().FROZEN) ci.cancel();
     }
 
     @Inject(method = "flow", at = @At("HEAD"), cancellable = true)
     private void stopFlowing(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState, CallbackInfo ci) {
-        if (WaterFreezer.getConfig().FROZEN) ci.cancel();
+        if (WaterFreezerModule.getConfig().FROZEN) ci.cancel();
     }
 }

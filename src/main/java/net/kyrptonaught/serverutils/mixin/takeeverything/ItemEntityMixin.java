@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import static net.kyrptonaught.serverutils.ServerUtilsMod.TakeEverythingModule;
+
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity {
 
@@ -30,7 +32,7 @@ public abstract class ItemEntityMixin extends Entity {
             if (TakeEverythingHelper.canSwap(instance.player, stack, false)) {
                 stack = TakeEverythingHelper.equipOrSwapArmor(instance.player, stack, false);
                 instance.insertStack(stack);
-                if (!stack.isEmpty() && !TakeEverythingMod.getConfig().deleteItemNotDrop) {
+                if (!stack.isEmpty() && !TakeEverythingModule.getConfig().deleteItemNotDrop) {
                     World world = instance.player.world;
                     ItemEntity itemEntity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), stack);
                     itemEntity.setToDefaultPickupDelay();

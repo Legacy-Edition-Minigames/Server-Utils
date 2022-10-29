@@ -1,13 +1,13 @@
 package net.kyrptonaught.serverutils.panoramaViewer;
 
-import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
+import net.kyrptonaught.serverutils.AbstractConfigFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PanoramaConfig implements AbstractConfigFile {
+public class PanoramaConfig extends AbstractConfigFile {
 
     public Map<String, Integer> FrameCounts = new HashMap<>(Map.of(
             "1", 1550,
