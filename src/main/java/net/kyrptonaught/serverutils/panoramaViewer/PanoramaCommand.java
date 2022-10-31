@@ -23,7 +23,7 @@ import static net.kyrptonaught.serverutils.ServerUtilsMod.PanoramaViewerModule;
 
 public class PanoramaCommand {
 
-    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> cmd = CommandManager.literal("panorama")
                 .requires((source) -> source.hasPermissionLevel(2));
 

@@ -1,9 +1,11 @@
 package net.kyrptonaught.serverutils.panoramaViewer;
 
+import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.CommandBossBar;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -30,6 +32,11 @@ public class PanoramaViewer extends ModuleWConfig<PanoramaConfig> {
                 bossBar.setName(panorama.getPaddedText());
             }
         });
+    }
+
+    @Override
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+        PanoramaCommand.registerCommands(dispatcher);
     }
 
     @Override
