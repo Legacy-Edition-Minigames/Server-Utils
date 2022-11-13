@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -19,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 public class DimensionLoaderCommand {
 
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal(DimensionLoaderMod.MOD_ID).requires(source -> source.hasPermissionLevel(2));
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal(ServerUtilsMod.DimensionLoaderModule.getMOD_ID()).requires(source -> source.hasPermissionLevel(2));
 
         literalArgumentBuilder.then(CommandManager.literal("prepareDimension")
                 .then(CommandManager.argument("id", IdentifierArgumentType.identifier())
@@ -37,6 +38,11 @@ public class DimensionLoaderCommand {
                                 .suggests(FunctionCommand.SUGGESTION_PROVIDER)
                                 .executes(context -> executeUnload(context, getID(context, "id"), CommandFunctionArgumentType.getFunctions(context, "callbackFunction"))))
                         .executes(context -> executeUnload(context, getID(context, "id"), null))));
+
+        dispatcher.register(CommandManager.literal("whereami").executes(context -> {
+            context.getSource().sendFeedback(DimensionLoaderMod.whereAmI(context.getSource().getPlayer()),false);
+            return 1;
+        }));
 
         dispatcher.register(literalArgumentBuilder);
     }

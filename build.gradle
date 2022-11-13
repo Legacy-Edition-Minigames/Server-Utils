@@ -15,6 +15,17 @@ repositories {
 	maven { url "https://maven.kyrptonaught.dev" }
 	maven { url "https://maven.terraformersmc.com/releases" }
 	//maven { url = 'https://maven.nucleoid.xyz/' }
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 dependencies {
@@ -25,6 +36,8 @@ dependencies {
 
 	modImplementation 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'
 	include 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'
+
+	modImplementation 'maven.modrinth:starlight:1.1.1+1.19'
 }
 
 processResources {

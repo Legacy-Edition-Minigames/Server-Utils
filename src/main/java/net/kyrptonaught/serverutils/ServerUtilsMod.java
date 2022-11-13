@@ -21,12 +21,12 @@ import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
-import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybindsConfig;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.kyrptonaught.serverutils.tntlighter.TNTLighter;
 import net.kyrptonaught.serverutils.velocitymodifier.VelocityModifierModule;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
 import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
+import net.kyrptonaught.serverutils.welcomeMessage.WelcomeModule;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -63,7 +63,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static ChatDisabler ChatDisabler = (ChatDisabler) registerModule("chatdisabler", new ChatDisabler());
     public static BrandBlocker BrandBlockerModule = (BrandBlocker) registerModule("brandblocker", new BrandBlocker());
     public static AdvancementSyncMod AdvancementSyncModule = (AdvancementSyncMod) registerModule("advancementsync", new AdvancementSyncMod());
-
+    public static WelcomeModule WelcomeMessageModule = (WelcomeModule) registerModule("welcomemessage", new WelcomeModule());
 
     @Override
     public void onInitialize() {

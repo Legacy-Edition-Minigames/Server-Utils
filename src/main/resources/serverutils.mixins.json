@@ -24,7 +24,8 @@
     "tntlighter.TNTBlockMixin",
     "tntlighter.TntEntityMixin",
     "waterFreezer.FlowableFluidMixin",
-    "waterFreezer.FluidBlockMixin"
+    "waterFreezer.FluidBlockMixin",
+    "welcomeMessage.ServerPlayNetworkHandlerMixin"
   ],
   "server": [
     "scoreboardplayerinfo.ServerHandshakeNetworkHandlerMixin"

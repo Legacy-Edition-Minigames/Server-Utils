@@ -4,9 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
 import net.kyrptonaught.serverutils.Module;
+import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
@@ -28,8 +30,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class DimensionLoaderMod extends Module {
-    public static String MOD_ID = "dimensionloader";
-
     public static final HashMap<Identifier, CustomDimHolder> loadedWorlds = new HashMap<>();
 
     @Override
@@ -68,6 +68,13 @@ public class DimensionLoaderMod extends Module {
         holder.setFunctions(functions);
         holder.scheduleToDelete();
         return Text.literal("Unloading Dimension");
+    }
+
+    public static Text whereAmI(ServerPlayerEntity player){
+        Identifier dimID = player.getWorld().getRegistryKey().getValue();
+        if(loadedWorlds.containsKey(dimID))
+            dimID = loadedWorlds.get(dimID).copyFromID;
+        return Text.translatable("key.world."+ dimID.toTranslationKey());
     }
 
     public static void serverTickWorldAdd(MinecraftServer server) {
