@@ -33,7 +33,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
                 players.add(((PersonatusProfile) this.player.getGameProfile()).getRealProfile().getName());
                 ((TeamS2CPacketAccessor) teamPacket).setPlayerNames(players);
             }
-        } else if (packet instanceof PlayerListS2CPacket listPacket && listPacket.getAction() == PlayerListS2CPacket.Action.UPDATE_GAME_MODE) {
+        } else if (packet instanceof PlayerListS2CPacket listPacket ) {
             GameProfile profile = this.player.getGameProfile();
             List<PlayerListS2CPacket.Entry> entries = listPacket.getEntries();
             for (int i = 0; i < entries.size(); i++) {

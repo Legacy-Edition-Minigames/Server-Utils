@@ -11,11 +11,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.UUID;
 
 @Pseudo
-@Mixin(targets = "me.lucko.luckperms.fabric.listeners.FabricConnectionListener", remap = false)
+@Mixin(targets = "me.lucko.luckperms.fabric.listeners.FabricConnectionListener")
 public class FixLuckPermsMixin {
 
     @Dynamic("LuckPerms onLogin")
-    @Redirect(method = "onLogin", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getUuid()Ljava/util/UUID;"), remap = false)
+    @Redirect(method = "onLogin", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getUuid()Ljava/util/UUID;"))
     public UUID spoofRealPerms(ServerPlayerEntity instance) {
         return ((PersonatusProfile) instance.getGameProfile()).getRealProfile().getId();
     }
