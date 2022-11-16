@@ -1,7 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.takeeverything;
 
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingHelper;
-import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;

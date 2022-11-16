@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.advancementSync;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.net.URI;
@@ -68,7 +69,7 @@ public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
     }
 
     public static String getUrl(String route, ServerPlayerEntity player) {
-        return ServerUtilsMod.AdvancementSyncModule.getConfig().getApiURL() + "/" + route + "/" + player.getUuidAsString();
+        return ServerUtilsMod.AdvancementSyncModule.getConfig().getApiURL() + "/" + route + "/" + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getId().toString();
     }
 
     public static HttpRequest buildPostRequest(String url, String json) {

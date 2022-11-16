@@ -29,7 +29,7 @@ public class TakeEverythingMod extends ModuleWConfig<TakeEverythingConfig> {
         return new TakeEverythingConfig();
     }
 
-    public static TakeEverythingConfig getConfigStatic(){
+    public static TakeEverythingConfig getConfigStatic() {
         return ServerUtilsMod.TakeEverythingModule.getConfig();
     }
 

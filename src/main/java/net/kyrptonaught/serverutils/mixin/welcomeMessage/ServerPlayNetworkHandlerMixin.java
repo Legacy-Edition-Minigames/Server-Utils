@@ -18,7 +18,9 @@ public class ServerPlayNetworkHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
 
-    @Shadow @Final private MinecraftServer server;
+    @Shadow
+    @Final
+    private MinecraftServer server;
 
     @Inject(method = "onChatMessage", at = @At(value = "HEAD"))
     public void dontSendMessage(ChatMessageC2SPacket packet, CallbackInfo ci) {

@@ -40,7 +40,7 @@ public class DimensionLoaderCommand {
                         .executes(context -> executeUnload(context, getID(context, "id"), null))));
 
         dispatcher.register(CommandManager.literal("whereami").executes(context -> {
-            context.getSource().sendFeedback(DimensionLoaderMod.whereAmI(context.getSource().getPlayer()),false);
+            context.getSource().sendFeedback(DimensionLoaderMod.whereAmI(context.getSource().getPlayer()), false);
             return 1;
         }));
 

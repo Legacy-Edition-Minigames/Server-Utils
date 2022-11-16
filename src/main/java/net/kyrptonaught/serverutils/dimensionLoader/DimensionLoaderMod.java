@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
 import net.kyrptonaught.serverutils.Module;
-import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
@@ -14,7 +13,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -70,11 +68,11 @@ public class DimensionLoaderMod extends Module {
         return Text.literal("Unloading Dimension");
     }
 
-    public static Text whereAmI(ServerPlayerEntity player){
+    public static Text whereAmI(ServerPlayerEntity player) {
         Identifier dimID = player.getWorld().getRegistryKey().getValue();
-        if(loadedWorlds.containsKey(dimID))
+        if (loadedWorlds.containsKey(dimID))
             dimID = loadedWorlds.get(dimID).copyFromID;
-        return Text.translatable("key.world."+ dimID.toTranslationKey());
+        return Text.translatable("key.world." + dimID.toTranslationKey());
     }
 
     public static void serverTickWorldAdd(MinecraftServer server) {

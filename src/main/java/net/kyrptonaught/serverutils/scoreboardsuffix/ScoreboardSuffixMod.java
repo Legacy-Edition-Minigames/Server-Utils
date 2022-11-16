@@ -7,7 +7,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.Module;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.MinecraftServer;
