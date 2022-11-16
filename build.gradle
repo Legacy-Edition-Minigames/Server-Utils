@@ -32,12 +32,20 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation ("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"){
+		exclude group: "net.fabricmc.fabric-api", module: "fabric-gametest-api-v1"
 
-	modImplementation 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'
-	include 'xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'
+	}
 
-	modImplementation 'maven.modrinth:starlight:1.1.1+1.19'
+	modImplementation include ('xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'){
+		exclude group: "net.fabricmc.fabric-api", module: "fabric-gametest-api-v1"
+
+	}
+
+	modImplementation ('maven.modrinth:starlight:1.1.1+1.19'){
+		exclude group: "net.fabricmc.fabric-api", module: "fabric-gametest-api-v1"
+
+	}
 }
 
 processResources {

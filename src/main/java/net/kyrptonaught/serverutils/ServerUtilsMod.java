@@ -15,6 +15,7 @@ import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
+import net.kyrptonaught.serverutils.personatus.PersonatusModule;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
@@ -64,6 +65,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static BrandBlocker BrandBlockerModule = (BrandBlocker) registerModule("brandblocker", new BrandBlocker());
     public static AdvancementSyncMod AdvancementSyncModule = (AdvancementSyncMod) registerModule("advancementsync", new AdvancementSyncMod());
     public static WelcomeModule WelcomeMessageModule = (WelcomeModule) registerModule("welcomemessage", new WelcomeModule());
+    public static PersonatusModule personatusModule = (PersonatusModule) registerModule("personatus", new PersonatusModule());
 
     @Override
     public void onInitialize() {
