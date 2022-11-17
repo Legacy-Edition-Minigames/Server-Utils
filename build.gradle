@@ -15,17 +15,7 @@ repositories {
 	maven { url "https://maven.kyrptonaught.dev" }
 	maven { url "https://maven.terraformersmc.com/releases" }
 	//maven { url = 'https://maven.nucleoid.xyz/' }
-	exclusiveContent {
-		forRepository {
-			maven {
-				name = "Modrinth"
-				url = "https://api.modrinth.com/maven"
-			}
-		}
-		filter {
-			includeGroup "maven.modrinth"
-		}
-	}
+
 }
 
 dependencies {
@@ -34,17 +24,10 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation ("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"){
 		exclude group: "net.fabricmc.fabric-api", module: "fabric-gametest-api-v1"
-
 	}
 
 	modImplementation include ('xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2'){
 		exclude group: "net.fabricmc.fabric-api", module: "fabric-gametest-api-v1"
-
-	}
-
-	modImplementation ('maven.modrinth:starlight:1.1.1+1.19'){
-		exclude group: "net.fabricmc.fabric-api", module: "fabric-gametest-api-v1"
-
 	}
 }
 

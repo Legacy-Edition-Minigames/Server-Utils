@@ -1,11 +1,20 @@
 package net.kyrptonaught.serverutils.personatus;
 
+import net.kyrptonaught.serverutils.ModuleWConfig;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 
-import net.kyrptonaught.serverutils.Module;
-
-public class PersonatusModule extends Module {
+public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
 
     public void onInitialize() {
 
+    }
+
+    public static boolean isEnabled() {
+        return ServerUtilsMod.personatusModule.getConfig().enabled;
+    }
+
+    @Override
+    public PersonatusConfig createDefaultConfig() {
+        return new PersonatusConfig();
     }
 }
