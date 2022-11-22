@@ -13,7 +13,6 @@ public class SyncedKeybinds extends ModuleWConfig<SyncedKeybindsConfig> {
     public void onInitialize() {
         SyncedKeybindsNetworking.registerReceivePacket();
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            if (ServerPlayNetworking.canSend(handler.getPlayer(), SyncedKeybindsNetworking.SYNC_KEYBINDS_PACKET))
                 SyncedKeybindsNetworking.syncKeybindsToClient(getConfig().keybinds, sender);
         });
     }
