@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -29,7 +30,7 @@ public class SpectateSqueakerMod extends Module {
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("set")
                         .then(CommandManager.argument("players", EntityArgumentType.players())
-                                .then(CommandManager.argument("soundID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("soundID", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.AVAILABLE_SOUNDS)
                                         .then(CommandManager.argument("cooldown", IntegerArgumentType.integer(0))
                                                 .executes(context -> {
                                                     Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
@@ -58,7 +59,7 @@ public class SpectateSqueakerMod extends Module {
         if (playerSound !=null && playerSound.canUse()) {
             SoundEvent sound = Registry.SOUND_EVENT.get(playerSound.getSoundID());
             if (sound != null) {
-                player.getWorld().playSoundFromEntity(null, player, sound, SoundCategory.PLAYERS, 1, 1);
+                player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 1, 1);
             }
         }
     }
