@@ -28,6 +28,7 @@
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
     "takeeverything.ScreenHandlerMixin",
+    "tntlighter.ExplosionMixin",
     "tntlighter.TNTBlockMixin",
     "tntlighter.TntEntityMixin",
     "waterFreezer.FlowableFluidMixin",

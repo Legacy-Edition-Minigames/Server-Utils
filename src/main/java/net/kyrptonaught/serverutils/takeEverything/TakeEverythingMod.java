@@ -8,6 +8,7 @@ import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Wearable;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -36,7 +37,7 @@ public class TakeEverythingMod extends ModuleWConfig<TakeEverythingConfig> {
     public static void registerItemUse() {
         UseItemCallback.EVENT.register((player, world, hand) -> {
             ItemStack stack = player.getStackInHand(hand);
-            if (!world.isClient && stack.getItem() instanceof ArmorItem) {
+            if (!world.isClient && TakeEverythingHelper.isSwappableItem(stack)) {
                 stack = TakeEverythingHelper.equipOrSwapArmor(player, stack, true); //return already equippedStack or empty
                 if (!stack.isEmpty()) player.setStackInHand(hand, stack);
                 return TypedActionResult.success(stack);

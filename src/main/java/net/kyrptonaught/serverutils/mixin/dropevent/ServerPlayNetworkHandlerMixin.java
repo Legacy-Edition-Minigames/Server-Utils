@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.dropevent;
 
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -27,7 +28,7 @@ public class ServerPlayNetworkHandlerMixin {
     public void dropDis(PlayerActionC2SPacket packet, CallbackInfo ci) {
         if (DropEventMod.ENABLED && (packet.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM || packet.getAction() == PlayerActionC2SPacket.Action.DROP_ALL_ITEMS)) {
             if (player.getMainHandStack().isEmpty()) {
-                server.getCommandManager().executeWithPrefix(player.getCommandSource().withLevel(2).withSilent(), ServerUtilsMod.DropEventModule.getConfig().runCommand);
+                CMDHelper.executeAs(player, ServerUtilsMod.DropEventModule.getConfig().runCommand);
                 ci.cancel();
             }
         }

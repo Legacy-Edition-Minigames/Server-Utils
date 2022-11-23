@@ -1,10 +1,9 @@
 package net.kyrptonaught.serverutils.syncedKeybinds;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class SyncedKeybinds extends ModuleWConfig<SyncedKeybindsConfig> {
@@ -13,7 +12,7 @@ public class SyncedKeybinds extends ModuleWConfig<SyncedKeybindsConfig> {
     public void onInitialize() {
         SyncedKeybindsNetworking.registerReceivePacket();
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-                SyncedKeybindsNetworking.syncKeybindsToClient(getConfig().keybinds, sender);
+            SyncedKeybindsNetworking.syncKeybindsToClient(getConfig().keybinds, sender);
         });
     }
 
@@ -22,9 +21,9 @@ public class SyncedKeybinds extends ModuleWConfig<SyncedKeybindsConfig> {
         return new SyncedKeybindsConfig();
     }
 
-    public static void keybindPressed(MinecraftServer server, ServerPlayerEntity player, String keyPressed) {
+    public static void keybindPressed(ServerPlayerEntity player, String keyPressed) {
         SyncedKeybindsConfig.KeybindConfigItem keybind = ServerUtilsMod.SyncedKeybindsModule.getConfig().keybinds.get(keyPressed);
         if (keybind != null)
-            server.getCommandManager().executeWithPrefix(player.getCommandSource(), keybind.triggerCMD);
+            CMDHelper.executeAs(player, keybind.triggerCMD);
     }
 }

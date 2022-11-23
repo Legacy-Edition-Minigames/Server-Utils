@@ -32,7 +32,7 @@ public abstract class ScreenHandlerMixin {
         if (!player.world.isClient) {
             if (actionType.equals(SlotActionType.QUICK_MOVE)) {
                 Slot slot = slots.get(slotIndex);
-                if (slot.canTakeItems(player) && !(slot.inventory instanceof PlayerInventory) && !slot.getStack().isEmpty() && slot.getStack().getItem() instanceof ArmorItem) {
+                if (slot.canTakeItems(player) && !(slot.inventory instanceof PlayerInventory) && !slot.getStack().isEmpty() && TakeEverythingHelper.isSwappableItem(slot.getStack())) {
                     ItemStack oldStack = TakeEverythingHelper.equipOrSwapArmor(player, slot.getStack(), false); //return already equippedStack or empty
                     if (!oldStack.isEmpty()) slot.setStack(oldStack);
                 }

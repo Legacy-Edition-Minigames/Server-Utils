@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.SpectateSqueaker;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class SpectateSqueakerMod extends Module {
-    public static final HashMap<UUID, Identifier> playerSounds = new HashMap<>();
+    public static final HashMap<UUID, PlayerSound> playerSounds = new HashMap<>();
 
     public void onInitialize() {
         SpectateSqueakerNetworking.registerReceivePacket();
@@ -29,13 +30,15 @@ public class SpectateSqueakerMod extends Module {
                 .then(CommandManager.literal("set")
                         .then(CommandManager.argument("players", EntityArgumentType.players())
                                 .then(CommandManager.argument("soundID", IdentifierArgumentType.identifier())
-                                        .executes(context -> {
-                                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
-                                            Identifier soundID = IdentifierArgumentType.getIdentifier(context, "soundID");
-                                            players.forEach(player -> playerSounds.put(player.getUuid(), soundID));
+                                        .then(CommandManager.argument("cooldown", IntegerArgumentType.integer(0))
+                                                .executes(context -> {
+                                                    Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                                                    Identifier soundID = IdentifierArgumentType.getIdentifier(context, "soundID");
+                                                    int cooldown = IntegerArgumentType.getInteger(context, "cooldown");
+                                                    players.forEach(player -> playerSounds.put(player.getUuid(), new PlayerSound(soundID, cooldown)));
 
-                                            return 1;
-                                        }))))
+                                                    return 1;
+                                                })))))
                 .then(CommandManager.literal("clear")
                         .executes(context -> {
                             playerSounds.clear();
@@ -50,10 +53,33 @@ public class SpectateSqueakerMod extends Module {
     }
 
     public static void playerSqueaks(ServerPlayerEntity player) {
-        Identifier soundID = playerSounds.get(player.getUuid());
-        SoundEvent sound = Registry.SOUND_EVENT.get(soundID);
-        if (soundID != null && sound != null) {
-            player.getWorld().playSoundFromEntity(null, player, sound, SoundCategory.PLAYERS, 1, 1);
+        PlayerSound playerSound = playerSounds.get(player.getUuid());
+
+        if (playerSound !=null && playerSound.canUse()) {
+            SoundEvent sound = Registry.SOUND_EVENT.get(playerSound.getSoundID());
+            if (sound != null) {
+                player.getWorld().playSoundFromEntity(null, player, sound, SoundCategory.PLAYERS, 1, 1);
+            }
+        }
+    }
+
+    public static class PlayerSound {
+        int coolDown;
+        Identifier soundID;
+        long lastUsed;
+
+        public PlayerSound(Identifier soundID, int coolDown) {
+            this.soundID = soundID;
+            this.coolDown = coolDown;
+        }
+
+        public boolean canUse() {
+            return System.currentTimeMillis() - lastUsed > coolDown;
+        }
+
+        public Identifier getSoundID() {
+            lastUsed = System.currentTimeMillis();
+            return soundID;
         }
     }
 }

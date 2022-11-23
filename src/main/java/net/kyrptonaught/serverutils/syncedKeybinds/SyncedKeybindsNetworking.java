@@ -19,7 +19,7 @@ public class SyncedKeybindsNetworking {
             String keybindId = packetByteBuf.readIdentifier().toString();
 
             server.execute(() -> {
-                SyncedKeybinds.keybindPressed(server, player, keybindId);
+                SyncedKeybinds.keybindPressed(player, keybindId);
             });
         });
     }
