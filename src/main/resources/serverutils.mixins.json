@@ -33,14 +33,17 @@
     "tntlighter.TntEntityMixin",
     "waterFreezer.FlowableFluidMixin",
     "waterFreezer.FluidBlockMixin",
-    "welcomeMessage.ServerPlayNetworkHandlerMixin"
+    "welcomeMessage.ServerPlayNetworkHandlerMixin",
+    "TextShadow.StyleMixin",
+    "TextShadow.StyleSerializerMixin"
   ],
   "server": [
     "scoreboardplayerinfo.ServerHandshakeNetworkHandlerMixin"
   ],
   "client": [
     "bigstructures.StructureBlockEntityRendererMixin",
-    "scoreboardplayerinfo.LocalServerHandshakeNetworkHandlerMixin"
+    "scoreboardplayerinfo.LocalServerHandshakeNetworkHandlerMixin",
+    "TextShadow.InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
