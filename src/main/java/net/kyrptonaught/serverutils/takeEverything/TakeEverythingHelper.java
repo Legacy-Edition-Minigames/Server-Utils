@@ -59,7 +59,7 @@ public class TakeEverythingHelper {
             return false;
 
         if (og.getItem() instanceof ArmorItem && newStack.getItem() instanceof ArmorItem)
-            return ((ArmorItem) newStack.getItem()).getProtection() >= ((ArmorItem) newStack.getItem()).getProtection();
+            return ((ArmorItem) newStack.getItem()).getProtection() >= ((ArmorItem) og.getItem()).getProtection();
 
         if (og.getItem() instanceof ArmorItem)
             return false;

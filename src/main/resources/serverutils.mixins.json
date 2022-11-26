@@ -34,16 +34,11 @@
     "waterFreezer.FlowableFluidMixin",
     "waterFreezer.FluidBlockMixin",
     "welcomeMessage.ServerPlayNetworkHandlerMixin",
-    "TextShadow.StyleMixin",
-    "TextShadow.StyleSerializerMixin"
-  ],
-  "server": [
-    "scoreboardplayerinfo.ServerHandshakeNetworkHandlerMixin"
+    "scoreboardplayerinfo.ServerHandshakeNetworkHandlerMixin",
+    "scoreboardplayerinfo.LocalServerHandshakeNetworkHandlerMixin"
   ],
   "client": [
-    "bigstructures.StructureBlockEntityRendererMixin",
-    "scoreboardplayerinfo.LocalServerHandshakeNetworkHandlerMixin",
-    "TextShadow.InGameHudMixin"
+    "bigstructures.StructureBlockEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
