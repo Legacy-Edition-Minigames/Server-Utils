@@ -3,7 +3,6 @@ package net.kyrptonaught.serverutils.mixin.takeeverything;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;

@@ -21,9 +21,6 @@ import java.util.UUID;
 public class SpectateSqueakerMod extends Module {
     public static final HashMap<UUID, PlayerSound> playerSounds = new HashMap<>();
 
-    public void onInitialize() {
-    }
-
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("registerSpectateSqueak")
                 .requires((source) -> source.hasPermissionLevel(2))
@@ -55,7 +52,7 @@ public class SpectateSqueakerMod extends Module {
     public static void playerSqueaks(ServerPlayerEntity player) {
         PlayerSound playerSound = playerSounds.get(player.getUuid());
 
-        if (playerSound !=null && playerSound.canUse()) {
+        if (playerSound != null && playerSound.canUse()) {
             SoundEvent sound = Registry.SOUND_EVENT.get(playerSound.getSoundID());
             if (sound != null) {
                 player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 1, 1);

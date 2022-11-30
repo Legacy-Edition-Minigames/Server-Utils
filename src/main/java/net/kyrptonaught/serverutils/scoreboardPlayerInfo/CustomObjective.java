@@ -9,7 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 
 public class CustomObjective {

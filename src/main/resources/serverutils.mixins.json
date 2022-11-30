@@ -20,7 +20,6 @@
     "personatus.ServerLoginNetworkHandlerMixin",
     "personatus.ServerPlayNetworkHandlerMixin",
     "personatus.TeamS2CPacketAccessor",
-    "personatus.YggdrasilInvoker",
     "playerlockdown.ServerPlayerInteractionManager",
     "scoreboardplayerinfo.LocalServerHandshakeNetworkHandlerMixin",
     "scoreboardplayerinfo.ServerHandshakeNetworkHandlerMixin",

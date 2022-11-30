@@ -7,7 +7,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.Wearable;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -36,7 +35,7 @@ public class TakeEverythingHelper {
 
     public static boolean canEquip(PlayerEntity player, ItemStack armor) {
         EquipmentSlot equipmentSlot = getEquipSlot(armor);
-        if(equipmentSlot == null)
+        if (equipmentSlot == null)
             return false;
         ItemStack equipped = player.getEquippedStack(equipmentSlot);
         return equipped.isEmpty();
@@ -44,7 +43,7 @@ public class TakeEverythingHelper {
 
     public static boolean canSwap(PlayerEntity player, ItemStack armor, boolean alwaysSwap) {
         EquipmentSlot equipmentSlot = getEquipSlot(armor);
-        if(equipmentSlot == null)
+        if (equipmentSlot == null)
             return false;
         ItemStack equipped = player.getEquippedStack(equipmentSlot);
         return !hasBinding(equipped) && (alwaysSwap || (!hasEnchants(player, equipped) && isBetter(equipped, armor)));
@@ -72,7 +71,7 @@ public class TakeEverythingHelper {
 
     public static ItemStack equipOrSwapArmor(PlayerEntity player, ItemStack armor, boolean alwaysSwap) {
         EquipmentSlot equipmentSlot = getEquipSlot(armor);
-        if(equipmentSlot == null)
+        if (equipmentSlot == null)
             return ItemStack.EMPTY;
 
         ItemStack equipped = player.getEquippedStack(equipmentSlot);
