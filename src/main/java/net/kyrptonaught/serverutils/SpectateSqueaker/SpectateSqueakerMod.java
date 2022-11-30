@@ -22,7 +22,6 @@ public class SpectateSqueakerMod extends Module {
     public static final HashMap<UUID, PlayerSound> playerSounds = new HashMap<>();
 
     public void onInitialize() {
-        SpectateSqueakerNetworking.registerReceivePacket();
     }
 
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
