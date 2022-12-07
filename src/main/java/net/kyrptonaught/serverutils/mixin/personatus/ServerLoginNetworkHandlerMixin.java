@@ -7,24 +7,24 @@ import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.personatus.PersonatusModule;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
 
 @Mixin(ServerLoginNetworkHandler.class)
-public class ServerLoginNetworkHandlerMixin{
+public class ServerLoginNetworkHandlerMixin {
 
     @Shadow
     GameProfile profile;
@@ -33,11 +33,10 @@ public class ServerLoginNetworkHandlerMixin{
     @Shadow
     MinecraftServer server;
 
-
     private boolean profileChecked = false;
 
 
-    @Inject(method = "onHello", cancellable = true, at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;profile:Lcom/mojang/authlib/GameProfile;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
+    @Inject(method = "onHello", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;profile:Lcom/mojang/authlib/GameProfile;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
     public void requestSpoof(LoginHelloC2SPacket packet, CallbackInfo ci) {
         if (!PersonatusModule.isEnabled()) {
             profileChecked = true;
@@ -54,9 +53,8 @@ public class ServerLoginNetworkHandlerMixin{
                             UUID uuid = UUIDTypeAdapter.fromString(responseUUID);
                             GameProfile spoofed = sessionService.fillProfileProperties(new GameProfile(uuid, responseName), true);
 
-                            //((PersonatusProfile) spoofed).setRealProfile(profile);
-                            //profile = spoofed;
-                             ((PersonatusProfile) profile).setRealProfile(spoofed);
+                            ((PersonatusProfile) spoofed).setRealProfile(profile);
+                            profile = spoofed;
                         }
                     }
                 } catch (Exception e) {
@@ -65,25 +63,31 @@ public class ServerLoginNetworkHandlerMixin{
             }
             profileChecked = true;
         }).start();
-
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;acceptPlayer()V", opcode = Opcodes.PUTFIELD), cancellable = true)
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;acceptPlayer()V"), cancellable = true)
     public void delayAcceptUntilCheck(CallbackInfo ci) {
         if (!PersonatusModule.isEnabled()) return;
         if (!profileChecked)
             ci.cancel();
     }
 
-    @Redirect(method = "acceptPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;createPlayer(Lcom/mojang/authlib/GameProfile;Lnet/minecraft/network/encryption/PlayerPublicKey;)Lnet/minecraft/server/network/ServerPlayerEntity;"))
-    public ServerPlayerEntity SpoofProfile(PlayerManager instance, GameProfile profile, PlayerPublicKey publicKey) {
-        if (PersonatusModule.isEnabled()) {
-            if (((PersonatusProfile) profile).isSpoofed()) {
-                GameProfile spoofed = ((PersonatusProfile) profile).getRealProfile();
-                ((PersonatusProfile) spoofed).setRealProfile(profile);
-                profile = spoofed;
-            }
-        }
-        return instance.createPlayer(profile, publicKey);
+    @Inject(method = "getVerifiedPublicKey", at = @At("HEAD"), cancellable = true)
+    private static void noKey4u(PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey, CallbackInfoReturnable<PlayerPublicKey> cir) {
+        cir.setReturnValue(null);
+    }
+
+    @Dynamic("Fabric Proxy Mixin")
+    @Inject(method = "setRealUUID", at = @At("HEAD"), cancellable = true, require = 0)
+    public void stopThatFabricProxyItsverysilly(UUID uuid, CallbackInfo ci) {
+        if (PersonatusModule.isEnabled())
+            ci.cancel();
+    }
+
+    @Dynamic("Fabric Proxy Mixin")
+    @Inject(method = "setProfile", at = @At("HEAD"), cancellable = true, require = 0)
+    public void stopThatFabricProxyItsverysilly2(GameProfile profile, CallbackInfo ci) {
+        if (PersonatusModule.isEnabled())
+            ci.cancel();
     }
 }

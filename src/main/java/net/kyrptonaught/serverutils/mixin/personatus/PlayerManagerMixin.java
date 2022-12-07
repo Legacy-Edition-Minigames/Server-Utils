@@ -20,6 +20,7 @@ public class PlayerManagerMixin {
 
     @Redirect(method = "getAdvancementTracker", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getUuid()Ljava/util/UUID;"))
     public UUID getRealAdvancements(ServerPlayerEntity instance) {
+        System.out.println(((PersonatusProfile) instance.getGameProfile()).getRealProfile().getId());
         return ((PersonatusProfile) instance.getGameProfile()).getRealProfile().getId();
     }
 }
