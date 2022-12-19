@@ -21,6 +21,11 @@ import java.util.UUID;
 public class SpectateSqueakerMod extends Module {
     public static final HashMap<UUID, PlayerSound> playerSounds = new HashMap<>();
 
+    @Override
+    public void onInitialize() {
+        SpectateSqueakereNetworking.registerReceivePacket();
+    }
+
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("registerSpectateSqueak")
                 .requires((source) -> source.hasPermissionLevel(2))
