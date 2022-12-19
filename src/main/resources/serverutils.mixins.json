@@ -31,8 +31,6 @@
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
     "takeeverything.ScreenHandlerMixin",
-    "TextShadow.StyleMixin",
-    "TextShadow.StyleSerializerMixin",
     "tntlighter.ExplosionMixin",
     "tntlighter.TNTBlockMixin",
     "tntlighter.TntEntityMixin",
@@ -41,8 +39,7 @@
     "welcomeMessage.ServerPlayNetworkHandlerMixin"
   ],
   "client": [
-    "bigstructures.StructureBlockEntityRendererMixin",
-    "TextShadow.InGameHudMixin"
+    "bigstructures.StructureBlockEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
