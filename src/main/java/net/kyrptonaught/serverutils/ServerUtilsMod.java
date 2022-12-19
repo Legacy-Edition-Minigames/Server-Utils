@@ -10,6 +10,7 @@ import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.cpslimiter.CPSLimiter;
+import net.kyrptonaught.serverutils.critBlocker.CritBlockerMod;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
@@ -66,6 +67,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static AdvancementSyncMod AdvancementSyncModule = (AdvancementSyncMod) registerModule("advancementsync", new AdvancementSyncMod());
     public static WelcomeModule WelcomeMessageModule = (WelcomeModule) registerModule("welcomemessage", new WelcomeModule());
     public static PersonatusModule personatusModule = (PersonatusModule) registerModule("personatus", new PersonatusModule());
+    public static Module critBlockerMod = registerModule("critblocker", new CritBlockerMod());
 
     @Override
     public void onInitialize() {

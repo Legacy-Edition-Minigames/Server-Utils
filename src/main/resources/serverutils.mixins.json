@@ -13,6 +13,7 @@
     "chatDisabler.ServerPlayNetworkHandlerMixin",
     "chesttracker.AbstractBlockStateMixin",
     "cpslimiter.ServerPlayNetworkHandlerMixin",
+    "critBlocker.PlayerEntityMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
     "personatus.FixLuckPermsMixin",
     "personatus.GameProfileMixin",
