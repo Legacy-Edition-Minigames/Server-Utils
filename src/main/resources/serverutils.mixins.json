@@ -16,6 +16,7 @@
     "dropevent.ServerPlayNetworkHandlerMixin",
     "personatus.FixLuckPermsMixin",
     "personatus.GameProfileMixin",
+    "personatus.PlayerListS2CPacketAccessor",
     "personatus.PlayerManagerMixin",
     "personatus.ServerLoginNetworkHandlerMixin",
     "personatus.ServerPlayNetworkHandlerMixin",
