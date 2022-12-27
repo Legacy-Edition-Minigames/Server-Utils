@@ -29,6 +29,7 @@
     "scoreboardsuffix.ServerScoreboardMixin",
     "serverMetadataSpoofer.ServerMetadataMixin",
     "spectateSqueaker.ServerPlayNetworkHandlerMixin",
+    "starlightSilencer.SaveUtilMixin",
     "switchableresourcepacks.ResourcePackStatusMixin",
     "takeeverything.ItemEntityMixin",
     "takeeverything.ScreenHandlerMixin",
