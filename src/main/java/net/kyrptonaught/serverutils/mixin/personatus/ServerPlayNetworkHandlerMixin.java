@@ -2,12 +2,10 @@ package net.kyrptonaught.serverutils.mixin.personatus;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.ParseResults;
-import io.netty.buffer.Unpooled;
 import net.kyrptonaught.serverutils.personatus.PacketCopier;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
@@ -35,8 +33,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow
     @Final
     public ClientConnection connection;
-
-    @Shadow protected abstract ParseResults<ServerCommandSource> parse(String command);
 
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"), cancellable = true)
     public void spoofPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {

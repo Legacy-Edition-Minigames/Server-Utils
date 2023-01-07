@@ -68,7 +68,8 @@ public class ServerUtilsMod implements ModInitializer {
     public static AdvancementSyncMod AdvancementSyncModule = (AdvancementSyncMod) registerModule("advancementsync", new AdvancementSyncMod());
     public static WelcomeModule WelcomeMessageModule = (WelcomeModule) registerModule("welcomemessage", new WelcomeModule());
     public static PersonatusModule personatusModule = (PersonatusModule) registerModule("personatus", new PersonatusModule());
-    public static Module critBlockerMod = registerModule("critblocker", new CritBlockerMod());
+    public static Module critBlockerModule = registerModule("critblocker", new CritBlockerMod());
+   // public static Module CustomUIModule = registerModule("customui", new CustomUI());
 
     @Override
     public void onInitialize() {
@@ -81,6 +82,7 @@ public class ServerUtilsMod implements ModInitializer {
                 moduleWConfig.saveConfig();
             }
         }
+       // CustomUI.reload();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             registerCommand(dispatcher);
             for (Module module : modules.values())
@@ -100,7 +102,13 @@ public class ServerUtilsMod implements ModInitializer {
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("reloadAllConfigs")
                         .executes(context -> {
-
+                            for (Module module : modules.values()) {
+                                if (module instanceof ModuleWConfig<?> moduleWConfig) {
+                                    moduleWConfig.setConfig(config.load(module.getMOD_ID(), moduleWConfig.getDefaultConfig()));
+                                    moduleWConfig.saveConfig();
+                                }
+                            }
+                            //CustomUI.reload();
                             context.getSource().sendFeedback(Text.literal("Configs reloaded. Note: not all modules may reflect these changes"), false);
                             return 1;
                         })));
