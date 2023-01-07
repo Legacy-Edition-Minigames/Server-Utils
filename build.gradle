@@ -14,10 +14,10 @@ repositories {
 	maven { url 'https://maven.fabricmc.net' }
 	maven { url "https://maven.kyrptonaught.dev" }
 	maven { url "https://maven.terraformersmc.com/releases" }
-	//maven { url = 'https://maven.nucleoid.xyz/' }
+	maven { url "https://maven.nucleoid.xyz/" }
 	maven { url "https://api.modrinth.com/maven" }
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-	maven { url 'https://masa.dy.fi/maven' }
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+	maven { url "https://masa.dy.fi/maven" }
 	mavenCentral()
 }
 
@@ -29,20 +29,23 @@ dependencies {
 		exclude group: "net.fabricmc.fabric-api", module: "fabric-gametest-api-v1"
 	}
 
+	//SGui
+	modImplementation include("eu.pb4:sgui:1.1.5+1.19.1"){ exclude group: "net.fabricmc.fabric-api" }
+
 	//Modified Fantasy
 	modImplementation include('xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Starlight
 	modImplementation('maven.modrinth:starlight:1.1.1+1.19') { exclude group: "net.fabricmc.fabric-api" }
 
-	//Fabric Proxy Lite
-	modImplementation('maven.modrinth:fabricproxy-lite:v2.3.0') { exclude group: "net.fabricmc.fabric-api" }
-
 	//Luck Perms
 	modImplementation('maven.modrinth:luckperms:v5.4.46-fabric') { exclude group: "net.fabricmc.fabric-api" }
 	modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
 	compileOnly 'net.luckperms:api:5.4'
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
+
+	//Fabric Proxy Lite
+	modImplementation('maven.modrinth:fabricproxy-lite:v2.3.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//crossstitch
 	modImplementation('maven.modrinth:crossstitch:0.1.5') { exclude group: "net.fabricmc.fabric-api" }

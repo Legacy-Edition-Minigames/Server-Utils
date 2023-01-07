@@ -12,6 +12,7 @@ import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.cpslimiter.CPSLimiter;
 import net.kyrptonaught.serverutils.critBlocker.CritBlockerMod;
+import net.kyrptonaught.serverutils.customUI.CustomUI;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
@@ -69,7 +70,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static WelcomeModule WelcomeMessageModule = (WelcomeModule) registerModule("welcomemessage", new WelcomeModule());
     public static PersonatusModule personatusModule = (PersonatusModule) registerModule("personatus", new PersonatusModule());
     public static Module critBlockerModule = registerModule("critblocker", new CritBlockerMod());
-   // public static Module CustomUIModule = registerModule("customui", new CustomUI());
+    public static Module CustomUIModule = registerModule("customui", new CustomUI());
 
     @Override
     public void onInitialize() {
@@ -82,7 +83,7 @@ public class ServerUtilsMod implements ModInitializer {
                 moduleWConfig.saveConfig();
             }
         }
-       // CustomUI.reload();
+        CustomUI.reload();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             registerCommand(dispatcher);
             for (Module module : modules.values())
@@ -108,7 +109,7 @@ public class ServerUtilsMod implements ModInitializer {
                                     moduleWConfig.saveConfig();
                                 }
                             }
-                            //CustomUI.reload();
+                            CustomUI.reload();
                             context.getSource().sendFeedback(Text.literal("Configs reloaded. Note: not all modules may reflect these changes"), false);
                             return 1;
                         })));
