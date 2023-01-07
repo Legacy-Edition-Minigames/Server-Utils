@@ -3,8 +3,8 @@ package net.kyrptonaught.serverutils.switchableresourcepacks;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.mixin.object.builder.CriteriaAccessor;
 import net.kyrptonaught.serverutils.ModuleWConfig;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -21,10 +21,10 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
     public static CustomCriterion STARTED, FINISHED, FAILED;
 
     public void onConfigLoad(ResourcePackConfig config) {
+        rpOptionHashMap.clear();
         config.packs.forEach(rpOption -> {
             rpOptionHashMap.put(rpOption.packname, rpOption);
         });
-
 
         if (config.packs.size() == 0) {
             ResourcePackConfig.RPOption option = new ResourcePackConfig.RPOption();
@@ -35,12 +35,14 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
             saveConfig();
             System.out.println("[" + getMOD_ID() + "]: Generated example resourcepack config");
         }
-
-        STARTED = CriteriaAccessor.callRegister(new CustomCriterion("started"));
-        FINISHED = CriteriaAccessor.callRegister(new CustomCriterion("finished"));
-        FAILED = CriteriaAccessor.callRegister(new CustomCriterion("failed"));
     }
 
+    @Override
+    public void onInitialize() {
+        STARTED = Criteria.register(new CustomCriterion("started"));
+        FINISHED = Criteria.register(new CustomCriterion("finished"));
+        FAILED = Criteria.register(new CustomCriterion("failed"));
+    }
 
     @Override
     public ResourcePackConfig createDefaultConfig() {

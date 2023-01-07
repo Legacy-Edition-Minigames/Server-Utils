@@ -31,6 +31,10 @@ public class ConfigManager {
         return GSON;
     }
 
+    public Path getDir() {
+        return dir;
+    }
+
     public void save(String MOD_ID, AbstractConfigFile config) {
         Path saveFile = dir.resolve(MOD_ID + ".json5");
         try (OutputStream os = Files.newOutputStream(saveFile); OutputStreamWriter out = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {

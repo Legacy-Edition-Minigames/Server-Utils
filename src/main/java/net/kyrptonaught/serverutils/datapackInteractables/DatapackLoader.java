@@ -1,7 +1,5 @@
 package net.kyrptonaught.serverutils.datapackInteractables;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -18,7 +16,6 @@ import java.util.Set;
 
 public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
     public static final Identifier ID = new Identifier(ServerUtilsMod.MOD_ID, ServerUtilsMod.DatapackInteractablesModule.getMOD_ID());
-    private static final Gson GSON = (new GsonBuilder()).create();
 
     @Override
     public Identifier getFabricId() {
@@ -34,7 +31,7 @@ public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
                 try {
                     JsonObject jsonObj = (JsonObject) JsonParser.parseReader(new InputStreamReader(resources.get(id).getInputStream()));
 
-                    BlockList blockList = GSON.fromJson(jsonObj, BlockList.class);
+                    BlockList blockList = ServerUtilsMod.getGson().fromJson(jsonObj, BlockList.class);
                     DatapackInteractables.addBlockList(blockList.isWhitelist, blockList.blockIDs);
                 } catch (IOException e) {
                     e.printStackTrace();

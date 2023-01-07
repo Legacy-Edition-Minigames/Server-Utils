@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils;
 
+import com.google.gson.Gson;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -109,5 +110,9 @@ public class ServerUtilsMod implements ModInitializer {
         //used by the client to detect if connected on a server with this mod installed
         ServerPlayNetworking.registerGlobalReceiver(PRESENCE_PACKET, (server, player, handler, buf, responseSender) -> {
         });
+    }
+
+    public static Gson getGson() {
+        return config.getGSON();
     }
 }

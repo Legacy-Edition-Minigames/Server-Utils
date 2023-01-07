@@ -40,8 +40,10 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                     String player = StringArgumentType.getString(context, "player");
                                     try {
                                         String responseName = PersonatusModule.URLGetValue(((YggdrasilMinecraftSessionService) server.getSessionService()).getAuthenticationService(), ServerUtilsMod.personatusModule.getConfig().getApiURL() + "/kvs/get/personatus/" + player, "value");
-                                        if (responseName != null) context.getSource().sendFeedback(Text.literal(player + " is being spoofed as " + responseName), false);
-                                        else context.getSource().sendFeedback(Text.literal(player + " is not spoofing"), false);
+                                        if (responseName != null)
+                                            context.getSource().sendFeedback(Text.literal(player + " is being spoofed as " + responseName), false);
+                                        else
+                                            context.getSource().sendFeedback(Text.literal(player + " is not spoofing"), false);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
