@@ -1,7 +1,5 @@
 package net.kyrptonaught.serverutils.datapackInteractables;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.resource.Resource;
@@ -10,6 +8,7 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -25,14 +24,14 @@ public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
     @Override
     public void reload(ResourceManager manager) {
         DatapackInteractables.clear();
-        Map<Identifier, Resource> resources = manager.findResources(ID.getPath(), (identifier) -> identifier.getPath().endsWith(".json"));
+        Map<Identifier, Resource> resources = manager.findResources(ID.getPath(), (identifier) -> identifier.getPath().endsWith(".json") || identifier.getPath().endsWith(".json5"));
         for (Identifier id : resources.keySet()) {
             if (id.getNamespace().equals(ID.getNamespace()))
-                try {
-                    JsonObject jsonObj = (JsonObject) JsonParser.parseReader(new InputStreamReader(resources.get(id).getInputStream()));
+                try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
 
-                    BlockList blockList = ServerUtilsMod.getGson().fromJson(jsonObj, BlockList.class);
+                    BlockList blockList = ServerUtilsMod.getGson().fromJson(reader, BlockList.class);
                     DatapackInteractables.addBlockList(blockList.isWhitelist, blockList.blockIDs);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
