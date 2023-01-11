@@ -30,6 +30,10 @@ public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
                 try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
 
                     BlockList blockList = ServerUtilsMod.getGson().fromJson(reader, BlockList.class);
+                    if (blockList == null) {
+                        System.out.println(ID + " - Error parsing file: " + id);
+                        continue;
+                    }
                     DatapackInteractables.addBlockList(blockList.isWhitelist, blockList.blockIDs);
 
                 } catch (IOException e) {

@@ -83,7 +83,6 @@ public class ServerUtilsMod implements ModInitializer {
                 moduleWConfig.saveConfig();
             }
         }
-        CustomUI.reload();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             registerCommand(dispatcher);
             for (Module module : modules.values())
@@ -109,7 +108,6 @@ public class ServerUtilsMod implements ModInitializer {
                                     moduleWConfig.saveConfig();
                                 }
                             }
-                            CustomUI.reload();
                             context.getSource().sendFeedback(Text.literal("Configs reloaded. Note: not all modules may reflect these changes"), false);
                             return 1;
                         })));

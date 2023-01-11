@@ -1,7 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.personatus;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.ParseResults;
 import net.kyrptonaught.serverutils.personatus.PacketCopier;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.ClientConnection;
@@ -9,7 +8,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;

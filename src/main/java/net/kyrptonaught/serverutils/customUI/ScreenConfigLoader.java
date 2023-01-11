@@ -1,50 +1,51 @@
 package net.kyrptonaught.serverutils.customUI;
 
-import net.kyrptonaught.serverutils.FileHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Map;
 
-public class ScreenConfigLoader {
+public class ScreenConfigLoader implements SimpleSynchronousResourceReloadListener {
+    public static final Identifier ID = new Identifier(ServerUtilsMod.MOD_ID, ServerUtilsMod.CustomUIModule.getMOD_ID());
 
-    public static HashMap<String, ScreenConfig> loadAll() {
-        HashMap<String, ScreenConfig> screenConfigs = new HashMap<>();
+    @Override
+    public Identifier getFabricId() {
+        return ID;
+    }
 
-        Path path = ServerUtilsMod.config.getDir().resolve(ServerUtilsMod.CustomUIModule.getMOD_ID());
-        FileHelper.createDir(path);
+    @Override
+    public void reload(ResourceManager manager) {
+        CustomUI.reload();
 
-        try (Stream<Path> stream = Files.walk(path)) {
-            stream.forEach(file -> {
-                if (file.getFileName().toString().endsWith(".json") || file.getFileName().toString().endsWith(".json5"))
-                    load(file).ifPresent(screenConfig -> screenConfigs.put(getRawFileName(file.getFileName().toString()), screenConfig));
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+        Map<Identifier, Resource> resources = manager.findResources(ID.getPath(), (identifier) -> identifier.getPath().endsWith(".json") || identifier.getPath().endsWith(".json5"));
+        for (Identifier id : resources.keySet()) {
+            if (id.getNamespace().equals(ID.getNamespace()))
+                try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
+
+                    ScreenConfig screenConfig = ServerUtilsMod.getGson().fromJson(reader, ScreenConfig.class);
+                    if (screenConfig == null) {
+                        System.out.println(ID + " - Error parsing file: " + id);
+                        continue;
+                    }
+
+                    String screenID = getRawFileName(id.getPath());
+                    if (id.getPath().contains("definitions"))
+                        CustomUI.addPresets(screenID, screenConfig);
+                    else if (id.getPath().contains("screens"))
+                        CustomUI.addScreen(screenID, screenConfig);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
         }
-
-        return screenConfigs;
     }
 
     private static String getRawFileName(String fileName) {
-        return fileName.substring(0, fileName.lastIndexOf("."));
-    }
-
-    private static Optional<ScreenConfig> load(Path path) {
-        try (InputStream in = Files.newInputStream(path, StandardOpenOption.READ);
-             InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-            return Optional.ofNullable(ServerUtilsMod.getGson().fromJson(reader, ScreenConfig.class));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
+        return fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf("."));
     }
 }
