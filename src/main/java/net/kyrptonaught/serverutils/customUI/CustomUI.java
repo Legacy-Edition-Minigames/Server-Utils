@@ -9,6 +9,8 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
+import net.kyrptonaught.serverutils.serverTranslator.TranslationStorage;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
@@ -54,6 +56,15 @@ public class CustomUI extends Module {
                     NbtCompound compound = StringNbtReader.parse(slotDefinition.itemNBT);
                     itemStack.setNbt(compound);
                 } catch (CommandSyntaxException e) {
+                    e.printStackTrace();
+                }
+
+            if (slotDefinition.customModelData != null)
+                try {
+                    String value = ServerTranslator.translate(player, slotDefinition.customModelData);
+                    int intValue = Integer.parseInt(value);
+                    itemStack.getNbt().putInt("CustomModelData", intValue);
+                } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
 

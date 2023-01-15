@@ -23,6 +23,7 @@ import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
+import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
@@ -71,6 +72,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static PersonatusModule personatusModule = (PersonatusModule) registerModule("personatus", new PersonatusModule());
     public static Module critBlockerModule = registerModule("critblocker", new CritBlockerMod());
     public static Module CustomUIModule = registerModule("customui", new CustomUI());
+    public static Module ServerTranslatorModule = registerModule("servertranslator", new ServerTranslator());
 
     @Override
     public void onInitialize() {

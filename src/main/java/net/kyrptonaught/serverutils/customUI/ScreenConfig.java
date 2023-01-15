@@ -23,5 +23,7 @@ public class ScreenConfig extends AbstractConfigFile {
 
         public String presetID;
 
+        public String customModelData;
+
     }
 }

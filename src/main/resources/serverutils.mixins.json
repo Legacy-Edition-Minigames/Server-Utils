@@ -28,6 +28,7 @@
     "scoreboardsuffix.ServerPlayerEntityMixin",
     "scoreboardsuffix.ServerScoreboardMixin",
     "serverMetadataSpoofer.ServerMetadataMixin",
+    "serverTranslator.ServerPlayerEntityMixin",
     "spectateSqueaker.ServerPlayNetworkHandlerMixin",
     "starlightSilencer.SaveUtilMixin",
     "switchableresourcepacks.ResourcePackStatusMixin",
