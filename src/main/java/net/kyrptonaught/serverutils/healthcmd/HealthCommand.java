@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -97,8 +98,9 @@ public class HealthCommand {
         if (modType == HealthCMDMod.ModType.ADD) {
             if (entity instanceof LivingEntity livingEntity) {
                 livingEntity.heal(amount);
-                if (entity instanceof ServerPlayerEntity player)
-                    player.markHealthDirty();
+                if (entity instanceof ServerPlayerEntity player) {
+                    player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), player.getHungerManager().getFoodLevel(), player.getHungerManager().getSaturationLevel()));
+                }
             }
 
         } else if (modType == HealthCMDMod.ModType.SET) {
