@@ -25,5 +25,33 @@ public class ScreenConfig extends AbstractConfigFile {
 
         public String customModelData;
 
+        public boolean isFieldBlank(String field) {
+            return field == null || field.isEmpty() || field.isBlank();
+        }
+
+        public SlotDefinition copyFrom(SlotDefinition other) {
+            if (isFieldBlank(itemID))
+                itemID = other.itemID;
+
+            if (isFieldBlank(itemNBT))
+                itemNBT = other.itemNBT;
+
+            if (isFieldBlank(displayName))
+                displayName = other.displayName;
+
+            if (isFieldBlank(leftClickAction))
+                leftClickAction = other.leftClickAction;
+
+            if (isFieldBlank(rightClickAction))
+                rightClickAction = other.rightClickAction;
+
+            if (isFieldBlank(presetID))
+                presetID = other.presetID;
+
+            if (isFieldBlank(customModelData))
+                customModelData = other.customModelData;
+
+            return this;
+        }
     }
 }

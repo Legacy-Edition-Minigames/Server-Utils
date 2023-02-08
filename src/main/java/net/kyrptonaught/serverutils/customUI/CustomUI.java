@@ -94,7 +94,7 @@ public class CustomUI extends Module {
 
 
     private static ScreenConfig.SlotDefinition getSlotDefinition(ScreenConfig.SlotDefinition slotDefinition) {
-        if (slotDefinition.presetID != null) return slotPresets.get(slotDefinition.presetID);
+        if (slotDefinition.presetID != null) return slotDefinition.copyFrom(slotPresets.get(slotDefinition.presetID));
         return slotDefinition;
     }
 
@@ -148,7 +148,7 @@ public class CustomUI extends Module {
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("showCustomScreen")
                 .requires((source) -> source.hasPermissionLevel(2))
-                .then(CommandManager.argument("screenID", StringArgumentType.word())
+                .then(CommandManager.argument("screenID", StringArgumentType.greedyString())
                         .suggests((context, builder) -> {
                             screens.keySet().forEach(builder::suggest);
                             return builder.buildFuture();

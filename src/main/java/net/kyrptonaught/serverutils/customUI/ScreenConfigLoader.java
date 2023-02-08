@@ -33,19 +33,24 @@ public class ScreenConfigLoader implements SimpleSynchronousResourceReloadListen
                         continue;
                     }
 
-                    String screenID = getRawFileName(id.getPath());
-                    if (id.getPath().contains("definitions"))
+                    String screenID = getID(id.getPath(), "definitions");
+                    if (screenID != null) {
                         CustomUI.addPresets(screenID, screenConfig);
-                    else if (id.getPath().contains("screens"))
+                        continue;
+                    }
+                    screenID = getID(id.getPath(), "screens");
+                    if (screenID != null) {
                         CustomUI.addScreen(screenID, screenConfig);
-
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
         }
     }
 
-    private static String getRawFileName(String fileName) {
-        return fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf("."));
+    private static String getID(String filename, String path) {
+        int index = filename.indexOf(path);
+        if (index == -1) return null;
+        return filename.substring(index + path.length() + 1, filename.lastIndexOf("."));
     }
 }
