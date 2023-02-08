@@ -21,10 +21,8 @@ public class ScreenConfigLoader implements SimpleSynchronousResourceReloadListen
     @Override
     public void reload(ResourceManager manager) {
         CustomUI.reload();
-
         Map<Identifier, Resource> resources = manager.findResources(ID.getPath(), (identifier) -> identifier.getPath().endsWith(".json") || identifier.getPath().endsWith(".json5"));
         for (Identifier id : resources.keySet()) {
-            if (id.getNamespace().equals(ID.getNamespace()))
                 try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
 
                     ScreenConfig screenConfig = ServerUtilsMod.getGson().fromJson(reader, ScreenConfig.class);
