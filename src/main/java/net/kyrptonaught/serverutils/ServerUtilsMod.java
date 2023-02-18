@@ -13,6 +13,7 @@ import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.cpslimiter.CPSLimiter;
 import net.kyrptonaught.serverutils.critBlocker.CritBlockerMod;
 import net.kyrptonaught.serverutils.customUI.CustomUI;
+import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
@@ -73,6 +74,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module critBlockerModule = registerModule("critblocker", new CritBlockerMod());
     public static Module CustomUIModule = registerModule("customui", new CustomUI());
     public static Module ServerTranslatorModule = registerModule("servertranslator", new ServerTranslator());
+    public static Module CustomWorldBorder = registerModule("customworldborder", new CustomWorldBorderMod());
 
     @Override
     public void onInitialize() {

@@ -19,6 +19,7 @@
       "net.kyrptonaught.serverutils.ServerUtilsMod"
     ]
   },
+  "accessWidener": "serverutils.accesswidener",
   "mixins": [
     {
       "config": "serverutils.mixins.json",

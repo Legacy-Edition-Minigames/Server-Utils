@@ -158,9 +158,6 @@ public class CustomUI extends Module {
     @Override
     public void onInitialize() {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ScreenConfigLoader());
-        System.out.println(expandSlotString("15"));
-        System.out.println(expandSlotString("15-20"));
-        System.out.println(expandSlotString("15,16,1,80"));
     }
 
     @Override
