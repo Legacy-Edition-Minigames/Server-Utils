@@ -23,26 +23,26 @@ public class ScreenConfigLoader implements SimpleSynchronousResourceReloadListen
         CustomUI.reload();
         Map<Identifier, Resource> resources = manager.findResources(ID.getPath(), (identifier) -> identifier.getPath().endsWith(".json") || identifier.getPath().endsWith(".json5"));
         for (Identifier id : resources.keySet()) {
-                try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
+            try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
 
-                    ScreenConfig screenConfig = ServerUtilsMod.getGson().fromJson(reader, ScreenConfig.class);
-                    if (screenConfig == null) {
-                        System.out.println(ID + " - Error parsing file: " + id);
-                        continue;
-                    }
-
-                    String screenID = getID(id, "definitions");
-                    if (screenID != null) {
-                        CustomUI.addPresets(screenID, screenConfig);
-                        continue;
-                    }
-                    screenID = getID(id, "screens");
-                    if (screenID != null) {
-                        CustomUI.addScreen(screenID, screenConfig);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                ScreenConfig screenConfig = ServerUtilsMod.getGson().fromJson(reader, ScreenConfig.class);
+                if (screenConfig == null) {
+                    System.out.println(ID + " - Error parsing file: " + id);
+                    continue;
                 }
+
+                String screenID = getID(id, "definitions");
+                if (screenID != null) {
+                    CustomUI.addPresets(screenID, screenConfig);
+                    continue;
+                }
+                screenID = getID(id, "screens");
+                if (screenID != null) {
+                    CustomUI.addScreen(screenID, screenConfig);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

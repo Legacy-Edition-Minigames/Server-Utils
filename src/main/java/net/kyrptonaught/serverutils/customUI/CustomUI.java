@@ -157,7 +157,8 @@ public class CustomUI extends Module {
                         })
                         .executes(context -> {
                             ServerPlayerEntity player = context.getSource().getPlayer();
-                            if (screenHistory.containsKey(player.getUuid())) screenHistory.get(player.getUuid()).clear();
+                            if (screenHistory.containsKey(player.getUuid()))
+                                screenHistory.get(player.getUuid()).clear();
 
                             String screenID = StringArgumentType.getString(context, "screenID");
                             showScreenFor(screenID, player);

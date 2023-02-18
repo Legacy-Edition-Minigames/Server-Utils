@@ -31,7 +31,7 @@ public class BrandBlocker extends ModuleWConfig<BrandBlockerConfig> {
     }
 
     public static void kickVelocity(ServerPlayerEntity player, ClientConnection connection, Text msg) {
-        VelocityProxyHelper.kickVelocity(player,msg);
+        VelocityProxyHelper.kickVelocity(player, msg);
     }
 
     public static void kickMC(ServerPlayerEntity player, ClientConnection connection, Text msg) {

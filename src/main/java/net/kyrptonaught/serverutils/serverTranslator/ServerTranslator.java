@@ -3,7 +3,6 @@ package net.kyrptonaught.serverutils.serverTranslator;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.kyrptonaught.serverutils.Module;
-import net.kyrptonaught.serverutils.customUI.ScreenConfigLoader;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
