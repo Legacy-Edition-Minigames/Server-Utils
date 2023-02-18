@@ -24,10 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 
 public class CustomUI extends Module {
     private static final HashMap<String, ScreenConfig> screens = new HashMap<>();
@@ -47,7 +44,7 @@ public class CustomUI extends Module {
             }
         };
         gui.setTitle(getAsText(config.title));
-        for (Integer slot : config.slots.keySet()) {
+        for (String slot : config.slots.keySet()) {
             ScreenConfig.SlotDefinition slotDefinition = getSlotDefinition(config.slots.get(slot));
 
             ItemStack itemStack = Registry.ITEM.get(new Identifier(slotDefinition.itemID)).getDefaultStack();
@@ -70,13 +67,13 @@ public class CustomUI extends Module {
 
             if (slotDefinition.displayName != null)
                 itemStack.setCustomName(getAsText(slotDefinition.displayName));
-
-            gui.setSlot(slot, GuiElementBuilder.from(itemStack)
-                    .setCallback((index, type, action) -> {
-                        if (type.isLeft) handleClick(player, slotDefinition.leftClickAction);
-                        if (type.isRight) handleClick(player, slotDefinition.rightClickAction);
-                    })
-            );
+            for (Integer slotNum : expandSlotString(slot))
+                gui.setSlot(slotNum, GuiElementBuilder.from(itemStack)
+                        .setCallback((index, type, action) -> {
+                            if (type.isLeft) handleClick(player, slotDefinition.leftClickAction);
+                            if (type.isRight) handleClick(player, slotDefinition.rightClickAction);
+                        })
+                );
         }
         if (!screenHistory.containsKey(player.getUuid())) screenHistory.put(player.getUuid(), new Stack<>());
         screenHistory.get(player.getUuid()).push(screen);
@@ -96,6 +93,23 @@ public class CustomUI extends Module {
     private static ScreenConfig.SlotDefinition getSlotDefinition(ScreenConfig.SlotDefinition slotDefinition) {
         if (slotDefinition.presetID != null) return slotDefinition.copyFrom(slotPresets.get(slotDefinition.presetID));
         return slotDefinition;
+    }
+
+    private static List<Integer> expandSlotString(String slot) {
+        if (slot.contains("-")) {
+            int start = Integer.parseInt(slot.substring(0, slot.indexOf("-")));
+            int end = Integer.parseInt(slot.substring(slot.indexOf("-") + 1));
+
+            List<Integer> slots = new ArrayList<>();
+            while (start <= end)
+                slots.add(start++);
+            return slots;
+        }
+        if (slot.contains(",")) {
+            return Arrays.stream(slot.split(",")).map(Integer::parseInt).toList();
+        }
+
+        return List.of(Integer.parseInt(slot));
     }
 
     private static void handleClick(ServerPlayerEntity player, String action) {
@@ -144,6 +158,9 @@ public class CustomUI extends Module {
     @Override
     public void onInitialize() {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ScreenConfigLoader());
+        System.out.println(expandSlotString("15"));
+        System.out.println(expandSlotString("15-20"));
+        System.out.println(expandSlotString("15,16,1,80"));
     }
 
     @Override

@@ -11,7 +11,7 @@ public class ScreenConfig extends AbstractConfigFile {
 
     public HashMap<String, SlotDefinition> presets = new HashMap<>();
 
-    public HashMap<Integer, SlotDefinition> slots = new HashMap<>();
+    public HashMap<String, SlotDefinition> slots = new HashMap<>();
 
 
     public static class SlotDefinition {
