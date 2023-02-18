@@ -9,8 +9,8 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
-import net.kyrptonaught.serverutils.serverTranslator.TranslationStorage;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
@@ -113,6 +113,8 @@ public class CustomUI extends Module {
             player.closeHandledScreen();
         } else if (action.startsWith("back/")) {
             showLastScreen(player);
+        } else if (action.startsWith("kick/")) {
+            VelocityProxyHelper.kickVelocity(player, cmd);
         }
     }
 
