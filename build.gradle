@@ -54,6 +54,10 @@ dependencies {
 	modImplementation('carpet:fabric-carpet:1.19.2-1.4.84+v221018') { exclude group: "net.fabricmc.fabric-api" }
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/serverutils.accesswidener")
+}
+
 processResources {
 	inputs.property "version", project.version
 
