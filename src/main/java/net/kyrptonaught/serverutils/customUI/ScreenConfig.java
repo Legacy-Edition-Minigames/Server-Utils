@@ -21,7 +21,8 @@ public class ScreenConfig extends AbstractConfigFile {
         public String displayName;
         public String leftClickAction;
         public String rightClickAction;
-
+        public String leftClickSound;
+        public String rightClickSound;
         public String presetID;
 
         public String customModelData;
@@ -45,6 +46,12 @@ public class ScreenConfig extends AbstractConfigFile {
 
             if (isFieldBlank(rightClickAction))
                 rightClickAction = other.rightClickAction;
+
+            if (isFieldBlank(leftClickSound))
+                leftClickSound = other.leftClickSound;
+
+            if (isFieldBlank(rightClickSound))
+                rightClickSound = other.rightClickSound;
 
             if (isFieldBlank(presetID))
                 presetID = other.presetID;

@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -31,9 +32,7 @@ public class TakeEverythingHelper {
                 player.currentScreenHandler.onSlotClick(i, 0, SlotActionType.QUICK_MOVE, player);
             }
         }
-
-        player.playerScreenHandler.updateToClient();
-        player.playSound(new SoundEvent(new Identifier("serverutils:takeeverything")), SoundCategory.PLAYERS, 1, 1);
+        player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier("serverutils:takeeverything"), SoundCategory.MASTER, player.getPos(), 1, 1, player.getRandom().nextLong()));
         return true;
     }
 

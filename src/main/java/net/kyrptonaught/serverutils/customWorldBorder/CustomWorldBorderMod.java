@@ -2,8 +2,6 @@ package net.kyrptonaught.serverutils.customWorldBorder;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.kyrptonaught.serverutils.Module;
-import net.kyrptonaught.serverutils.customWorldBorder.duckInterface.CustomWorldBorder;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -13,6 +11,7 @@ public class CustomWorldBorderMod extends Module {
 
     @Override
     public void onInitialize() {
+        CustomWorldBorderManager.init();
         CustomWorldBorderManager.tickPlayers();
     }
 

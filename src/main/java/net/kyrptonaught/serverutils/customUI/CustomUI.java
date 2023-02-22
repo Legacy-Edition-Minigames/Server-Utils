@@ -14,12 +14,14 @@ import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -70,8 +72,8 @@ public class CustomUI extends Module {
             for (Integer slotNum : expandSlotString(slot))
                 gui.setSlot(slotNum, GuiElementBuilder.from(itemStack)
                         .setCallback((index, type, action) -> {
-                            if (type.isLeft) handleClick(player, slotDefinition.leftClickAction);
-                            if (type.isRight) handleClick(player, slotDefinition.rightClickAction);
+                            if (type.isLeft) handleClick(player, slotDefinition.leftClickAction, slotDefinition.leftClickSound);
+                            if (type.isRight) handleClick(player, slotDefinition.rightClickAction, slotDefinition.rightClickSound);
                         })
                 );
         }
@@ -117,7 +119,8 @@ public class CustomUI extends Module {
         return List.of(Integer.parseInt(slot));
     }
 
-    private static void handleClick(ServerPlayerEntity player, String action) {
+    private static void handleClick(ServerPlayerEntity player, String action, String soundID) {
+        if (soundID != null) player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundID), SoundCategory.MASTER, player.getPos(), 1, 1, player.getRandom().nextLong()));
         if (action == null) return;
 
         String cmd = action.substring(action.indexOf("/") + 1).trim();

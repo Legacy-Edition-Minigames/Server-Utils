@@ -16,7 +16,7 @@ import java.util.UUID;
 public class CustomWorldBorderManager {
     public static HashMap<UUID, SyncedBorder> playerBorders = new HashMap<>();
 
-    private static double xCenter, zCenter;
+    private static double xCenter = 0, zCenter = 0;
     private static double xSize, zSize;
     private static double maxSize, maxY;
 
@@ -24,6 +24,11 @@ public class CustomWorldBorderManager {
     private static final WorldBorder q2Border = new WorldBorder();
     private static final WorldBorder q3Border = new WorldBorder();
     private static final WorldBorder q4Border = new WorldBorder();
+
+    public static void init() {
+        maxSize = zSize = xSize = 5.9999968E7;
+        maxY = Double.MAX_VALUE;
+    }
 
     public static void setCustomWorldBorder(ServerWorld world, BlockPos min, BlockPos max) {
         double minX = Math.min(min.getX(), max.getX());
