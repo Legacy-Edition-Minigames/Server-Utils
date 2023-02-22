@@ -12,6 +12,11 @@ import net.minecraft.util.math.BlockPos;
 public class CustomWorldBorderMod extends Module {
 
     @Override
+    public void onInitialize() {
+        CustomWorldBorderManager.tickPlayers();
+    }
+
+    @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         //libertalia /customWorldBorder -77 0 130 40 52 260
         dispatcher.register(CommandManager.literal("customWorldBorder")
@@ -21,8 +26,7 @@ public class CustomWorldBorderMod extends Module {
                             BlockPos min = BlockPosArgumentType.getBlockPos(context, "min");
                             BlockPos max = BlockPosArgumentType.getBlockPos(context, "max");
 
-                            ((CustomWorldBorder) context.getSource().getWorld().getWorldBorder()).setShape(min, max);
-                            ((CustomWorldBorder) MinecraftClient.getInstance().world.getWorldBorder()).setShape(min, max);
+                            CustomWorldBorderManager.setCustomWorldBorder(context.getSource().getWorld(), min, max);
                             return 1;
                         }))));
     }

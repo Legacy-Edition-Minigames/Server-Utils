@@ -7,8 +7,8 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderStage;
 
 public class CustomWorldBorderArea implements WorldBorder.Area {
-    private WorldBorder worldBorder;
-    private double xSize, zSize;
+    private final WorldBorder worldBorder;
+    private final double xSize, zSize;
 
     public CustomWorldBorderArea(WorldBorder worldBorder, double xSize, double zSize) {
         this.worldBorder = worldBorder;
@@ -64,12 +64,10 @@ public class CustomWorldBorderArea implements WorldBorder.Area {
 
     @Override
     public void onMaxRadiusChanged() {
-
     }
 
     @Override
     public void onCenterChanged() {
-
     }
 
     @Override
