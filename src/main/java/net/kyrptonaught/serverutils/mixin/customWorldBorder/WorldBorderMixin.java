@@ -17,11 +17,16 @@ import java.util.List;
 @Mixin(WorldBorder.class)
 public abstract class WorldBorderMixin implements CustomWorldBorder {
 
+    private boolean vanillaSyncing = true;
+
     @Shadow
     private WorldBorder.Area area;
 
     @Shadow
     public abstract void setCenter(double x, double z);
+
+    @Shadow
+    public abstract void setSize(double size);
 
     @Override
     public void setShape(double xCenter, double zCenter, double xSize, double zSize) {
@@ -29,13 +34,24 @@ public abstract class WorldBorderMixin implements CustomWorldBorder {
         this.area = new CustomWorldBorderArea((WorldBorder) (Object) this, xSize, zSize);
     }
 
+    @Override
+    public void setShape(double xCenter, double zCenter, double size) {
+        setCenter(xCenter, zCenter);
+        setSize(size);
+    }
+
+    @Override
+    public void enableVanillaSyncing(boolean syncing) {
+        vanillaSyncing = syncing;
+    }
+
     @Inject(method = "setSize", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/border/WorldBorder;getListeners()Ljava/util/List;"), cancellable = true)
     public void DontUpdateSize(double size, CallbackInfo ci) {
-        ci.cancel();
+        if (!vanillaSyncing) ci.cancel();
     }
 
     @Inject(method = "setCenter", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/border/WorldBorder;getListeners()Ljava/util/List;"), cancellable = true)
     public void DontUpdateCenter(double x, double z, CallbackInfo ci) {
-        ci.cancel();
+        if (!vanillaSyncing) ci.cancel();
     }
 }
