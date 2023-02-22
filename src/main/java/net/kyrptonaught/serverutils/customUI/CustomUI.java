@@ -75,7 +75,12 @@ public class CustomUI extends Module {
                         })
                 );
         }
-        if (!screenHistory.containsKey(player.getUuid())) screenHistory.put(player.getUuid(), new Stack<>());
+        if (!screenHistory.containsKey(player.getUuid()))
+            screenHistory.put(player.getUuid(), new Stack<>());
+
+        if (config.replaceOpenScreen)
+            screenHistory.get(player.getUuid()).pop();
+
         screenHistory.get(player.getUuid()).push(screen);
         gui.open();
     }

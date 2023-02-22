@@ -8,6 +8,7 @@ public class ScreenConfig extends AbstractConfigFile {
     public String title;
 
     public boolean escToClose = true;
+    public boolean replaceOpenScreen = false;
 
     public HashMap<String, SlotDefinition> presets = new HashMap<>();
 
