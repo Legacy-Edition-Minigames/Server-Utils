@@ -40,6 +40,7 @@ public class CustomUI extends Module {
         SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_9X6, player, true) {
             @Override
             public void onClose() {
+                playSound(player, config.escSound);
                 if (screenHistory.get(player.getUuid()).size() < 2 && !config.escToClose)
                     showScreenFor(screen, player);
                 else showLastScreen(player);
@@ -72,16 +73,16 @@ public class CustomUI extends Module {
             for (Integer slotNum : expandSlotString(slot))
                 gui.setSlot(slotNum, GuiElementBuilder.from(itemStack)
                         .setCallback((index, type, action) -> {
-                            if (type.isLeft) handleClick(player, slotDefinition.leftClickAction, slotDefinition.leftClickSound);
-                            if (type.isRight) handleClick(player, slotDefinition.rightClickAction, slotDefinition.rightClickSound);
+                            if (type.isLeft)
+                                handleClick(player, slotDefinition.leftClickAction, slotDefinition.leftClickSound, slotDefinition);
+                            if (type.isRight)
+                                handleClick(player, slotDefinition.rightClickAction, slotDefinition.rightClickSound, slotDefinition);
                         })
                 );
         }
+
         if (!screenHistory.containsKey(player.getUuid()))
             screenHistory.put(player.getUuid(), new Stack<>());
-
-        if (config.replaceOpenScreen)
-            screenHistory.get(player.getUuid()).pop();
 
         screenHistory.get(player.getUuid()).push(screen);
         gui.open();
@@ -119,8 +120,8 @@ public class CustomUI extends Module {
         return List.of(Integer.parseInt(slot));
     }
 
-    private static void handleClick(ServerPlayerEntity player, String action, String soundID) {
-        if (soundID != null) player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundID), SoundCategory.MASTER, player.getPos(), 1, 1, player.getRandom().nextLong()));
+    private static void handleClick(ServerPlayerEntity player, String action, String soundID, ScreenConfig.SlotDefinition slot) {
+        playSound(player, soundID);
         if (action == null) return;
 
         String cmd = action.substring(action.indexOf("/") + 1).trim();
@@ -130,6 +131,8 @@ public class CustomUI extends Module {
             CommandFunctionManager functionManager = player.getServer().getCommandFunctionManager();
             functionManager.getFunction(new Identifier(cmd)).ifPresent(commandFunction -> functionManager.execute(commandFunction, player.getServer().getCommandSource().withLevel(2).withSilent()));
         } else if (action.startsWith("openUI/")) {
+            if (slot.replaceOpenScreen && screenHistory.get(player.getUuid()).size() > 0)
+                screenHistory.get(player.getUuid()).pop();
             showScreenFor(cmd, player);
         } else if (action.startsWith("close/")) {
             player.closeHandledScreen();
@@ -146,6 +149,12 @@ public class CustomUI extends Module {
         } catch (JsonParseException var4) {
             return Text.literal(text);
         }
+    }
+
+    private static void playSound(ServerPlayerEntity player, String soundID) {
+        if (soundID != null)
+            player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundID), SoundCategory.MASTER, player.getPos(), 1, 1, player.getRandom().nextLong()));
+
     }
 
     public static void addScreen(String screenID, ScreenConfig screenConfig) {

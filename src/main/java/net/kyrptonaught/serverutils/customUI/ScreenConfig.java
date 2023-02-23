@@ -8,7 +8,7 @@ public class ScreenConfig extends AbstractConfigFile {
     public String title;
 
     public boolean escToClose = true;
-    public boolean replaceOpenScreen = false;
+    public String escSound;
 
     public HashMap<String, SlotDefinition> presets = new HashMap<>();
 
@@ -25,6 +25,7 @@ public class ScreenConfig extends AbstractConfigFile {
         public String rightClickSound;
         public String presetID;
 
+        public boolean replaceOpenScreen = false;
         public String customModelData;
 
         public boolean isFieldBlank(String field) {
@@ -59,6 +60,7 @@ public class ScreenConfig extends AbstractConfigFile {
             if (isFieldBlank(customModelData))
                 customModelData = other.customModelData;
 
+            replaceOpenScreen = other.replaceOpenScreen;
             return this;
         }
     }
