@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
@@ -85,6 +86,7 @@ public class DimensionLoaderMod extends Module {
             if (holder.scheduledDelete()) {
                 if (holder.deleteFinished(fantasy)) {
                     holder.executeFunctions(server);
+                    CustomWorldBorderMod.onDimensionUnload(holder.world.asWorld());
                     it.remove();
                 }
             } else if (!holder.wasRegistered()) {

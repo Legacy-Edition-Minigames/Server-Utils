@@ -2,20 +2,20 @@ package net.kyrptonaught.serverutils.customWorldBorder;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.Module;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.command.argument.BlockPosArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.PersistentStateManager;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
+import java.util.HashMap;
+
 public class CustomWorldBorderMod extends Module {
+
+    private static final HashMap<RegistryKey<World>, CustomWorldBorderManager> customWorldBorders = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -35,6 +35,10 @@ public class CustomWorldBorderMod extends Module {
         });
     }
 
+    public static void onDimensionUnload(ServerWorld world) {
+        customWorldBorders.remove(world.getRegistryKey());
+    }
+
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         //libertalia /customWorldBorder -77 0 130 40 52 260
@@ -42,8 +46,9 @@ public class CustomWorldBorderMod extends Module {
     }
 
     public static CustomWorldBorderManager getCustomWorldBorderManager(ServerWorld world) {
-        PersistentStateManager stateMan = world.getPersistentStateManager();
-        String id = ServerUtilsMod.CustomWorldBorder.getMOD_ID();
-        return ((CustomWorldBorderStorage) stateMan.getOrCreate((nbt) -> CustomWorldBorderStorage.fromNbt(world, nbt), CustomWorldBorderStorage::new, id)).getCustomWorldBorderManager();
+        if (!customWorldBorders.containsKey(world.getRegistryKey()))
+            customWorldBorders.put(world.getRegistryKey(), new CustomWorldBorderManager());
+
+        return customWorldBorders.get(world.getRegistryKey());
     }
 }

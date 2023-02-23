@@ -6,6 +6,4 @@ public interface CustomWorldBorder {
 
     void setShape(double xCenter, double zCenter, double size);
 
-
-    void enableVanillaSyncing(boolean syncing);
 }
