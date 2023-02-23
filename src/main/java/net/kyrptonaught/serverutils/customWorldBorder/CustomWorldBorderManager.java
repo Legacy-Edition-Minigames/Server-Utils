@@ -41,8 +41,8 @@ public class CustomWorldBorderManager {
         maxY = Math.max(min.getY(), max.getY()) + 1;
         xSize = (maxX - minX) / 2D;
         zSize = (maxZ - minZ) / 2D;
-        xCenter = min.getX() + xSize;
-        zCenter = min.getZ() + zSize;
+        xCenter = minX + xSize;
+        zCenter = minZ + zSize;
 
         setCustomWorldBorder(world, true, xCenter, zCenter, xSize, zSize, maxY);
     }
