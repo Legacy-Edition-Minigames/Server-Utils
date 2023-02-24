@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.customWorldBorder;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.Module;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,6 +28,10 @@ public class CustomWorldBorderMod extends Module {
             for (ServerPlayerEntity player : world.getPlayers()) {
                 worldBorderManager.tickPlayer(player, mainBorder);
             }
+        });
+
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            getCustomWorldBorderManager(newPlayer.getWorld()).playerBorders.remove(newPlayer.getUuid());
         });
 
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
