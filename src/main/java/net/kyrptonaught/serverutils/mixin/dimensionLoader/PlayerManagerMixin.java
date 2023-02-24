@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 
 import java.util.Optional;
 import java.util.Set;
@@ -31,23 +30,22 @@ import java.util.Set;
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
 
-    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getDimensionKey()Lnet/minecraft/util/registry/RegistryKey;"))
-    public RegistryKey<DimensionType> respawnSpoofDim(World instance) {
-        return DimensionLoaderMod.tryGetDimKey((ServerWorld) instance);
+    @Shadow @Final private MinecraftServer server;
+
+    @Redirect(method = "respawnPlayer", at = @At(value = "NEW", target = "net/minecraft/network/packet/s2c/play/PlayerRespawnS2CPacket"))
+    public PlayerRespawnS2CPacket mtwSpoofDim(RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimension, long sha256Seed, GameMode gameMode, GameMode previousGameMode, boolean debugWorld, boolean flatWorld, boolean keepPlayerAttributes, Optional<GlobalPos> lastDeathPos, ServerPlayerEntity player, boolean alive) {
+        BlockPos blockPos = player.getSpawnPointPosition();
+        ServerWorld target = this.server.getWorld(player.getSpawnPointDimension());
+        Optional<Vec3d> optional = target != null && blockPos != null ? PlayerEntity.findRespawnPosition(target, blockPos, player.getSpawnAngle(), player.isSpawnForced(), alive) : Optional.empty();
+        target = target != null && optional.isPresent() ? target : this.server.getOverworld();
+
+        return new PlayerRespawnS2CPacket(DimensionLoaderMod.tryGetDimKey(target), DimensionLoaderMod.tryGetWorldKey(target), sha256Seed, gameMode, previousGameMode, debugWorld, flatWorld, keepPlayerAttributes, lastDeathPos);
     }
 
-    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getRegistryKey()Lnet/minecraft/util/registry/RegistryKey;"))
-    public RegistryKey<World> respawnSpoofWorld(World instance) {
-        return DimensionLoaderMod.tryGetWorldKey((ServerWorld) instance);
-    }
 
-    @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getDimensionKey()Lnet/minecraft/util/registry/RegistryKey;"))
-    public RegistryKey<DimensionType> connectSpoofDim(ServerWorld instance) {
-        return DimensionLoaderMod.tryGetDimKey(instance);
-    }
-
-    @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/util/registry/RegistryKey;"))
-    public RegistryKey<World> connectSpoofWorld(ServerWorld instance) {
-        return DimensionLoaderMod.tryGetWorldKey(instance);
+    @Redirect(method = "onPlayerConnect", at = @At(value = "NEW", target = "net/minecraft/network/packet/s2c/play/GameJoinS2CPacket"))
+    public GameJoinS2CPacket mtwSpoofDim(int playerEntityId, boolean hardcore, GameMode gameMode, @Nullable GameMode previousGameMode, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Immutable registryManager, RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimensionId, long sha256Seed, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld, Optional<GlobalPos> lastDeathLocation, ClientConnection connection, ServerPlayerEntity player) {
+        ServerWorld target = player.getWorld();
+        return new GameJoinS2CPacket(playerEntityId, hardcore, gameMode, previousGameMode, dimensionIds, registryManager, DimensionLoaderMod.tryGetDimKey(target), DimensionLoaderMod.tryGetWorldKey(target), sha256Seed, maxPlayers, viewDistance, simulationDistance, reducedDebugInfo, showDeathScreen, debugWorld, flatWorld, lastDeathLocation);
     }
 }
