@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.command.CommandManager;
@@ -85,6 +86,12 @@ public class CustomUI extends Module {
             screenHistory.put(player.getUuid(), new Stack<>());
 
         screenHistory.get(player.getUuid()).push(screen);
+
+        if (config.forceHotBarSlot > -1) {
+            player.getInventory().selectedSlot = config.forceHotBarSlot;
+            player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(config.forceHotBarSlot));
+        }
+
         gui.open();
     }
 
@@ -179,21 +186,29 @@ public class CustomUI extends Module {
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+        var arg = CommandManager.argument("screenID", StringArgumentType.greedyString())
+                .suggests((context, builder) -> {
+                    screens.keySet().forEach(builder::suggest);
+                    return builder.buildFuture();
+                });
+
         dispatcher.register(CommandManager.literal("showCustomScreen")
                 .requires((source) -> source.hasPermissionLevel(2))
-                .then(CommandManager.argument("screenID", StringArgumentType.greedyString())
-                        .suggests((context, builder) -> {
-                            screens.keySet().forEach(builder::suggest);
-                            return builder.buildFuture();
-                        })
-                        .executes(context -> {
+                .then(CommandManager.literal("append")
+                        .then(arg.executes(context -> {
                             ServerPlayerEntity player = context.getSource().getPlayer();
-                            if (screenHistory.containsKey(player.getUuid()))
-                                screenHistory.get(player.getUuid()).clear();
-
                             String screenID = StringArgumentType.getString(context, "screenID");
                             showScreenFor(screenID, player);
                             return 1;
-                        })));
+                        })))
+                .then(arg.executes(context -> {
+                    ServerPlayerEntity player = context.getSource().getPlayer();
+                    if (screenHistory.containsKey(player.getUuid()))
+                        screenHistory.get(player.getUuid()).clear();
+
+                    String screenID = StringArgumentType.getString(context, "screenID");
+                    showScreenFor(screenID, player);
+                    return 1;
+                })));
     }
 }

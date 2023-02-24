@@ -10,6 +10,8 @@ public class ScreenConfig extends AbstractConfigFile {
     public boolean escToClose = true;
     public String escSound;
 
+    public int forceHotBarSlot = -1;
+
     public HashMap<String, SlotDefinition> presets = new HashMap<>();
 
     public HashMap<String, SlotDefinition> slots = new HashMap<>();
