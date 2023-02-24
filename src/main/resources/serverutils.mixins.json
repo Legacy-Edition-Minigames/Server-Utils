@@ -16,6 +16,8 @@
     "critBlocker.PlayerEntityMixin",
     "customWorldBorder.PlayerManagerMixin",
     "customWorldBorder.WorldBorderMixin",
+    "dimensionLoader.PlayerManagerMixin",
+    "dimensionLoader.ServerPlayerEntityMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
     "personatus.FixLuckPermsMixin",
     "personatus.GameProfileMixin",

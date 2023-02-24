@@ -9,11 +9,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -74,6 +77,20 @@ public class DimensionLoaderMod extends Module {
         if (loadedWorlds.containsKey(dimID))
             dimID = loadedWorlds.get(dimID).copyFromID;
         return Text.translatable("key.world." + dimID.toTranslationKey());
+    }
+
+    public static RegistryKey<World> tryGetWorldKey(ServerWorld world) {
+        RegistryKey<World> ogKey = world.getRegistryKey();
+        if (loadedWorlds.containsKey(ogKey.getValue()))
+            return RegistryKey.of(Registry.WORLD_KEY, loadedWorlds.get(ogKey.getValue()).copyFromID);
+        return ogKey;
+    }
+
+    public static RegistryKey<DimensionType> tryGetDimKey(ServerWorld world) {
+        RegistryKey<World> ogKey = world.getRegistryKey();
+        if (loadedWorlds.containsKey(ogKey.getValue()))
+            return RegistryKey.of(Registry.DIMENSION_TYPE_KEY, loadedWorlds.get(ogKey.getValue()).copyFromID);
+        return world.getDimensionKey();
     }
 
     public static void serverTickWorldAdd(MinecraftServer server) {
