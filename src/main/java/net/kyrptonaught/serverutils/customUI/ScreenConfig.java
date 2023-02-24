@@ -27,8 +27,12 @@ public class ScreenConfig extends AbstractConfigFile {
         public String rightClickSound;
         public String presetID;
 
-        public boolean replaceOpenScreen = false;
+        public Boolean replaceOpenScreen;
         public String customModelData;
+
+        public boolean replaceOpenScreen() {
+            return replaceOpenScreen != null && replaceOpenScreen;
+        }
 
         public boolean isFieldBlank(String field) {
             return field == null || field.isEmpty() || field.isBlank();
@@ -62,7 +66,8 @@ public class ScreenConfig extends AbstractConfigFile {
             if (isFieldBlank(customModelData))
                 customModelData = other.customModelData;
 
-            replaceOpenScreen = other.replaceOpenScreen;
+            if (replaceOpenScreen == null)
+                replaceOpenScreen = other.replaceOpenScreen;
             return this;
         }
     }
