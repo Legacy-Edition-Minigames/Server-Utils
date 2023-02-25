@@ -16,6 +16,7 @@ import net.kyrptonaught.serverutils.customUI.CustomUI;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
+import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
@@ -75,6 +76,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module CustomUIModule = registerModule("customui", new CustomUI());
     public static Module ServerTranslatorModule = registerModule("servertranslator", new ServerTranslator());
     public static Module CustomWorldBorder = registerModule("customworldborder", new CustomWorldBorderMod());
+    public static Module DiscordBridgeModule = registerModule("discordbridge", new DiscordBridgeMod());
 
     @Override
     public void onInitialize() {

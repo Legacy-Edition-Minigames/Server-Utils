@@ -30,7 +30,7 @@ dependencies {
 	}
 
 	//SGui
-	modImplementation include("eu.pb4:sgui:1.1.5+1.19.1"){ exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include("eu.pb4:sgui:1.1.5+1.19.1") { exclude group: "net.fabricmc.fabric-api" }
 
 	//Modified Fantasy
 	modImplementation include('xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2') { exclude group: "net.fabricmc.fabric-api" }
@@ -52,6 +52,13 @@ dependencies {
 
 	//carpet
 	modImplementation('carpet:fabric-carpet:1.19.2-1.4.84+v221018') { exclude group: "net.fabricmc.fabric-api" }
+
+	//NoChatReports
+	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.19.2-v1.13.12') { exclude group: "net.fabricmc.fabric-api" }
+
+	//Discord Bridge
+	implementation include("net.dv8tion:JDA:5.0.0-beta.4") { exclude module: 'opus-java' }
+	implementation include("club.minnced:discord-webhooks:0.8.2")
 }
 
 loom {
