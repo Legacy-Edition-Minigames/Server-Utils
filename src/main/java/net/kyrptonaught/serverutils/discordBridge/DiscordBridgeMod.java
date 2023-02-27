@@ -6,11 +6,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     public static BridgeBot bot;
@@ -45,6 +48,13 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
             bot.sendMessage(getConfig().GameMessageName, getConfig().GameMessageAvatarURL, message);
     }
 
+    public static void sendToAll(MinecraftServer server, Text message) {
+        server.sendMessage(message);
+        for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
+            serverPlayerEntity.sendMessage(message, false);
+        }
+    }
+
     public String getUserHeadURL(ServerPlayerEntity player) {
         return getConfig().PlayerSkinURL
                 .replace("%PLAYERNAME%", player.getGameProfile().getName())
@@ -54,6 +64,9 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     public void buildBot(MinecraftServer server, DiscordBridgeConfig config) {
         JDA jda = JDABuilder.createLight(config.BotToken)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+                .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .setChunkingFilter(ChunkingFilter.ALL)
                 .setActivity(Activity.playing(config.PlayingStatus))
                 .build();
 

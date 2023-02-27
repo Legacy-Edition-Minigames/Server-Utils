@@ -11,11 +11,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
 import java.util.HashMap;
@@ -54,45 +50,49 @@ public class BridgeBot extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (!event.isWebhookMessage() && event.getChannel().getId().equals(channelID)) {
-            HashMap<String, String> replacementURLs = new HashMap<>();
-            for (MessageEmbed embed : event.getMessage().getEmbeds()) {
-                replacementURLs.put(embed.getUrl(), embed.getUrl());
+            if (event.getMessage().getReferencedMessage() != null) {
+                parseMessage(event.getMessage().getReferencedMessage(), Text.literal("    ┌──── ").formatted(Formatting.GRAY));
             }
 
-            for (Message.Attachment attachment : event.getMessage().getAttachments()) {
-                replacementURLs.put(attachment.getFileName(), attachment.getUrl());
-            }
-
-            MutableText message = Text.literal("[" + event.getAuthor().getName() + "]: ");
-            for (String str : event.getMessage().getContentDisplay().split(" ")) {
-                message.append(parseText(str, replacementURLs));
-            }
-
-            if (replacementURLs.size() > 0) {
-                Iterator<String> iterator = replacementURLs.keySet().iterator();
-                message.append("<");
-                while (iterator.hasNext()) {
-                    String str = iterator.next();
-                    message.append(Text.literal(str + (iterator.hasNext() ? ", " : "")).setStyle(styleURL(replacementURLs.get(str))));
-                }
-                message.append(">");
-            }
-
-            this.server.sendMessage(message);
-            for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
-                serverPlayerEntity.sendMessage(message, false);
-            }
+            parseMessage(event.getMessage(), Text.literal("[Discord] ").formatted(Formatting.BLUE));
         }
     }
 
-    public Text parseText(String text, HashMap<String,String> replacementURLs) {
+    public void parseMessage(Message discordMessage, MutableText prefix) {
+        HashMap<String, String> replacementURLs = new HashMap<>();
+
+        for (MessageEmbed embed : discordMessage.getEmbeds())
+            replacementURLs.put(embed.getUrl(), embed.getUrl());
+        for (Message.Attachment attachment : discordMessage.getAttachments())
+            replacementURLs.put(attachment.getFileName(), attachment.getUrl());
+
+        int color = discordMessage.getMember().getColorRaw();
+        MutableText message = Text.literal("").append(prefix).append(Text.literal("<" + discordMessage.getAuthor().getName() + "> ").styled(style -> style.withColor(color)));
+        for (String str : discordMessage.getContentDisplay().split(" ")) {
+            message.append(parseText(str, replacementURLs));
+        }
+
+        if (replacementURLs.size() > 0) {
+            Iterator<String> iterator = replacementURLs.keySet().iterator();
+            message.append("{");
+            while (iterator.hasNext()) {
+                String str = iterator.next();
+                message.append(Text.literal(str + (iterator.hasNext() ? ", " : "")).setStyle(styleURL(replacementURLs.get(str))));
+            }
+            message.append("}");
+        }
+
+        DiscordBridgeMod.sendToAll(server, message);
+    }
+
+    public Text parseText(String text, HashMap<String, String> replacementURLs) {
         if (!replacementURLs.containsKey(text))
             return Text.literal(text + " ");
 
         return Text.literal(text + " ").setStyle(styleURL(replacementURLs.remove(text)));
     }
 
-    public Style styleURL(String url){
+    public Style styleURL(String url) {
         return Style.EMPTY.withFormatting(Formatting.UNDERLINE, Formatting.BLUE).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
     }
 
