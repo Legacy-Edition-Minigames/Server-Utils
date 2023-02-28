@@ -146,7 +146,7 @@ public class CustomUI extends Module {
         } else if (action.startsWith("back/")) {
             showLastScreen(player);
         } else if (action.startsWith("kick/")) {
-            VelocityProxyHelper.kickVelocity(player, cmd);
+            VelocityProxyHelper.kickPlayer(player, cmd);
         }
     }
 

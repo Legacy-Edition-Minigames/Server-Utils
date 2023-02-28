@@ -30,15 +30,6 @@ public class BrandBlocker extends ModuleWConfig<BrandBlockerConfig> {
         }
     }
 
-    public static void kickVelocity(ServerPlayerEntity player, ClientConnection connection, Text msg) {
-        VelocityProxyHelper.kickVelocity(player, msg);
-    }
-
-    public static void kickMC(ServerPlayerEntity player, ClientConnection connection, Text msg) {
-        connection.send(new DisconnectS2CPacket(msg));
-        connection.disconnect(msg);
-    }
-
     @Override
     public BrandBlockerConfig createDefaultConfig() {
         return new BrandBlockerConfig();

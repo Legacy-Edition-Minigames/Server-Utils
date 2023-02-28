@@ -2,7 +2,9 @@ package net.kyrptonaught.serverutils;
 
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -18,13 +20,14 @@ public class VelocityProxyHelper {
         sendVelocityCommand(player, "Connect", servername);
     }
 
-
-    public static void kickVelocity(ServerPlayerEntity player, Text msg) {
-        kickVelocity(player, msg.getString());
+    public static void kickPlayer(ServerPlayerEntity player, Text msg) {
+        sendVelocityCommand(player, "KickPlayer", ((PersonatusProfile) player.getGameProfile()).getRealProfile().getName(), msg.toString());
+        player.networkHandler.connection.send(new DisconnectS2CPacket(msg));
+        player.networkHandler.connection.disconnect(msg);
     }
 
-    public static void kickVelocity(ServerPlayerEntity player, String msg) {
-        sendVelocityCommand(player, "KickPlayer", player.getEntityName(), msg);
+    public static void kickPlayer(ServerPlayerEntity player, String msg) {
+        kickPlayer(player, Text.literal(msg));
     }
 
     private static void sendVelocityCommand(ServerPlayerEntity player, String command, String... args) {
@@ -35,7 +38,7 @@ public class VelocityProxyHelper {
 
             ServerPlayNetworking.send(player, BUNGEECORD_ID, output.getBuf());
         } catch (Exception e) {
-            System.out.println("Failed to send comamnd to Velocity Proxy: ");
+            System.out.println("Failed to send command to Velocity Proxy: ");
             e.printStackTrace();
         }
     }

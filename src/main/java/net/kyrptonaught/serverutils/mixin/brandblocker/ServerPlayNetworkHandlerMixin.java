@@ -1,9 +1,9 @@
 package net.kyrptonaught.serverutils.mixin.brandblocker;
 
+import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.brandBlocker.duckInterface.SPNHDelayedJoinBroadcast;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
-import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -26,9 +26,6 @@ public abstract class ServerPlayNetworkHandlerMixin implements SPNHDelayedJoinBr
     public ServerPlayerEntity player;
 
     @Shadow
-    public abstract ClientConnection getConnection();
-
-    @Shadow
     @Final
     private MinecraftServer server;
 
@@ -42,10 +39,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements SPNHDelayedJoinBr
                 if (msg != null) {
                     System.out.println("[BrandBlock] " + player.getEntityName() + " attempted to join with the blocked client brand: " + brand);
                     this.silentLeave = true;
-                    if (brand.contains("(Velocity)"))
-                        BrandBlocker.kickVelocity(player, getConnection(), msg);
-                    else
-                        BrandBlocker.kickMC(player, getConnection(), msg);
+                    VelocityProxyHelper.kickPlayer(player, msg);
                 } else {
                     this.server.getPlayerManager().broadcast(storedJoinMSG, false);
                 }
