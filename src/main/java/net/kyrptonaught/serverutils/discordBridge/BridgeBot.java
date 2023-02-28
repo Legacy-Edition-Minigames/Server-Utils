@@ -19,10 +19,10 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 public class BridgeBot extends ListenerAdapter {
-    private final MinecraftServer server;
-    private final JDA jda;
-    private final WebhookClient client;
-    private final String channelID;
+    protected final MinecraftServer server;
+    protected final JDA jda;
+    protected final WebhookClient client;
+    protected final String channelID;
 
     private final HashMap<String, Consumer<SlashCommandInteraction>> commands = new HashMap<>();
 
@@ -35,7 +35,7 @@ public class BridgeBot extends ListenerAdapter {
     }
 
     public void registerCommand(String cmd, String description, Consumer<SlashCommandInteraction> execute) {
-        this.jda.updateCommands().addCommands(Commands.slash(cmd, description)).queue();
+        this.jda.updateCommands().addCommands(Commands.slash(cmd, description).setGuildOnly(true)).queue();
         this.commands.put(cmd, execute);
     }
 
@@ -98,7 +98,7 @@ public class BridgeBot extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (commands.containsKey(event.getName()))
+        if (commands.containsKey(event.getName()) && event.getChannel().getId().equals(channelID))
             commands.get(event.getName()).accept(event);
     }
 

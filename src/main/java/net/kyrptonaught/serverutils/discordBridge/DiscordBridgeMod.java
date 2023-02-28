@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.discordBridge;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
+import com.mojang.brigadier.CommandDispatcher;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -12,6 +13,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -31,11 +34,23 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> sendGameMessage("Server Stopped"));
-        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
-            sendChatMessage(sender, message.getSignedContent().plain());
-        });
-
+        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> sendChatMessage(sender, message.getSignedContent().plain()));
         ServerMessageEvents.GAME_MESSAGE.register((server, message, overlay) -> sendGameMessage(message.getString()));
+        LinkingManager.init();
+    }
+
+
+    @Override
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(CommandManager.literal("discordLink").executes(context -> {
+            if (getConfig().isMenuBot) {
+                ServerPlayerEntity player = context.getSource().getPlayer();
+                String link = LinkingManager.beginLink(player);
+
+                context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
+            }
+            return 1;
+        }));
     }
 
     public void sendChatMessage(ServerPlayerEntity player, String message) {
@@ -69,6 +84,11 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setActivity(Activity.playing(config.PlayingStatus))
                 .build();
+
+        if (config.isMenuBot) {
+            bot = new MenuBot(server, jda, config.channelID);
+            return;
+        }
 
         WebhookClient client = new WebhookClientBuilder(config.webhookURL)
                 .setWait(false)

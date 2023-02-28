@@ -14,4 +14,6 @@ public class DiscordBridgeConfig extends AbstractConfigFile {
     public String PlayerSkinURL;
 
     public String PlayingStatus;
+
+    public boolean isMenuBot;
 }
