@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.serverutils.SpectateSqueaker.SpectateSqueakerMod;
 import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
+import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
@@ -48,6 +49,8 @@ public class ServerUtilsMod implements ModInitializer {
     public static ConfigManager config = new ConfigManager(MOD_ID);
     public static HashMap<String, Module> modules = new HashMap<>();
 
+
+    public static BackendServerModule BackendModule = (BackendServerModule) registerModule("backend", new BackendServerModule());
     public static WaterFreezer WaterFreezerModule = (WaterFreezer) registerModule("waterfreezer", new WaterFreezer());
     public static Module VelocityServerSwitchMod = registerModule("velocityserverswitch", new VelocityServerSwitchMod());
     public static Module VelocityModifierModule = registerModule("velocitycommand", new VelocityModifierModule());

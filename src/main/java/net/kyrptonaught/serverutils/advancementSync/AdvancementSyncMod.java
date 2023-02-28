@@ -2,11 +2,10 @@ package net.kyrptonaught.serverutils.advancementSync;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -27,11 +26,11 @@ public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             if (getConfig().syncOnJoin) {
                 try {
-                    HttpRequest request = buildGetRequest(getUrl("getAdvancements", handler.player));
+                    HttpRequest request = BackendServerModule.buildGetRequest(getUrl("getAdvancements", handler.player));
 
                     client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                             .thenAccept(stringHttpResponse -> {
-                                if (!didRequestFail(stringHttpResponse)) {
+                                if (!BackendServerModule.didRequestFail(stringHttpResponse)) {
                                     String json = stringHttpResponse.body();
                                     server.execute(() -> {
                                         ((PATLoadFromString) handler.player.getAdvancementTracker()).loadFromString(server.getAdvancementLoader(), json);
@@ -52,7 +51,7 @@ public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
 
     public static void syncGrantedAdvancement(ServerPlayerEntity serverPlayerEntity, String json) {
         try {
-            HttpRequest request = buildPostRequest(getUrl("addAdvancements", serverPlayerEntity), json);
+            HttpRequest request = BackendServerModule.buildPostRequest(getUrl("addAdvancements", serverPlayerEntity), json);
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +60,7 @@ public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
 
     public static void syncRevokedAdvancement(ServerPlayerEntity serverPlayerEntity, String json) {
         try {
-            HttpRequest request = buildPostRequest(getUrl("removeAdvancements", serverPlayerEntity), json);
+            HttpRequest request = BackendServerModule.buildPostRequest(getUrl("removeAdvancements", serverPlayerEntity), json);
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -69,28 +68,7 @@ public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
     }
 
     public static String getUrl(String route, ServerPlayerEntity player) {
-        return ServerUtilsMod.AdvancementSyncModule.getConfig().getApiURL() + "/" + route + "/" + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getId().toString();
+        return BackendServerModule.getApiURL() + "/" + route + "/" + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getId().toString();
     }
 
-    public static HttpRequest buildPostRequest(String url, String json) {
-        return HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .timeout(Duration.ofMinutes(2))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-    }
-
-    public static HttpRequest buildGetRequest(String url) {
-        return HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .timeout(Duration.ofMinutes(2))
-                .header("Content-Type", "application/json")
-                .GET()
-                .build();
-    }
-
-    public boolean didRequestFail(HttpResponse<String> response) {
-        return response == null || response.statusCode() != 200 || response.body().equalsIgnoreCase("failed");
-    }
 }
