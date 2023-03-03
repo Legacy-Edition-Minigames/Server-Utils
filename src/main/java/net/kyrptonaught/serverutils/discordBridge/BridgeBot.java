@@ -5,6 +5,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -43,6 +44,9 @@ public class BridgeBot extends ListenerAdapter {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         builder.setUsername(name);
         builder.setAvatarUrl(url);
+        for(RichCustomEmoji emoji : jda.getEmojiCache())
+            msg = msg.replaceAll(":"+emoji.getName() + ":", emoji.getAsMention());
+
         builder.setContent(msg);
         client.send(builder.build());
     }
@@ -53,7 +57,6 @@ public class BridgeBot extends ListenerAdapter {
             if (event.getMessage().getReferencedMessage() != null) {
                 parseMessage(event.getMessage().getReferencedMessage(), Text.literal("    ┌──── ").formatted(Formatting.GRAY));
             }
-
             parseMessage(event.getMessage(), Text.literal("[Discord] ").formatted(Formatting.BLUE));
         }
     }

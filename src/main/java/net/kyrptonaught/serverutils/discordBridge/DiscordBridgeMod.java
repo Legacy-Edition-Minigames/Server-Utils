@@ -9,9 +9,11 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
+import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -42,15 +44,18 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("discordLink").executes(context -> {
-            if (getConfig().isMenuBot) {
-                ServerPlayerEntity player = context.getSource().getPlayer();
-                String link = LinkingManager.beginLink(player);
+        dispatcher.register(CommandManager.literal("discordLink")
+                .then(CommandManager.argument("message", TextArgumentType.text()).executes(context -> {
+                    //if (getConfig().isMenuBot) {
+                    ServerPlayerEntity player = context.getSource().getPlayer();
+                    Text text = TextArgumentType.getTextArgument(context, "message");
+                    String link = LinkingManager.beginLink(player);
+                    BookGUI.showLinkGUI(player, link, text);
 
-                context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
-            }
-            return 1;
-        }));
+                    context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
+                    // }
+                    return 1;
+                })));
     }
 
     public void sendChatMessage(ServerPlayerEntity player, String message) {
@@ -77,9 +82,11 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     }
 
     public void buildBot(MinecraftServer server, DiscordBridgeConfig config) {
-        JDA jda = JDABuilder.createLight(config.BotToken)
+        JDA jda = JDABuilder.createDefault(config.BotToken)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+                .enableCache(CacheFlag.EMOJI)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setActivity(Activity.playing(config.PlayingStatus))
