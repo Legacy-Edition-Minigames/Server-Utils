@@ -6,6 +6,8 @@ import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -13,14 +15,45 @@ import net.minecraft.util.Identifier;
 
 public class BookGUI {
 
-    public static void showLinkGUI(ServerPlayerEntity player, String linkID, Text text) {
+    public static void showLinkGUI(ServerPlayerEntity player, String linkID) {
         BookElementBuilder bookBuilder = BookElementBuilder.from(Items.WRITTEN_BOOK.getDefaultStack())
-                .addPage(text).signed();
+                .addPage(
+                        Text.literal("\uF808\uF8033").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
+                        Text.literal("Linking your accounts allows you to send messages to the server using the bridge channels."),
+                        Text.empty(),
+                        Text.literal("You will be granted a role indicating you have the privilege."),
+                        Text.literal("All rules apply, this role may be revoked.")
+                )
+                .addPage(
+                        Text.literal("\uF808\uF8033").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
+                        Text.literal("§lHow to link: "),
+                        Text.empty(),
+                        Text.literal("1. Join the ").append(Text.literal("Legacy Edition Minigames Discord Server").styled(style -> urlStyle(style, "https://dsc.gg/lem"))),
+                        Text.empty(),
+                        Text.literal("2. Find the ").append(Text.literal("\"Account Link\" channel").styled(style -> urlStyle(style, "https://discord.com/channels/860805393441357834/880533722322042901"))),
+                        Text.empty(),
+                        Text.literal("3. Send the following message").append(Text.literal("\"/link " + linkID + "\"").styled(style -> copyStyle(style, "/link " + linkID)))
+                ).signed();
         new BookGui(player, bookBuilder) {
             @Override
             public void onTakeBookButton() {
                 this.close();
             }
         }.open();
+    }
+
+
+    private static Style urlStyle(Style style, String url) {
+        return style.withColor(Formatting.BLUE)
+                .withUnderline(true)
+                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to open")));
+    }
+
+    private static Style copyStyle(Style style, String text) {
+        return style.withColor(Formatting.BLUE)
+                .withUnderline(true)
+                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, text))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to copy")));
     }
 }

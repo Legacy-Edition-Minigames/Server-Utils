@@ -44,18 +44,16 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("discordLink")
-                .then(CommandManager.argument("message", TextArgumentType.text()).executes(context -> {
-                    //if (getConfig().isMenuBot) {
-                    ServerPlayerEntity player = context.getSource().getPlayer();
-                    Text text = TextArgumentType.getTextArgument(context, "message");
-                    String link = LinkingManager.beginLink(player);
-                    BookGUI.showLinkGUI(player, link, text);
+        dispatcher.register(CommandManager.literal("discordLink").executes(context -> {
+            //if (getConfig().isMenuBot) {
+            ServerPlayerEntity player = context.getSource().getPlayer();
+            String link = LinkingManager.beginLink(player);
+            BookGUI.showLinkGUI(player, link);
 
-                    context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
-                    // }
-                    return 1;
-                })));
+            context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
+            // }
+            return 1;
+        }));
     }
 
     public void sendChatMessage(ServerPlayerEntity player, String message) {
