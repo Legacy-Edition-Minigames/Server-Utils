@@ -2,7 +2,6 @@ package net.kyrptonaught.serverutils.discordBridge;
 
 import eu.pb4.sgui.api.elements.BookElementBuilder;
 import eu.pb4.sgui.api.gui.BookGui;
-import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -10,22 +9,21 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 
 public class BookGUI {
 
     public static void showLinkGUI(ServerPlayerEntity player, String linkID) {
         BookElementBuilder bookBuilder = BookElementBuilder.from(Items.WRITTEN_BOOK.getDefaultStack())
                 .addPage(
-                        Text.literal("\uF808\uF8033").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
+                        //Text.literal("\uF80C3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
                         Text.literal("Linking your accounts allows you to send messages to the server using the bridge channels."),
                         Text.empty(),
                         Text.literal("You will be granted a role indicating you have the privilege."),
+                        Text.empty(),
                         Text.literal("All rules apply, this role may be revoked.")
                 )
                 .addPage(
-                        Text.literal("\uF808\uF8033").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
+                       // Text.literal("3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
                         Text.literal("§lHow to link: "),
                         Text.empty(),
                         Text.literal("1. Join the ").append(Text.literal("Legacy Edition Minigames Discord Server").styled(style -> urlStyle(style, "https://dsc.gg/lem"))),

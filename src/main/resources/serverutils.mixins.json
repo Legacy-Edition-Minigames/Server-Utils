@@ -18,6 +18,8 @@
     "customWorldBorder.WorldBorderMixin",
     "dimensionLoader.PlayerManagerMixin",
     "dimensionLoader.ServerPlayerEntityMixin",
+    "discordBridge.PlayerAdvancementTrackerMixin",
+    "discordBridge.ServerPlayerEntityMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
     "personatus.FixLuckPermsMixin",
     "personatus.GameProfileMixin",

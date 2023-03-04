@@ -18,7 +18,7 @@ public class ServerTranslator extends Module {
     }
 
     public static String getLanguage(ServerPlayerEntity player) {
-        if (playerLanguages.containsKey(player.getUuid()))
+        if (player == null || playerLanguages.containsKey(player.getUuid()))
             return playerLanguages.get(player.getUuid());
         return "en_us";
     }
@@ -27,11 +27,14 @@ public class ServerTranslator extends Module {
         return TranslationStorage.getTranslationFor(getLanguage(player), key);
     }
 
+    public static String translate(String key) {
+        return translate(null, key);
+    }
+
     @Override
     public void onInitialize() {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new TranslationLoader());
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            playerLanguages.remove(handler.player.getUuid());
-        });
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new InjectedLoader());
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> playerLanguages.remove(handler.player.getUuid()));
     }
 }

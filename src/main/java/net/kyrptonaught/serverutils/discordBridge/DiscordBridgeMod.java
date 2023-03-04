@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -28,16 +29,16 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             buildBot(server, getConfig());
             BotCommands.registerCommands(bot, server);
-            sendGameMessage("Server Started");
+            MessageSender.sendGameMessage("`Server Started`");
+
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             if (bot != null) bot.close();
         });
 
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> sendGameMessage("Server Stopped"));
-        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> sendChatMessage(sender, message.getSignedContent().plain()));
-        ServerMessageEvents.GAME_MESSAGE.register((server, message, overlay) -> sendGameMessage(message.getString()));
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> MessageSender.sendGameMessage("`Server Stopped`"));
+        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> MessageSender.sendChatMessage(sender, message.getSignedContent().plain()));
         LinkingManager.init();
     }
 
@@ -54,27 +55,17 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
             // }
             return 1;
         }));
+
+        dispatcher.register(CommandManager.literal("discordMSG").requires((source) -> source.hasPermissionLevel(2))
+                .then(CommandManager.argument("msg", TextArgumentType.text()).executes(context -> {
+                    Text text = TextArgumentType.getTextArgument(context, "msg");
+                    MessageSender.sendGameMessage(text);
+                    return 1;
+                })));
     }
 
-    public void sendChatMessage(ServerPlayerEntity player, String message) {
-        if (bot != null)
-            bot.sendMessage(player.getEntityName(), getUserHeadURL(player), message);
-    }
-
-    public void sendGameMessage(String message) {
-        if (bot != null)
-            bot.sendMessage(getConfig().GameMessageName, getConfig().GameMessageAvatarURL, message);
-    }
-
-    public static void sendToAll(MinecraftServer server, Text message) {
-        server.sendMessage(message);
-        for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
-            serverPlayerEntity.sendMessage(message, false);
-        }
-    }
-
-    public String getUserHeadURL(ServerPlayerEntity player) {
-        return getConfig().PlayerSkinURL
+    public static String getUserHeadURL(ServerPlayerEntity player) {
+        return DiscordBridgeMod.config().PlayerSkinURL
                 .replace("%PLAYERNAME%", player.getGameProfile().getName())
                 .replace("%PLAYERUUID%", player.getUuidAsString());
     }
@@ -101,6 +92,11 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
                 .build();
 
         bot = new BridgeBot(server, jda, client, config.channelID);
+    }
+
+
+    public static DiscordBridgeConfig config() {
+        return ServerUtilsMod.DiscordBridgeModule.getConfig();
     }
 
     @Override
