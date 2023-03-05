@@ -1,6 +1,9 @@
-package net.kyrptonaught.serverutils.discordBridge;
+package net.kyrptonaught.serverutils.discordBridge.linking;
 
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
+import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
+import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -11,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class LinkingManager {
@@ -33,9 +37,9 @@ public class LinkingManager {
         return linkID;
     }
 
-    public static void generateLink(String linkID, String discordID, Consumer<Boolean> completion) {
+    public static void generateLink(String linkID, String discordID, SlashCommandInteractionEvent event) {
         if (!linksInProgress.containsKey(linkID)) {
-            completion.accept(false);
+            event.getHook().editOriginal("Error").queue();
             return;
         }
 
@@ -43,12 +47,16 @@ public class LinkingManager {
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenAccept(stringHttpResponse -> {
                     if (BackendServerModule.didRequestFail(stringHttpResponse)) {
-                        completion.accept(false);
+                        event.getHook().editOriginal("Error").queue();
                         return;
                     }
 
-                    linksInProgress.remove(linkID).sendMessage(Text.empty().append(Text.literal("[Discord] ").formatted(Formatting.BLUE)).append("Linked Successfully!"));
-                    completion.accept(true);
+                    event.getHook().editOriginal("Linked!").queue();
+                    event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(DiscordBridgeMod.config().linkRoleID)).queue();
+
+                    ServerPlayerEntity player = linksInProgress.remove(linkID);
+                    player.sendMessage(Text.empty().append(Text.literal("[Discord] ").formatted(Formatting.BLUE)).append("Linked Successfully!"));
+                    MessageSender.sendLogMessage(event.getMember().getEffectiveName() + " linked their account to MC -> " + player.getDisplayName() + "(" + player.getUuidAsString() + ")");
                 });
     }
 }

@@ -10,6 +10,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
+import net.kyrptonaught.serverutils.discordBridge.Integrations;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -30,8 +31,9 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                 .then(CommandManager.literal("enabled")
                         .then(CommandManager.argument("enable", BoolArgumentType.bool())
                                 .executes(context -> {
-                                    ServerUtilsMod.personatusModule.getConfig().enabled = BoolArgumentType.getBool(context, "enable");
-                                    ServerUtilsMod.personatusModule.saveConfig();
+                                    getConfig().enabled = BoolArgumentType.getBool(context, "enable");
+                                    saveConfig();
+                                    Integrations.personatusEnable(context.getSource().getName(), getConfig().enabled);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("checkSpoof")
@@ -68,8 +70,10 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                                 String spoofedName = StringArgumentType.getString(context, "spoofedName");
 
                                                 String response = URLGetValue(((YggdrasilMinecraftSessionService) server.getSessionService()).getAuthenticationService(), BackendServerModule.getApiURL() + "/kvs/set/personatus/" + player + "/" + spoofedName, "success");
-                                                if ("true".equals(response))
+                                                if ("true".equals(response)) {
                                                     context.getSource().sendFeedback(Text.literal("Spoofing set. Please check the spoof first with /personatus checkSpoof " + player + " to verify. Relog to apply spoof."), false);
+                                                    Integrations.personatusSpoof(context.getSource().getName(), player, spoofedName);
+                                                }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
@@ -82,8 +86,10 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                     String player = StringArgumentType.getString(context, "player");
                                     try {
                                         String response = URLGetValue(((YggdrasilMinecraftSessionService) server.getSessionService()).getAuthenticationService(), BackendServerModule.getApiURL() + "/kvs/reset/personatus/" + player, "success");
-                                        if ("true".equals(response))
+                                        if ("true".equals(response)) {
                                             context.getSource().sendFeedback(Text.literal("Spoof reset"), false);
+                                            Integrations.personatusClear(context.getSource().getName(), player);
+                                        }
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }

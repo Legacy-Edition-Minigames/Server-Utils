@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.0-SNAPSHOT'
+	id 'fabric-loom' version '1.1-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -45,10 +45,10 @@ dependencies {
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 
 	//Fabric Proxy Lite
-	modImplementation('maven.modrinth:fabricproxy-lite:v2.3.0') { exclude group: "net.fabricmc.fabric-api" }
+	//modImplementation('maven.modrinth:fabricproxy-lite:v2.3.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//crossstitch
-	modImplementation('maven.modrinth:crossstitch:0.1.5') { exclude group: "net.fabricmc.fabric-api" }
+	//modImplementation('maven.modrinth:crossstitch:0.1.5') { exclude group: "net.fabricmc.fabric-api" }
 
 	//carpet
 	modImplementation('carpet:fabric-carpet:1.19.2-1.4.84+v221018') { exclude group: "net.fabricmc.fabric-api" }

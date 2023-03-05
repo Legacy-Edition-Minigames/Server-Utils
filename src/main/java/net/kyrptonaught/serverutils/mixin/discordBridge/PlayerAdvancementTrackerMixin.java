@@ -1,6 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.discordBridge;
 
-import net.kyrptonaught.serverutils.discordBridge.MessageSender;
+import net.kyrptonaught.serverutils.discordBridge.Integrations;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.text.Text;
@@ -13,8 +13,7 @@ public class PlayerAdvancementTrackerMixin {
 
     @Redirect(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
     public void hijackAdvancementMessage(PlayerManager instance, Text message, boolean overlay) {
-        MessageSender.sendAdvancementMessage(message);
-        instance.broadcast(message,overlay);
-        System.out.println(message);
+        Integrations.sendAdvancementMessage(message);
+        instance.broadcast(message, overlay);
     }
 }

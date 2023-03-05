@@ -1,4 +1,4 @@
-package net.kyrptonaught.serverutils.discordBridge;
+package net.kyrptonaught.serverutils.discordBridge.linking;
 
 import eu.pb4.sgui.api.elements.BookElementBuilder;
 import eu.pb4.sgui.api.gui.BookGui;
@@ -10,7 +10,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public class BookGUI {
+public class LinkingGUI {
 
     public static void showLinkGUI(ServerPlayerEntity player, String linkID) {
         BookElementBuilder bookBuilder = BookElementBuilder.from(Items.WRITTEN_BOOK.getDefaultStack())
@@ -23,7 +23,7 @@ public class BookGUI {
                         Text.literal("All rules apply, this role may be revoked.")
                 )
                 .addPage(
-                       // Text.literal("3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
+                        // Text.literal("3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
                         Text.literal("§lHow to link: "),
                         Text.empty(),
                         Text.literal("1. Join the ").append(Text.literal("Legacy Edition Minigames Discord Server").styled(style -> urlStyle(style, "https://dsc.gg/lem"))),

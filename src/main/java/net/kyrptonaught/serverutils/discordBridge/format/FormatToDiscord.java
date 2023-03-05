@@ -1,19 +1,20 @@
-package net.kyrptonaught.serverutils.discordBridge;
+package net.kyrptonaught.serverutils.discordBridge.format;
 
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
+import net.kyrptonaught.serverutils.discordBridge.bot.BridgeBot;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 import java.util.Optional;
 
-public class TextToDiscordFormatter {
+public class FormatToDiscord {
 
     public static String toDiscord(BridgeBot bot, String text) {
-        for (RichCustomEmoji emoji : bot.jda.getEmojiCache())
+        for (RichCustomEmoji emoji : DiscordBridgeMod.bot.jda.getEmojiCache())
             text = text.replaceAll(":" + emoji.getName() + ":", emoji.getAsMention());
         return text;
     }
-
 
     public static String toDiscord(BridgeBot bot, Text text) {
         try {

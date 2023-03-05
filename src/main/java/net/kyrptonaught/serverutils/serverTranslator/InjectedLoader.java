@@ -36,7 +36,6 @@ public class InjectedLoader implements SimpleSynchronousResourceReloadListener {
             e.printStackTrace();
         }
 
-
         Map<Identifier, Resource> resources = manager.findResources(ID.getPath(), (identifier) -> identifier.getPath().endsWith(".json") || identifier.getPath().endsWith(".json5"));
         for (Identifier id : resources.keySet()) {
             if (getRawFileName(id.getPath()).equals("en_us"))

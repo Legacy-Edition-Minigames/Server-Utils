@@ -3,7 +3,7 @@ package net.kyrptonaught.serverutils.mixin.brandblocker;
 import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.brandBlocker.duckInterface.SPNHDelayedJoinBroadcast;
-import net.kyrptonaught.serverutils.discordBridge.MessageSender;
+import net.kyrptonaught.serverutils.discordBridge.Integrations;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.server.MinecraftServer;
@@ -43,7 +43,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements SPNHDelayedJoinBr
                     VelocityProxyHelper.kickPlayer(player, msg);
                 } else {
                     this.server.getPlayerManager().broadcast(storedJoinMSG, false);
-                    MessageSender.sendJoinLeaveMessage(storedJoinMSG);
+                    Integrations.sendJoinMessage(storedJoinMSG);
                 }
             });
         }
@@ -54,7 +54,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements SPNHDelayedJoinBr
     public void silentLeave(PlayerManager instance, Text message, boolean overlay) {
         if (!silentLeave) {
             instance.broadcast(message, overlay);
-            MessageSender.sendJoinLeaveMessage(message);
+            Integrations.sendLeaveMessage(message);
         }
     }
 

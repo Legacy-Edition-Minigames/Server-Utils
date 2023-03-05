@@ -1,15 +1,18 @@
-package net.kyrptonaught.serverutils.discordBridge;
+package net.kyrptonaught.serverutils.discordBridge.format;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class DiscordToTextFormatter {
+public class FormatToMC {
 
     public static Text parseMessage(Message discordMessage, MutableText prefix) {
         HashMap<String, String> replacementURLs = new HashMap<>();

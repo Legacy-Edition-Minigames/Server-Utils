@@ -3,6 +3,9 @@ package net.kyrptonaught.serverutils.chatDisabler;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.kyrptonaught.serverutils.ModuleWConfig;
+import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
+import net.kyrptonaught.serverutils.discordBridge.Integrations;
+import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -19,14 +22,14 @@ public class ChatDisabler extends ModuleWConfig<ChatDisablerConfig> {
                         .then(CommandManager.argument("enabled", BoolArgumentType.bool())
                                 .executes(context -> {
                                     CHATENABLED = BoolArgumentType.getBool(context, "enabled");
-
                                     ChatDisablerConfig config = getConfig();
+
+                                    Integrations.chatDisabler(context.getSource().getName(), CHATENABLED, config);
                                     if (CHATENABLED) {
                                         if (config.notifyChatEnabled)
                                             broadcast(context.getSource().getServer(), config.enabledMessage);
-                                    } else if (config.notifyChatDisabled) {
+                                    } else if (config.notifyChatDisabled)
                                         broadcast(context.getSource().getServer(), config.disabledMessage);
-                                    }
                                     return 1;
                                 }))));
     }

@@ -1,7 +1,7 @@
 package net.kyrptonaught.serverutils.mixin.discordBridge;
 
 import com.mojang.authlib.GameProfile;
-import net.kyrptonaught.serverutils.discordBridge.MessageSender;
+import net.kyrptonaught.serverutils.discordBridge.Integrations;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.encryption.PlayerPublicKey;
@@ -23,6 +23,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
     public void hijackDeathMessage(DamageSource damageSource, CallbackInfo ci) {
-        MessageSender.sendDeathMessage(this.getDamageTracker().getDeathMessage());
+        Integrations.sendDeathMessage(this.getDamageTracker().getDeathMessage());
     }
 }
