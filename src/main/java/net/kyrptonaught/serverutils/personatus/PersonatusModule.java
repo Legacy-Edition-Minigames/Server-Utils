@@ -2,8 +2,6 @@ package net.kyrptonaught.serverutils.personatus;
 
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.HttpAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -12,14 +10,10 @@ import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.discordBridge.Integrations;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-
-import java.io.IOException;
-import java.net.URL;
 
 
 public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
@@ -39,10 +33,9 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                 .then(CommandManager.literal("checkSpoof")
                         .then(CommandManager.argument("player", StringArgumentType.word())
                                 .executes(context -> {
-                                    MinecraftServer server = context.getSource().getServer();
                                     String player = StringArgumentType.getString(context, "player");
                                     try {
-                                        String responseName = URLGetValue(((YggdrasilMinecraftSessionService) server.getSessionService()).getAuthenticationService(), BackendServerModule.getApiURL() + "/kvs/get/personatus/" + player, "value");
+                                        String responseName = URLGetValue(false, "kvs/get/personatus/" + player, "value");
                                         if (responseName != null)
                                             context.getSource().sendFeedback(Text.literal(player + " is being spoofed as " + responseName), false);
                                         else
@@ -65,12 +58,10 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                 .then(CommandManager.argument("spoofedName", StringArgumentType.word())
                                         .executes(context -> {
                                             try {
-                                                MinecraftServer server = context.getSource().getServer();
                                                 String player = StringArgumentType.getString(context, "player");
                                                 String spoofedName = StringArgumentType.getString(context, "spoofedName");
 
-                                                String response = URLGetValue(((YggdrasilMinecraftSessionService) server.getSessionService()).getAuthenticationService(), BackendServerModule.getApiURL() + "/kvs/set/personatus/" + player + "/" + spoofedName, "success");
-                                                if ("true".equals(response)) {
+                                                if (URLGet("kvs/set/personatus/" + player + "/" + spoofedName)) {
                                                     context.getSource().sendFeedback(Text.literal("Spoofing set. Please check the spoof first with /personatus checkSpoof " + player + " to verify. Relog to apply spoof."), false);
                                                     Integrations.personatusSpoof(context.getSource().getName(), player, spoofedName);
                                                 }
@@ -82,11 +73,9 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                 .then(CommandManager.literal("clearSpoof")
                         .then(CommandManager.argument("player", StringArgumentType.word())
                                 .executes(context -> {
-                                    MinecraftServer server = context.getSource().getServer();
                                     String player = StringArgumentType.getString(context, "player");
                                     try {
-                                        String response = URLGetValue(((YggdrasilMinecraftSessionService) server.getSessionService()).getAuthenticationService(), BackendServerModule.getApiURL() + "/kvs/reset/personatus/" + player, "success");
-                                        if ("true".equals(response)) {
+                                        if (URLGet("kvs/reset/personatus/" + player)) {
                                             context.getSource().sendFeedback(Text.literal("Spoof reset"), false);
                                             Integrations.personatusClear(context.getSource().getName(), player);
                                         }
@@ -97,8 +86,8 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                 }))));
     }
 
-    public static String URLGetValue(HttpAuthenticationService service, String url, String key) throws IOException {
-        String response = service.performGetRequest(new URL(url));
+    public static String URLGetValue(boolean mojangURL, String url, String key) {
+        String response = mojangURL ? BackendServerModule.getAlt(url) : BackendServerModule.get(url);
 
         if (response != null && !response.isEmpty()) {
             JsonObject obj = ServerUtilsMod.config.getGSON().fromJson(response, JsonObject.class);
@@ -110,6 +99,9 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
         return null;
     }
 
+    public static boolean URLGet(String url) {
+        return BackendServerModule.get(url) != null;
+    }
 
     public static boolean isEnabled() {
         return ServerUtilsMod.personatusModule.getConfig().enabled;

@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.discordBridge.format.FormatToMC;
 import net.minecraft.server.MinecraftServer;
@@ -36,8 +37,12 @@ public class BridgeBot extends ListenerAdapter {
     }
 
     public void registerCommand(String cmd, String description, Consumer<SlashCommandInteraction> execute) {
-        this.jda.updateCommands().addCommands(Commands.slash(cmd, description).setGuildOnly(true)).queue();
-        this.commands.put(cmd, execute);
+        registerCommand(Commands.slash(cmd, description).setGuildOnly(true), execute);
+    }
+
+    public void registerCommand(SlashCommandData commandData, Consumer<SlashCommandInteraction> execute) {
+        this.jda.updateCommands().addCommands(commandData).queue();
+        this.commands.put(commandData.getName(), execute);
     }
 
     public void sendMessage(String name, String url, String msg) {

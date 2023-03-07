@@ -44,19 +44,18 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> MessageSender.sendGameMessage("Server Stopped", 0xffffff));
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> MessageSender.sendChatMessage(sender, message.getSignedContent().plain()));
-        LinkingManager.init();
     }
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("discordLink").executes(context -> {
-            //if (getConfig().isMenuBot) {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            String link = LinkingManager.beginLink(player);
-            LinkingGUI.showLinkGUI(player, link);
+            if (getConfig().isMenuBot) {
+                ServerPlayerEntity player = context.getSource().getPlayer();
+                String link = LinkingManager.beginLink(player);
+                LinkingGUI.showLinkGUI(player, link);
 
-            context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
-            // }
+                context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
+            }
             return 1;
         }));
 

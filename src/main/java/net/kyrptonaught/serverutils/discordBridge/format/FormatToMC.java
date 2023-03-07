@@ -22,7 +22,7 @@ public class FormatToMC {
         for (Message.Attachment attachment : discordMessage.getAttachments())
             replacementURLs.put(attachment.getFileName(), attachment.getUrl());
 
-        int color = discordMessage.getMember().getColorRaw();
+        int color = discordMessage.getMember() != null ? discordMessage.getMember().getColorRaw() : 0;
         MutableText message = Text.literal("").append(prefix).append(Text.literal("<" + discordMessage.getAuthor().getName() + "> ").styled(style -> style.withColor(color)));
         for (String str : discordMessage.getContentDisplay().split(" ")) {
             message.append(parseText(str, replacementURLs));

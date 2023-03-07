@@ -2,10 +2,6 @@ package net.kyrptonaught.serverutils.brandBlocker;
 
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.kyrptonaught.serverutils.VelocityProxyHelper;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 public class BrandBlocker extends ModuleWConfig<BrandBlockerConfig> {

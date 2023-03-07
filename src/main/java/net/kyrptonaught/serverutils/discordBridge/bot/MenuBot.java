@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
-import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
 import net.minecraft.server.MinecraftServer;
 

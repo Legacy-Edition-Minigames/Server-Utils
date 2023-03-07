@@ -2,7 +2,6 @@ package net.kyrptonaught.serverutils.mixin.customWorldBorder;
 
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderArea;
 import net.kyrptonaught.serverutils.customWorldBorder.duckInterface.CustomWorldBorder;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import org.spongepowered.asm.mixin.Final;

@@ -3,8 +3,6 @@ package net.kyrptonaught.serverutils.mixin.personatus;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.mojang.util.UUIDTypeAdapter;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.personatus.PersonatusModule;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.encryption.PlayerPublicKey;
@@ -46,20 +44,16 @@ public class ServerLoginNetworkHandlerMixin {
 
         new Thread(() -> {
             if (server.getSessionService() instanceof YggdrasilMinecraftSessionService sessionService) {
-                try {
-                    String responseName = PersonatusModule.URLGetValue(sessionService.getAuthenticationService(), BackendServerModule.getApiURL() + "/kvs/get/personatus/" + profile.getName(), "value");
-                    if (responseName != null) {
-                        String responseUUID = PersonatusModule.URLGetValue(sessionService.getAuthenticationService(), "https://api.mojang.com/users/profiles/minecraft/" + responseName, "id");
-                        if (responseUUID != null) {
-                            UUID uuid = UUIDTypeAdapter.fromString(responseUUID);
-                            GameProfile spoofed = sessionService.fillProfileProperties(new GameProfile(uuid, responseName), true);
+                String responseName = PersonatusModule.URLGetValue(false, "kvs/get/personatus/" + profile.getName(), "value");
+                if (responseName != null) {
+                    String responseUUID = PersonatusModule.URLGetValue(true, "https://api.mojang.com/users/profiles/minecraft/" + responseName, "id");
+                    if (responseUUID != null) {
+                        UUID uuid = UUIDTypeAdapter.fromString(responseUUID);
+                        GameProfile spoofed = sessionService.fillProfileProperties(new GameProfile(uuid, responseName), true);
 
-                            ((PersonatusProfile) spoofed).setRealProfile(profile);
-                            profile = spoofed;
-                        }
+                        ((PersonatusProfile) spoofed).setRealProfile(profile);
+                        profile = spoofed;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
             profileChecked = true;

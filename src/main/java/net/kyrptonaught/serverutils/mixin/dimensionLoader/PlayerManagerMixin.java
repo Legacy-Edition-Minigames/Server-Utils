@@ -30,7 +30,9 @@ import java.util.Set;
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
 
-    @Shadow @Final private MinecraftServer server;
+    @Shadow
+    @Final
+    private MinecraftServer server;
 
     @Redirect(method = "respawnPlayer", at = @At(value = "NEW", target = "net/minecraft/network/packet/s2c/play/PlayerRespawnS2CPacket"))
     public PlayerRespawnS2CPacket mtwSpoofDim(RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimension, long sha256Seed, GameMode gameMode, GameMode previousGameMode, boolean debugWorld, boolean flatWorld, boolean keepPlayerAttributes, Optional<GlobalPos> lastDeathPos, ServerPlayerEntity player, boolean alive) {
