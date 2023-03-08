@@ -30,7 +30,7 @@ public class LinkingGUI {
                         Text.empty(),
                         Text.literal("2. Find the ").append(Text.literal("\"Account Link\" channel").styled(style -> urlStyle(style, "https://discord.com/channels/860805393441357834/880533722322042901"))),
                         Text.empty(),
-                        Text.literal("3. Send the following message").append(Text.literal("\"/link " + linkID + "\"").styled(style -> copyStyle(style, "/link " + linkID)))
+                        Text.literal("3. Click on the link button and enter the following code: ").append(Text.literal(linkID).styled(style -> copyStyle(style, linkID)))
                 ).signed();
         new BookGui(player, bookBuilder) {
             @Override

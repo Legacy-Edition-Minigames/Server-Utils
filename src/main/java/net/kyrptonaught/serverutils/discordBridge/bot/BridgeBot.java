@@ -7,42 +7,28 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.discordBridge.format.FormatToMC;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.HashMap;
-import java.util.function.Consumer;
-
 public class BridgeBot extends ListenerAdapter {
     public final MinecraftServer server;
     public final JDA jda;
     public final WebhookClient client;
-
-    private final HashMap<String, Consumer<SlashCommandInteraction>> commands = new HashMap<>();
 
     public BridgeBot(MinecraftServer server, JDA jda, WebhookClient webhookClient) {
         this.server = server;
         this.jda = jda;
         this.client = webhookClient;
         this.jda.addEventListener(this);
-    }
-
-    public void registerCommand(String cmd, String description, Consumer<SlashCommandInteraction> execute) {
-        registerCommand(Commands.slash(cmd, description).setGuildOnly(true), execute);
-    }
-
-    public void registerCommand(SlashCommandData commandData, Consumer<SlashCommandInteraction> execute) {
-        this.jda.updateCommands().addCommands(commandData).queue();
-        this.commands.put(commandData.getName(), execute);
+        BotCommands.registerCommands(jda);
     }
 
     public void sendMessage(String name, String url, String msg) {
@@ -81,8 +67,17 @@ public class BridgeBot extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (commands.containsKey(event.getName()) && isAllowedChannel(event.getChannel().getIdLong()))
-            commands.get(event.getName()).accept(event);
+        BotCommands.execute(this, event);
+    }
+
+    @Override
+    public void onButtonInteraction(ButtonInteractionEvent event) {
+        BotCommands.buttonPressed(this, event);
+    }
+
+    @Override
+    public void onModalInteraction(ModalInteractionEvent event) {
+        BotCommands.modalInteraction(this, event);
     }
 
     public void log(String message) {
@@ -112,11 +107,11 @@ public class BridgeBot extends ListenerAdapter {
     }
 
     public long getChannel() {
-        return DiscordBridgeMod.config().channelID;
+        return DiscordBridgeMod.config().bridgeChannelID;
     }
 
     public void close() {
-        if (jda != null) jda.shutdown();
+        if (jda != null) jda.shutdownNow();
         if (client != null) client.close();
     }
 }

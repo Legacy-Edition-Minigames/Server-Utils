@@ -6,7 +6,6 @@ public class DiscordBridgeConfig extends AbstractConfigFile {
 
     public String BotToken;
     public String webhookURL;
-    public long channelID;
 
     public String GameMessageName;
     public String GameMessageAvatarURL;
@@ -15,8 +14,9 @@ public class DiscordBridgeConfig extends AbstractConfigFile {
 
     public String PlayingStatus;
 
-    public boolean isMenuBot;
-    public long linkRoleID;
-
+    public long bridgeChannelID;
+    public long linkChannelID;
     public long loggingChannelID;
+
+    public long linkRoleID;
 }

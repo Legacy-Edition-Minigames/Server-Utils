@@ -1,20 +1,50 @@
 package net.kyrptonaught.serverutils.discordBridge.bot;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
+import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
 public class BotCommands {
 
-    public static void registerCommands(BridgeBot bot, MinecraftServer server) {
-        if (bot == null) return;
-        bot.registerCommand("info", "Get the server info", event -> infoCommandExecute(server, event));
+    public static void registerCommands(JDA jda) {
+        jda.updateCommands().addCommands(
+                Commands.slash("info", "Get the server info").setGuildOnly(true)
+                ).queue();
     }
 
-    private static void infoCommandExecute(MinecraftServer server, SlashCommandInteraction event) {
+    public static void execute(BridgeBot bot, SlashCommandInteraction event) {
+        switch (event.getName()) {
+            case "info" -> BotCommands.infoCommandExecute(bot.server, event);
+        }
+    }
+
+    public static void buttonPressed(BridgeBot bot, @NotNull ButtonInteractionEvent event) {
+        switch (event.getButton().getId()) {
+            case "link:start" -> LinkingManager.displayLinkInput(event);
+        }
+    }
+
+    public static void modalInteraction(BridgeBot bot, ModalInteractionEvent event) {
+        switch (event.getModalId()) {
+            case "link:modal" -> LinkingManager.linkInputResults(event);
+        }
+    }
+
+    public static void infoCommandExecute(MinecraftServer server, SlashCommandInteraction event) {
+        if (event.getChannel().getIdLong() != DiscordBridgeMod.config().bridgeChannelID) return;
+
         double serverTickTime = MathHelper.average(server.lastTickLengths) * 1.0E-6D;
         long freeRam = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
 
@@ -35,4 +65,5 @@ public class BotCommands {
                         .addField("RAM", freeRam + "MB / " + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB", true)
                         .build()).queue();
     }
+
 }

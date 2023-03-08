@@ -1,7 +1,9 @@
 package net.kyrptonaught.serverutils.backendServer;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -24,6 +26,8 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
+
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> executorService.shutdown());
     }
 
     public static void asyncPost(String url, BiConsumer<Boolean, HttpResponse<String>> response) {

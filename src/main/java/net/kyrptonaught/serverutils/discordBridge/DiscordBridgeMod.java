@@ -16,10 +16,10 @@ import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.discordBridge.bot.BotCommands;
 import net.kyrptonaught.serverutils.discordBridge.bot.BridgeBot;
-import net.kyrptonaught.serverutils.discordBridge.bot.MenuBot;
-import net.kyrptonaught.serverutils.discordBridge.linking.LinkingGUI;
 import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
+import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -33,29 +33,23 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             buildBot(server, getConfig());
-            BotCommands.registerCommands(bot, server);
             MessageSender.sendGameMessage("Server Started", 0xffffff);
-
+            LinkingManager.prepareChannel(bot.jda, getConfig().linkChannelID);
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            MessageSender.sendGameMessage("Server Stopped", 0xffffff);
             if (bot != null) bot.close();
         });
-
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> MessageSender.sendGameMessage("Server Stopped", 0xffffff));
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> MessageSender.sendChatMessage(sender, message.getSignedContent().plain()));
     }
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("discordLink").executes(context -> {
-            if (getConfig().isMenuBot) {
-                ServerPlayerEntity player = context.getSource().getPlayer();
-                String link = LinkingManager.beginLink(player);
-                LinkingGUI.showLinkGUI(player, link);
-
-                context.getSource().sendFeedback(Text.literal("Link started: " + link), false);
-            }
+            ServerPlayerEntity player = context.getSource().getPlayer();
+            if (player != null)
+                LinkingManager.beginLink(player);
             return 1;
         }));
 
@@ -84,17 +78,17 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
                 .setActivity(Activity.playing(config.PlayingStatus))
                 .build();
 
-        if (config.isMenuBot) {
-            bot = new MenuBot(server, jda);
-            return;
-        }
-
         WebhookClient client = new WebhookClientBuilder(config.webhookURL)
                 .setWait(false)
                 .setDaemon(true)
                 .build();
 
         bot = new BridgeBot(server, jda, client);
+        try {
+            bot.jda.awaitReady();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
