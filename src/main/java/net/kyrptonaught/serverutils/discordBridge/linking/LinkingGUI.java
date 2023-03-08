@@ -18,9 +18,7 @@ public class LinkingGUI {
                         //Text.literal("\uF80C3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
                         Text.literal("Linking your accounts allows you to send messages to the server using the bridge channels."),
                         Text.empty(),
-                        Text.literal("You will be granted a role indicating you have the privilege."),
-                        Text.empty(),
-                        Text.literal("All rules apply, this role may be revoked.")
+                        Text.literal("All rules apply, this role may be revoked if you break the rules.")
                 )
                 .addPage(
                         // Text.literal("3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
