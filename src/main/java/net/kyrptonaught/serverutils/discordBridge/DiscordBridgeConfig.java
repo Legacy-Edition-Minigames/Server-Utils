@@ -7,6 +7,8 @@ public class DiscordBridgeConfig extends AbstractConfigFile {
     public String BotToken;
     public String webhookURL;
 
+    public String serverName;
+
     public String GameMessageName;
     public String GameMessageAvatarURL;
 

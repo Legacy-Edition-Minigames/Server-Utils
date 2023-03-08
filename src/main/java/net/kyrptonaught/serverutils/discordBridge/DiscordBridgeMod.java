@@ -34,7 +34,7 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             buildBot(server, getConfig());
             MessageSender.sendGameMessage("Server Started", 0xffffff);
-            LinkingManager.prepareChannel(bot.jda, getConfig().linkChannelID);
+            LinkingManager.prepareChannel(bot, getConfig().linkChannelID);
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
@@ -68,6 +68,9 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     }
 
     public void buildBot(MinecraftServer server, DiscordBridgeConfig config) {
+        if (config.BotToken == null || config.webhookURL == null)
+            return;
+
         JDA jda = JDABuilder.createDefault(config.BotToken)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)

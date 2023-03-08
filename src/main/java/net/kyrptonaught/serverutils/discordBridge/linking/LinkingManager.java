@@ -25,19 +25,17 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.io.File;
 import java.util.Collections;
-import java.util.List;
 
 public class LinkingManager {
 
-    public static void prepareChannel(JDA jda, long channel) {
-        if (channel == 0) return;
-        MessageHistory history = MessageHistory.getHistoryFromBeginning(jda.getTextChannelById(channel)).complete();
+    public static void prepareChannel(BridgeBot bot, long channel) {
+        if (channel == 0 || bot == null) return;
+        MessageHistory history = MessageHistory.getHistoryFromBeginning(bot.jda.getTextChannelById(channel)).complete();
         for (Message message : history.getRetrievedHistory()) {
             message.delete().queue();
         }
-        generateDiscordInput(jda, channel);
+        generateDiscordInput(bot.jda, channel);
     }
 
     public static void beginLink(ServerPlayerEntity player) {

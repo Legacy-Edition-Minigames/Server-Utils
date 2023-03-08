@@ -15,10 +15,12 @@ public class MessageSender {
         if (DiscordBridgeMod.bot != null)
             DiscordBridgeMod.bot.sendMessage(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message));
     }
+
     public static void sendGameMessageWMentions(Text message) {
         if (DiscordBridgeMod.bot != null)
-            DiscordBridgeMod.bot.sendMessage(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message),true);
+            DiscordBridgeMod.bot.sendMessage(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message), true);
     }
+
     public static void sendGameMessage(String message) {
         if (DiscordBridgeMod.bot != null) {
             DiscordBridgeMod.bot.sendMessage(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message));
@@ -39,8 +41,12 @@ public class MessageSender {
 
     public static void sendLogMessage(String message) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.log(message);
+            DiscordBridgeMod.bot.log(serverName(), message);
         }
+    }
+
+    private static String serverName() {
+        return DiscordBridgeMod.config().serverName;
     }
 
     private static String name() {

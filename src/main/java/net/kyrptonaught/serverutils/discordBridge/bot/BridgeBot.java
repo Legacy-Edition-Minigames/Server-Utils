@@ -86,11 +86,12 @@ public class BridgeBot extends ListenerAdapter {
         BotCommands.modalInteraction(this, event);
     }
 
-    public void log(String message) {
+    public void log(String logSource, String message) {
         long channel = DiscordBridgeMod.config().loggingChannelID;
         if (channel != 0) {
             jda.getTextChannelById(DiscordBridgeMod.config().loggingChannelID).sendMessageEmbeds(
                     new EmbedBuilder()
+                            .setTitle(logSource)
                             .setDescription(message)
                             .setColor(0xa87132)
                             .build()).queue();
