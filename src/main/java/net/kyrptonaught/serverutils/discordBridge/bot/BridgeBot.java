@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.discordBridge.bot;
 
 import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
@@ -36,6 +37,7 @@ public class BridgeBot extends ListenerAdapter {
         builder.setUsername(name);
         builder.setAvatarUrl(url);
         builder.setContent(msg);
+        builder.setAllowedMentions(AllowedMentions.none());
         client.send(builder.build());
     }
 
