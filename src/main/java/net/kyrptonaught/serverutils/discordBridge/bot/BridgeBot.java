@@ -33,11 +33,15 @@ public class BridgeBot extends ListenerAdapter {
     }
 
     public void sendMessage(String name, String url, String msg) {
+        sendMessage(name, url, msg, false);
+    }
+
+    public void sendMessage(String name, String url, String msg, boolean allowMentions) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         builder.setUsername(name);
         builder.setAvatarUrl(url);
         builder.setContent(msg);
-        builder.setAllowedMentions(AllowedMentions.none());
+        builder.setAllowedMentions(allowMentions ? AllowedMentions.all() : AllowedMentions.none());
         client.send(builder.build());
     }
 

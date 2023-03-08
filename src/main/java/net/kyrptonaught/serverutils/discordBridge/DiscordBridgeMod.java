@@ -56,7 +56,7 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
         dispatcher.register(CommandManager.literal("discordMSG").requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.argument("msg", TextArgumentType.text()).executes(context -> {
                     Text text = TextArgumentType.getTextArgument(context, "msg");
-                    MessageSender.sendGameMessage(text);
+                    MessageSender.sendGameMessageWMentions(text);
                     return 1;
                 })));
     }
