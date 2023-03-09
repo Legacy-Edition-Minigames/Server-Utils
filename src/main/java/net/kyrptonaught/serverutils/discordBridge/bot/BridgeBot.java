@@ -1,10 +1,5 @@
 package net.kyrptonaught.serverutils.discordBridge.bot;
 
-import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.send.AllowedMentions;
-import club.minnced.discord.webhook.send.WebhookEmbed;
-import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
-import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -13,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.discordBridge.format.FormatToMC;
 import net.minecraft.server.MinecraftServer;
@@ -22,44 +18,39 @@ import net.minecraft.util.Formatting;
 public class BridgeBot extends ListenerAdapter {
     public final MinecraftServer server;
     public final JDA jda;
-    public final WebhookClient client;
+    public final String webhookUrl;
 
-    public BridgeBot(MinecraftServer server, JDA jda, WebhookClient webhookClient) {
+    public BridgeBot(MinecraftServer server, JDA jda, String webhookUrl) {
         this.server = server;
         this.jda = jda;
-        this.client = webhookClient;
         this.jda.addEventListener(this);
+        this.webhookUrl = webhookUrl;
         BotCommands.registerCommands(jda);
     }
+
+    private static final String payloadTemplate = " {\"content\":\"%1$s\",\"username\":\"%2$s\",\"avatar_url\":\"%3$s\",\"allowed_mentions\":{%4$s}}";
 
     public void sendMessage(String name, String url, String msg) {
         sendMessage(name, url, msg, false);
     }
 
     public void sendMessage(String name, String url, String msg, boolean allowMentions) {
-        WebhookMessageBuilder builder = new WebhookMessageBuilder();
-        builder.setUsername(name);
-        builder.setAvatarUrl(url);
-        builder.setContent(msg);
-        builder.setAllowedMentions(allowMentions ? AllowedMentions.all() : AllowedMentions.none());
-        client.send(builder.build());
+        String test = payloadTemplate.formatted(msg, name, url, allowMentions ? " \"parse\":[\"users\",\"roles\",\"everyone\"]" : "\"parse\": []");
+        BackendServerModule.asyncPostAlt(webhookUrl, test);
     }
 
-    public void sendEmbed(String name, String url, String msg, String title, int hexColor) {
-        WebhookMessageBuilder builder = new WebhookMessageBuilder();
-        builder.setUsername(name);
-        builder.setAvatarUrl(url);
-        WebhookEmbedBuilder embedBuilder = new WebhookEmbedBuilder();
-        if (title != null) embedBuilder.setTitle(new WebhookEmbed.EmbedTitle(title, null));
+    public void sendEmbed(String title, String msg, int hexColor) {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        if (title != null) embedBuilder.setTitle(title);
         if (hexColor != 0) embedBuilder.setColor(hexColor);
         embedBuilder.setDescription(msg);
 
-        client.send(builder.addEmbeds(embedBuilder.build()).build());
+        jda.getTextChannelById(getChannel()).sendMessageEmbeds(embedBuilder.build()).queue();
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (!event.isWebhookMessage() && isAllowedChannel(event.getChannel().getIdLong())) {
+        if (!event.isWebhookMessage() && event.getAuthor().getIdLong() != jda.getSelfUser().getIdLong() && isAllowedChannel(event.getChannel().getIdLong())) {
             if (event.getMessage().getReferencedMessage() != null) {
                 Text message = FormatToMC.parseMessage(event.getMessage().getReferencedMessage(), Text.literal("    ┌──── ").formatted(Formatting.GRAY));
                 server.getPlayerManager().broadcast(message, false);
@@ -118,7 +109,6 @@ public class BridgeBot extends ListenerAdapter {
     }
 
     public void close() {
-        if (jda != null) jda.shutdownNow();
-        if (client != null) client.close();
+        if (jda != null) jda.shutdown();
     }
 }

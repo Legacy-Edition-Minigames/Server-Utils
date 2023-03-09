@@ -1,7 +1,6 @@
 package net.kyrptonaught.serverutils.discordBridge;
 
-import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.WebhookClientBuilder;
+
 import com.mojang.brigadier.CommandDispatcher;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -14,12 +13,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.kyrptonaught.serverutils.discordBridge.bot.BotCommands;
 import net.kyrptonaught.serverutils.discordBridge.bot.BridgeBot;
 import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
-import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.command.argument.TextArgumentType;
-import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -81,14 +77,8 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
                 .setActivity(Activity.playing(config.PlayingStatus))
                 .build();
 
-        WebhookClient client = new WebhookClientBuilder(config.webhookURL)
-                .setWait(false)
-                .setDaemon(true)
-                .build();
-
-        bot = new BridgeBot(server, jda, client);
         try {
-            bot.jda.awaitReady();
+            bot = new BridgeBot(server, jda.awaitReady(), config.webhookURL);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

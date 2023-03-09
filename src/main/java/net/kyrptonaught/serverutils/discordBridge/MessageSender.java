@@ -29,13 +29,13 @@ public class MessageSender {
 
     public static void sendGameMessage(String message, int color) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendEmbed(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message), null, color);
+            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message), color);
         }
     }
 
     public static void sendGameMessage(Text message, int color) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendEmbed(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message), null, color);
+            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message),  color);
         }
     }
 

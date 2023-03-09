@@ -3,7 +3,6 @@ package net.kyrptonaught.serverutils.backendServer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -24,7 +23,7 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
                 .executor(executorService)
                 .version(HttpClient.Version.HTTP_1_1)
                 .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(5))
+                .connectTimeout(Duration.ofSeconds(10))
                 .build();
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> executorService.shutdown());
@@ -47,6 +46,11 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
 
     public static void asyncPost(String url, String json) {
         HttpRequest request = buildPostRequest(getApiUrl(url), json);
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static void asyncPostAlt(String url, String json) {
+        HttpRequest request = buildPostRequest(url, json);
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
@@ -79,7 +83,7 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
     private static HttpRequest buildPostRequest(String url) {
         return HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .timeout(Duration.ofMinutes(2))
+                .timeout(Duration.ofSeconds(10))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
@@ -88,7 +92,7 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
     private static HttpRequest buildPostRequest(String url, String json) {
         return HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .timeout(Duration.ofMinutes(2))
+                .timeout(Duration.ofSeconds(10))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -97,7 +101,7 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
     private static HttpRequest buildGetRequest(String url) {
         return HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .timeout(Duration.ofMinutes(2))
+                .timeout(Duration.ofSeconds(10))
                 .header("Content-Type", "application/json")
                 .GET()
                 .build();
