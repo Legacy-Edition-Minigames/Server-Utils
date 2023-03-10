@@ -24,9 +24,9 @@ public class LinkingGUI {
                         // Text.literal("3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
                         Text.literal("§lHow to link: "),
                         Text.empty(),
-                        Text.literal("1. Join the ").append(Text.literal("Legacy Edition Minigames Discord Server").styled(style -> urlStyle(style, "https://dsc.gg/lem"))),
+                        Text.literal("1. Join the ").append(Text.literal("Legacy Edition Minigames Discord Server").styled(style -> urlStyle(style, "https://discord.gg/5q2zz3EdYf"))),
                         Text.empty(),
-                        Text.literal("2. Find the ").append(Text.literal("\"Account Link\" channel").styled(style -> urlStyle(style, "https://discord.com/channels/860805393441357834/880533722322042901"))),
+                        Text.literal("2. Find the ").append(Text.literal("\"Account Link\" channel").styled(style -> urlStyle(style, "https://discord.com/channels/860805393441357834/1082945943827128360"))),
                         Text.empty(),
                         Text.literal("3. Click on the link button and enter the following code: ").append(Text.literal(linkID).styled(style -> copyStyle(style, linkID)))
                 ).signed();
