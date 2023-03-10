@@ -74,7 +74,7 @@ public class LinkingManager {
 
         BackendServerModule.asyncPost("link/finish/" + linkID + "/" + discordID, (success, response) -> {
             if (!success) {
-                event.reply("Error").setEphemeral(true).queue();
+                event.reply("An error occured. Is the code correct?").setEphemeral(true).queue();
                 return;
             }
             event.reply("Linked!").setEphemeral(true).queue();
