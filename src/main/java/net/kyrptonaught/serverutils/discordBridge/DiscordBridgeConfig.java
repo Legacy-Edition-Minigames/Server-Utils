@@ -9,16 +9,13 @@ public class DiscordBridgeConfig extends AbstractConfigFile {
 
     public String serverName;
 
-    public String GameMessageName;
-    public String GameMessageAvatarURL;
-
     public String PlayerSkinURL;
 
     public String PlayingStatus;
 
     public long bridgeChannelID;
     public long linkChannelID;
-    public long loggingChannelID;
+    public String loggingWebhookURL;
 
     public long linkRoleID;
 }

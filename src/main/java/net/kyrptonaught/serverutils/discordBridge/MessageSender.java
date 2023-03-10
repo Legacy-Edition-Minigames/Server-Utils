@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.discordBridge;
 
+import net.kyrptonaught.serverutils.discordBridge.bot.WebhookSender;
 import net.kyrptonaught.serverutils.discordBridge.format.FormatToDiscord;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -7,53 +8,33 @@ import net.minecraft.text.Text;
 public class MessageSender {
 
     public static void sendChatMessage(ServerPlayerEntity player, String message) {
-        if (DiscordBridgeMod.bot != null)
-            DiscordBridgeMod.bot.sendMessage(player.getEntityName(), DiscordBridgeMod.getUserHeadURL(player), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message));
-    }
-
-    public static void sendGameMessage(Text message) {
-        if (DiscordBridgeMod.bot != null)
-            DiscordBridgeMod.bot.sendMessage(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message));
+        WebhookSender.sendMessage(player.getEntityName(), DiscordBridgeMod.getUserHeadURL(player), FormatToDiscord.toDiscord(player.getServer(), message));
     }
 
     public static void sendGameMessageWMentions(Text message) {
-        if (DiscordBridgeMod.bot != null)
-            DiscordBridgeMod.bot.sendMessage(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message), true);
-    }
-
-    public static void sendGameMessage(String message) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendMessage(name(), url(), FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message));
+            DiscordBridgeMod.bot.sendMessage(FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message));
         }
     }
 
     public static void sendGameMessage(String message, int color) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message), color);
+            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message), color);
         }
     }
 
     public static void sendGameMessage(Text message, int color) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot, message),  color);
+            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message), color);
         }
     }
 
     public static void sendLogMessage(String message) {
-        if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.log(serverName(), message);
-        }
+        WebhookSender.log(serverName(), message);
     }
 
     private static String serverName() {
         return DiscordBridgeMod.config().serverName;
     }
 
-    private static String name() {
-        return DiscordBridgeMod.config().GameMessageName;
-    }
-
-    private static String url() {
-        return DiscordBridgeMod.config().GameMessageAvatarURL;
-    }
 }

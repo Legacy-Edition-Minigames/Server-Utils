@@ -15,13 +15,14 @@ public class LinkingGUI {
     public static void showLinkGUI(ServerPlayerEntity player, String linkID) {
         BookElementBuilder bookBuilder = BookElementBuilder.from(Items.WRITTEN_BOOK.getDefaultStack())
                 .addPage(
-                        //Text.literal("\uF80C3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
                         Text.literal("Linking your accounts allows you to send messages to the server using the bridge channels."),
                         Text.empty(),
-                        Text.literal("All rules apply, this role may be revoked if you break the rules.")
+                        Text.literal("All rules apply, this role may be revoked if you break the rules."),
+                        Text.empty(),
+                        Text.empty(),
+                        Text.literal("Continue").styled(LinkingGUI::nextPageStyle)
                 )
                 .addPage(
-                        // Text.literal("3").formatted(Formatting.WHITE).styled(style -> style.withFont(new Identifier("4jmenu:menu/theme/vanilla/window/box"))),
                         Text.literal("§lHow to link: "),
                         Text.empty(),
                         Text.literal("1. Join the ").append(Text.literal("Legacy Edition Minigames Discord Server").styled(style -> urlStyle(style, "https://discord.gg/5q2zz3EdYf"))),
@@ -51,5 +52,12 @@ public class LinkingGUI {
                 .withUnderline(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, text))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to copy")));
+    }
+
+    private static Style nextPageStyle(Style style){
+        return style.withColor(Formatting.BLUE)
+                .withUnderline(true)
+                .withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "2"))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Next Page")));
     }
 }

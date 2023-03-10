@@ -3,22 +3,23 @@ package net.kyrptonaught.serverutils.discordBridge.format;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.discordBridge.bot.BridgeBot;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 import java.util.Optional;
 
 public class FormatToDiscord {
-
-    public static String toDiscord(BridgeBot bot, String text) {
-        for (RichCustomEmoji emoji : DiscordBridgeMod.bot.jda.getEmojiCache())
-            text = text.replaceAll(":" + emoji.getName() + ":", emoji.getAsMention());
+    public static String toDiscord(MinecraftServer server, String text) {
+        if (DiscordBridgeMod.bot != null)
+            for (RichCustomEmoji emoji : DiscordBridgeMod.bot.jda.getEmojiCache())
+                text = text.replaceAll(":" + emoji.getName() + ":", emoji.getAsMention());
         return text;
     }
 
-    public static String toDiscord(BridgeBot bot, Text text) {
+    public static String toDiscord(MinecraftServer server, Text text) {
         try {
-            text = Texts.parse(bot.server.getCommandSource(), text, null, 0);
+            text = Texts.parse(server.getCommandSource(), text, null, 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,10 +32,12 @@ public class FormatToDiscord {
             if (style.isItalic()) modifier.append("*");
             if (style.isBold()) modifier.append("**");
 
+            text2 = text2.replaceAll("[\\uF801-\\uF880]", "");
+
             output.append(modifier).append(text2).append(modifier.reverse());
             return Optional.empty();
         }, text.getStyle());
 
-        return toDiscord(bot, output.toString());
+        return toDiscord(server, output.toString());
     }
 }

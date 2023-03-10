@@ -64,7 +64,7 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     }
 
     public void buildBot(MinecraftServer server, DiscordBridgeConfig config) {
-        if (config.BotToken == null || config.webhookURL == null)
+        if (config.BotToken == null)
             return;
 
         JDA jda = JDABuilder.createDefault(config.BotToken)
@@ -78,7 +78,7 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
                 .build();
 
         try {
-            bot = new BridgeBot(server, jda.awaitReady(), config.webhookURL);
+            bot = new BridgeBot(server, jda.awaitReady());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
