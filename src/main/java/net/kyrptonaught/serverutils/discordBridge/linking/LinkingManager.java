@@ -50,7 +50,7 @@ public class LinkingManager {
 
     public static void generateDiscordInput(JDA jda, long channel) {
         MessageEmbed embed = new EmbedBuilder()
-                .setDescription("Click \"Link\" below to link your account")
+                .setDescription("Click \"Link\" below to link your account\n\n**Note**: This feature is only on the **experimental server** for testing, in the future this will be required to access <#860805608884928532>\nyou can test this feature on `test.leb.derpbox.xyz` using `/discordLink`")
                 .build();
 
         jda.getTextChannelById(channel).sendMessageEmbeds(Collections.singleton(embed))
