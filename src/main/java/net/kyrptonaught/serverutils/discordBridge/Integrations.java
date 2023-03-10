@@ -33,7 +33,7 @@ public class Integrations {
     }
 
     public static void sendLeaveMessage(Text message) {
-        MessageSender.sendGameMessage(Text.literal("➡️ ").append(message), 0x6332a8);
+        MessageSender.sendGameMessage(Text.literal("⬅️ ").append(message), 0x6332a8);
     }
 
     public static void sendDeathMessage(Text message) {
