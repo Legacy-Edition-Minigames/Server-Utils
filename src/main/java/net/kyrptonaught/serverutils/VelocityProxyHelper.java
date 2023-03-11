@@ -21,7 +21,7 @@ public class VelocityProxyHelper {
     }
 
     public static void kickPlayer(ServerPlayerEntity player, Text msg) {
-        sendVelocityCommand(player, "KickPlayer", ((PersonatusProfile) player.getGameProfile()).getRealProfile().getName(), msg.toString());
+        sendVelocityCommand(player, "KickPlayer", ((PersonatusProfile) player.getGameProfile()).getRealProfile().getName(), msg.getString());
         player.networkHandler.connection.send(new DisconnectS2CPacket(msg));
         player.networkHandler.connection.disconnect(msg);
     }

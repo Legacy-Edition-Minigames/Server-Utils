@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.discordBridge;
 
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -50,11 +51,20 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
         }));
 
         dispatcher.register(CommandManager.literal("discordMSG").requires((source) -> source.hasPermissionLevel(2))
-                .then(CommandManager.argument("msg", TextArgumentType.text()).executes(context -> {
-                    Text text = TextArgumentType.getTextArgument(context, "msg");
-                    MessageSender.sendGameMessageWMentions(text);
-                    return 1;
-                })));
+                .then(CommandManager.argument("msg", TextArgumentType.text())
+                        .executes(context -> {
+                            Text text = TextArgumentType.getTextArgument(context, "msg");
+                            MessageSender.sendGameMessageWMentions(text);
+                            return 1;
+                        })));
+        dispatcher.register(CommandManager.literal("discordChatMSG").requires((source) -> source.hasPermissionLevel(2))
+                .then(CommandManager.argument("msg", TextArgumentType.text())
+                        .executes(context -> {
+                            Text text = TextArgumentType.getTextArgument(context, "msg");
+                            MessageSender.sendGameMessageWMentions(text);
+                            context.getSource().getServer().getPlayerManager().broadcast(text, false);
+                            return 1;
+                        })));
     }
 
     public static String getUserHeadURL(ServerPlayerEntity player) {
