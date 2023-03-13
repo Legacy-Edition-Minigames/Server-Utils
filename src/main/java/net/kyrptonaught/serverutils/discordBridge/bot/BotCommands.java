@@ -2,41 +2,61 @@ package net.kyrptonaught.serverutils.discordBridge.bot;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
+import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
+import net.kyrptonaught.serverutils.personatus.PersonatusModule;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 public class BotCommands {
 
     public static void registerCommands(JDA jda) {
         jda.updateCommands().addCommands(
-                Commands.slash("info", "Get the server info").setGuildOnly(true)
-                ).queue();
+                Commands.slash("info", "Get the server info").setGuildOnly(true),
+                Commands.slash("sus", "Mark a player as sussy").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true),
+                Commands.slash("unsus", "Mark a player as no longer sussy").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true)
+        ).queue();
     }
 
     public static void execute(BridgeBot bot, SlashCommandInteraction event) {
         switch (event.getName()) {
-            case "info" -> BotCommands.infoCommandExecute(bot.server, event);
+            case "info" -> infoCommandExecute(bot.server, event);
+            case "sus" -> {
+                event.deferReply().queue();
+                String mcname = event.getOption("mcname").getAsString();
+                susCommandExecute(mcname, (result) -> event.getHook().editOriginal(result).queue());
+            }
+            case "unsus" -> {
+                event.deferReply().queue();
+                String mcname = event.getOption("mcname").getAsString();
+                unsusCommandExecute(mcname, (result) -> event.getHook().editOriginal(result).queue());
+            }
         }
     }
 
     public static void buttonPressed(BridgeBot bot, @NotNull ButtonInteractionEvent event) {
-        switch (event.getButton().getId()) {
-            case "link:start" -> LinkingManager.displayLinkInput(event);
+        if (event.getButton().getId().equals("link:start")) {
+            LinkingManager.displayLinkInput(event);
         }
     }
 
     public static void modalInteraction(BridgeBot bot, ModalInteractionEvent event) {
-        switch (event.getModalId()) {
-            case "link:modal" -> LinkingManager.linkInputResults(event);
+        if (event.getModalId().equals("link:modal")) {
+            LinkingManager.linkInputResults(event);
         }
     }
 
@@ -48,7 +68,7 @@ public class BotCommands {
 
         StringBuilder playerString = new StringBuilder();
         PlayerManager players = server.getPlayerManager();
-        playerString.append("```ts\n").append("Online Players (").append(players.getCurrentPlayerCount()).append("/").append(players.getMaxPlayerCount()).append(")\n");
+        playerString.append("```css\n").append("Online Players (").append(players.getCurrentPlayerCount()).append("/").append(players.getMaxPlayerCount()).append(")\n");
         for (ServerPlayerEntity player : players.getPlayerList())
             playerString.append("[").append(player.pingMilliseconds).append("ms] ").append(player.getEntityName()).append("\n");
         playerString.append("```");
@@ -64,4 +84,38 @@ public class BotCommands {
                         .build()).queue();
     }
 
+
+    public static void susCommandExecute(String mcName, Consumer<String> result) {
+        String responseUUID = PersonatusModule.URLGetValue(true, "https://api.mojang.com/users/profiles/minecraft/" + mcName, "id");
+
+        if (responseUUID == null) {
+            result.accept("Invalid MC Name");
+            return;
+        }
+
+        BackendServerModule.asyncPost("link/sus/add/" + responseUUID, (success, response) -> {
+            if (success) {
+                result.accept("Added sussy baka");
+                MessageSender.sendLogMessage("Added " + mcName + " as a sussy baka");
+            } else
+                result.accept("Error");
+        });
+    }
+
+    public static void unsusCommandExecute(String mcName, Consumer<String> result) {
+        String responseUUID = PersonatusModule.URLGetValue(true, "https://api.mojang.com/users/profiles/minecraft/" + mcName, "id");
+
+        if (responseUUID == null) {
+            result.accept("Invalid MC Name");
+            return;
+        }
+
+        BackendServerModule.asyncPost("link/sus/remove/" + responseUUID, (success, response) -> {
+            if (success) {
+                result.accept("Removed sussy baka");
+                MessageSender.sendLogMessage("Removed " + mcName + " as a sussy baka");
+            } else
+                result.accept("Error");
+        });
+    }
 }

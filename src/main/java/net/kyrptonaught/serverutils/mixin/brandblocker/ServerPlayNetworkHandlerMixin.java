@@ -43,7 +43,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements SPNHDelayedJoinBr
                     VelocityProxyHelper.kickPlayer(player, msg);
                 } else {
                     this.server.getPlayerManager().broadcast(storedJoinMSG, false);
-                    Integrations.sendJoinMessage(storedJoinMSG);
+                    Integrations.sendJoinMessage(player, storedJoinMSG);
                 }
             });
         }

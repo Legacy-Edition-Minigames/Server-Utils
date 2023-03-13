@@ -18,4 +18,5 @@ public class DiscordBridgeConfig extends AbstractConfigFile {
     public String loggingWebhookURL;
 
     public long linkRoleID;
+    public long moderatorRoleID;
 }

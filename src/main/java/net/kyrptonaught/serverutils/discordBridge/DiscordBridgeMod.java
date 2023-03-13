@@ -1,8 +1,6 @@
 package net.kyrptonaught.serverutils.discordBridge;
 
-
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -16,12 +14,9 @@ import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.discordBridge.bot.BridgeBot;
 import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
-import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
 public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     public static BridgeBot bot;
@@ -43,28 +38,7 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("discordLink").executes(context -> {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            if (player != null)
-                LinkingManager.beginLink(player);
-            return 1;
-        }));
-
-        dispatcher.register(CommandManager.literal("discordMSG").requires((source) -> source.hasPermissionLevel(2))
-                .then(CommandManager.argument("msg", TextArgumentType.text())
-                        .executes(context -> {
-                            Text text = TextArgumentType.getTextArgument(context, "msg");
-                            MessageSender.sendGameMessageWMentions(text);
-                            return 1;
-                        })));
-        dispatcher.register(CommandManager.literal("discordChatMSG").requires((source) -> source.hasPermissionLevel(2))
-                .then(CommandManager.argument("msg", TextArgumentType.text())
-                        .executes(context -> {
-                            Text text = TextArgumentType.getTextArgument(context, "msg");
-                            MessageSender.sendGameMessageWMentions(text);
-                            context.getSource().getServer().getPlayerManager().broadcast(text, false);
-                            return 1;
-                        })));
+        DiscordBridgeCommands.registerCommands(dispatcher);
     }
 
     public static String getUserHeadURL(ServerPlayerEntity player) {

@@ -2,7 +2,6 @@ package net.kyrptonaught.serverutils.discordBridge.format;
 
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
-import net.kyrptonaught.serverutils.discordBridge.bot.BridgeBot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;

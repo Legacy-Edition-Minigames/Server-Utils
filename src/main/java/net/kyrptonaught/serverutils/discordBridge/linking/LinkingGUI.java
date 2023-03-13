@@ -54,7 +54,7 @@ public class LinkingGUI {
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to copy")));
     }
 
-    private static Style nextPageStyle(Style style){
+    private static Style nextPageStyle(Style style) {
         return style.withColor(Formatting.BLUE)
                 .withUnderline(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "2"))

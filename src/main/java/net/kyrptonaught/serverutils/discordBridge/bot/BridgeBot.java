@@ -16,7 +16,6 @@ import net.kyrptonaught.serverutils.discordBridge.format.FormatToMC;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.NotNull;
 
 public class BridgeBot extends ListenerAdapter {
     public final MinecraftServer server;
@@ -89,7 +88,7 @@ public class BridgeBot extends ListenerAdapter {
         return (event.getMessage().getType() == MessageType.DEFAULT || event.getMessage().getType() == MessageType.INLINE_REPLY) &&
                 !event.isWebhookMessage() &&
                 event.getAuthor().getIdLong() != jda.getSelfUser().getIdLong() &&
-                isAllowedChannel(event.getChannel().getIdLong());
+                (isAllowedChannel(event.getChannel().getIdLong()));
     }
 
 

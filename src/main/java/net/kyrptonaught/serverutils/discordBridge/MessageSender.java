@@ -33,6 +33,10 @@ public class MessageSender {
         WebhookSender.log(serverName(), message);
     }
 
+    public static void sendLogWMentions(String message) {
+        WebhookSender.logMention(serverName(), message, true);
+    }
+
     private static String serverName() {
         return DiscordBridgeMod.config().serverName;
     }
