@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.discordBridge.format;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -21,6 +22,8 @@ public class FormatToMC {
             replacementURLs.put(embed.getUrl(), embed.getUrl());
         for (Message.Attachment attachment : discordMessage.getAttachments())
             replacementURLs.put(attachment.getFileName(), attachment.getUrl());
+        for(StickerItem stickerItem : discordMessage.getStickers())
+            replacementURLs.put("Sticker:"+stickerItem.getName(), stickerItem.getIcon().getUrl());
 
         int color = discordMessage.getMember() != null ? discordMessage.getMember().getColorRaw() : 0;
         MutableText message = Text.literal("").append(prefix).append(Text.literal("<" + discordMessage.getAuthor().getName() + "> ").styled(style -> style.withColor(color)));
@@ -29,15 +32,15 @@ public class FormatToMC {
         }
 
         if (replacementURLs.size() > 0) {
-            Iterator<String> iterator = replacementURLs.keySet().iterator();
             message.append("{");
-            while (iterator.hasNext()) {
-                String str = iterator.next();
-                message.append(Text.literal(str + (iterator.hasNext() ? ", " : "")).setStyle(styleURL(replacementURLs.get(str))));
+
+            Iterator<String> urlIterator = replacementURLs.keySet().iterator();
+            while (urlIterator.hasNext()) {
+                String str = urlIterator.next();
+                message.append(Text.literal(str + (urlIterator.hasNext() ? ", " : "")).setStyle(styleURL(replacementURLs.get(str))));
             }
             message.append("}");
         }
-
         return message;
     }
 
