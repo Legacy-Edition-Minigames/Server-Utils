@@ -13,28 +13,28 @@ public class MessageSender {
 
     public static void sendGameMessageWMentions(Text message) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendMessage(FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message));
+            DiscordBridgeMod.bot.sendMessage(FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message, true));
         }
     }
 
     public static void sendGameMessage(String message, int color) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message), color);
+            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message, true), color);
         }
     }
 
     public static void sendGameMessage(Text message, int color) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message), color);
+            DiscordBridgeMod.bot.sendEmbed(null, FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message, true), color);
         }
     }
 
     public static void sendLogMessage(String message) {
-        WebhookSender.log(serverName(), message);
+        WebhookSender.log(serverName(), FormatToDiscord.escapeFormatting(message).replaceAll("\\\\", "\\\\\\\\"));
     }
 
     public static void sendLogWMentions(String message) {
-        WebhookSender.logMention(serverName(), message, true);
+        WebhookSender.logMention(serverName(), FormatToDiscord.escapeFormatting(message).replaceAll("\\\\", "\\\\\\\\"), true);
     }
 
     private static String serverName() {

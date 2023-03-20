@@ -10,6 +10,11 @@ import java.util.Optional;
 
 public class FormatToDiscord {
     public static String toDiscord(MinecraftServer server, String text) {
+        return toDiscord(server, text, false);
+    }
+
+    public static String toDiscord(MinecraftServer server, String text, boolean escapeFormat) {
+        if (escapeFormat) text = escapeFormatting(text);
         if (DiscordBridgeMod.bot != null)
             for (RichCustomEmoji emoji : DiscordBridgeMod.bot.jda.getEmojiCache())
                 text = text.replaceAll(":" + emoji.getName() + ":", emoji.getAsMention());
@@ -17,6 +22,10 @@ public class FormatToDiscord {
     }
 
     public static String toDiscord(MinecraftServer server, Text text) {
+        return toDiscord(server, text, false);
+    }
+
+    public static String toDiscord(MinecraftServer server, Text text, boolean escapeFormat) {
         try {
             text = Texts.parse(server.getCommandSource(), text, null, 0);
         } catch (Exception e) {
@@ -25,6 +34,8 @@ public class FormatToDiscord {
 
         StringBuilder output = new StringBuilder();
         text.visit((style, text2) -> {
+            if (escapeFormat) text2 = escapeFormatting(text2);
+
             StringBuilder modifier = new StringBuilder();
             if (style.isUnderlined()) modifier.append("__");
             if (style.isStrikethrough()) modifier.append("~~");
@@ -38,5 +49,12 @@ public class FormatToDiscord {
         }, text.getStyle());
 
         return toDiscord(server, output.toString());
+    }
+
+    public static String escapeFormatting(String word) {
+        return word
+                .replaceAll("_", "\\\\_")
+                .replaceAll("\\*", "\\\\*")
+                .replaceAll("~", "\\\\");
     }
 }
