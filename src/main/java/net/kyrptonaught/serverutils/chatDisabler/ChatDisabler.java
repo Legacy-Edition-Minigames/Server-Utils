@@ -22,7 +22,7 @@ public class ChatDisabler extends ModuleWConfig<ChatDisablerConfig> {
                                     CHATENABLED = BoolArgumentType.getBool(context, "enabled");
                                     ChatDisablerConfig config = getConfig();
 
-                                    Integrations.chatDisabler(context.getSource().getName(), CHATENABLED, config);
+                                    Integrations.chatDisabler(context.getSource(), CHATENABLED, config);
                                     if (CHATENABLED) {
                                         if (config.notifyChatEnabled)
                                             broadcast(context.getSource().getServer(), config.enabledMessage);

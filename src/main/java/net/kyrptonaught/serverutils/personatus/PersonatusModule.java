@@ -27,7 +27,7 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                 .executes(context -> {
                                     getConfig().enabled = BoolArgumentType.getBool(context, "enable");
                                     saveConfig();
-                                    Integrations.personatusEnable(context.getSource().getName(), getConfig().enabled);
+                                    Integrations.personatusEnable(context.getSource(), getConfig().enabled);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("checkSpoof")
@@ -63,7 +63,7 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
 
                                                 if (URLGet("kvs/set/personatus/" + player + "/" + spoofedName)) {
                                                     context.getSource().sendFeedback(Text.literal("Spoofing set. Please check the spoof first with /personatus checkSpoof " + player + " to verify. Relog to apply spoof."), false);
-                                                    Integrations.personatusSpoof(context.getSource().getName(), player, spoofedName);
+                                                    Integrations.personatusSpoof(context.getSource(), player, spoofedName);
                                                 }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -77,7 +77,7 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                     try {
                                         if (URLGet("kvs/reset/personatus/" + player)) {
                                             context.getSource().sendFeedback(Text.literal("Spoof reset"), false);
-                                            Integrations.personatusClear(context.getSource().getName(), player);
+                                            Integrations.personatusClear(context.getSource(), player);
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
