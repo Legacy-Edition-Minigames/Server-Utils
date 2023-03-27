@@ -25,13 +25,8 @@ public abstract class WorldBorderMixin implements CustomWorldBorder {
     @Shadow
     public abstract void setSize(double size);
 
-    @Shadow
-    @Final
-    private List<WorldBorderListener> listeners;
-
     @Override
     public void setShape(double xCenter, double zCenter, double xSize, double zSize) {
-        this.listeners.clear();
         setCenter(xCenter, zCenter);
         this.area = new CustomWorldBorderArea((WorldBorder) (Object) this, xSize, zSize);
     }
@@ -42,13 +37,8 @@ public abstract class WorldBorderMixin implements CustomWorldBorder {
         setSize(size);
     }
 
-    @Inject(method = "setSize", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/border/WorldBorder;getListeners()Ljava/util/List;"), cancellable = true)
-    public void DontUpdateSize(double size, CallbackInfo ci) {
-        ci.cancel();
-    }
-
-    @Inject(method = "setCenter", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/border/WorldBorder;getListeners()Ljava/util/List;"), cancellable = true)
-    public void DontUpdateCenter(double x, double z, CallbackInfo ci) {
+    @Inject(method = "addListener", at = @At("HEAD"), cancellable = true)
+    public void noListeners(WorldBorderListener listener, CallbackInfo ci) {
         ci.cancel();
     }
 }

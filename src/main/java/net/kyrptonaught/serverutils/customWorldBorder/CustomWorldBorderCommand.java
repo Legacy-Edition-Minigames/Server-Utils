@@ -31,7 +31,6 @@ public class CustomWorldBorderCommand {
                                     ServerWorld world = DimensionArgumentType.getDimensionArgument(context, "dimension");
                                     Entity[] entities = EntityArgumentType.getEntities(context, "entities").toArray(Entity[]::new);
                                     if (entities.length >= 2) {
-                                        System.out.println("setting border to: " + entities[0].getBlockPos() + " , " + entities[1].getBlockPos());
                                         CustomWorldBorderMod.getCustomWorldBorderManager(world).setCustomWorldBorder(world, entities[0].getBlockPos(), entities[1].getBlockPos());
                                     }
                                     return 1;

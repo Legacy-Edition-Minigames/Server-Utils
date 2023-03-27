@@ -3,8 +3,7 @@ package net.kyrptonaught.serverutils.customWorldBorder;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.serverutils.customWorldBorder.duckInterface.CustomWorldBorder;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
-import net.minecraft.network.packet.s2c.play.WorldBorderSizeChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -23,11 +22,19 @@ public class CustomWorldBorderManager {
     public double xSize, zSize;
     public double maxY;
 
-    private final WorldBorder q1Border = new WorldBorder();
-    private final WorldBorder q2Border = new WorldBorder();
+    private final WorldBorder q1Border;
+    private final WorldBorder q2Border;
 
     public CustomWorldBorderManager() {
         maxY = zSize = xSize = 5.9999968E7;
+        q1Border = new WorldBorder();
+        q1Border.setWarningBlocks(0);
+        q1Border.setWarningTime(0);
+        q1Border.setDamagePerBlock(0);
+        q2Border = new WorldBorder();
+        q2Border.setWarningBlocks(0);
+        q2Border.setWarningTime(0);
+        q2Border.setDamagePerBlock(0);
     }
 
     public void setCustomWorldBorder(ServerWorld world, BlockPos min, BlockPos max) {
@@ -74,21 +81,26 @@ public class CustomWorldBorderManager {
     public void tickPlayer(ServerPlayerEntity player, WorldBorder worldBorder) {
         checkBounds(player, worldBorder, maxY);
 
-        if (hasLCH(player)) {
-            if (!playerBorders.containsKey(player.getUuid())) {
-                CustomWorldBorderNetworking.sendCustomWorldBorderPacket(player, xCenter, zCenter, xSize, zSize);
-                playerBorders.put(player.getUuid(), new SyncedBorder());
-            }
-            return;
-        }
+        if (!playerBorders.containsKey(player.getUuid()))
+            playerBorders.put(player.getUuid(), new SyncedBorder(hasLCH(player), null));
 
-        SyncedBorder newSync = new SyncedBorder(player.getX() >= xCenter, zSize * 2);
         SyncedBorder previousSync = playerBorders.get(player.getUuid());
-
-        if (!newSync.sizeMatches(previousSync)) sendSizePacket(player, newSync.isPositive ? q2Border : q1Border);
-        if (!newSync.syncMatches(previousSync)) sendCenterPacket(player, newSync.isPositive ? q2Border : q1Border);
-
-        playerBorders.put(player.getUuid(), newSync);
+        if (previousSync.hasLCH) {
+            if (previousSync.lastSyncPositive == null) {
+                CustomWorldBorderNetworking.sendCustomWorldBorderPacket(player, xCenter, zCenter, xSize, zSize);
+                previousSync.lastSyncPositive = true;
+            }
+        } else if (player.getX() >= xCenter) {
+            if (!previousSync.didPositiveSync()) {
+                sendWorldBorderPacket(player, q2Border);
+                previousSync.lastSyncPositive = true;
+            }
+        } else {
+            if (!previousSync.didNegativeSync()) {
+                sendWorldBorderPacket(player, q1Border);
+                previousSync.lastSyncPositive = false;
+            }
+        }
     }
 
     private static void checkBounds(ServerPlayerEntity player, WorldBorder worldBorder, double maxY) {
@@ -103,20 +115,15 @@ public class CustomWorldBorderManager {
         if (player.getY() > maxY) player.refreshPositionAfterTeleport(player.getX(), maxY - .5, player.getZ());
     }
 
-    public static void sendCenterPacket(ServerPlayerEntity player, WorldBorder worldBorder) {
-        player.networkHandler.sendPacket(new WorldBorderCenterChangedS2CPacket(worldBorder));
+    public static void sendWorldBorderPacket(ServerPlayerEntity player, WorldBorder worldBorder){
+        player.networkHandler.sendPacket(new WorldBorderInitializeS2CPacket(worldBorder));
     }
 
-    public static void sendSizePacket(ServerPlayerEntity player, WorldBorder worldBorder) {
-        player.networkHandler.sendPacket(new WorldBorderSizeChangedS2CPacket(worldBorder));
-    }
 
     public static void updateWorldBorderToAll(List<ServerPlayerEntity> players, WorldBorder worldBorder) {
-        Packet<?> sizePacket = new WorldBorderSizeChangedS2CPacket(worldBorder);
-        Packet<?> centerPacket = new WorldBorderCenterChangedS2CPacket(worldBorder);
+        Packet<?> packet = new WorldBorderInitializeS2CPacket(worldBorder);
         for (ServerPlayerEntity player : players) {
-            player.networkHandler.sendPacket(sizePacket);
-            player.networkHandler.sendPacket(centerPacket);
+            player.networkHandler.sendPacket(packet);
         }
     }
 
@@ -125,26 +132,20 @@ public class CustomWorldBorderManager {
     }
 
     public static class SyncedBorder {
-        private final boolean isPositive;
-        private final double size;
+        public boolean hasLCH;
+        public Boolean lastSyncPositive;
 
-        public SyncedBorder() {
-            this(true, 0);
+        public SyncedBorder(boolean hasLCH, Boolean lastSyncPositive) {
+            this.hasLCH = hasLCH;
+            this.lastSyncPositive = lastSyncPositive;
         }
 
-        public SyncedBorder(boolean positiveBorder, double size) {
-            this.isPositive = positiveBorder;
-            this.size = size;
+        public boolean didPositiveSync() {
+            return lastSyncPositive != null && lastSyncPositive;
         }
 
-        public boolean syncMatches(SyncedBorder other) {
-            if (other == null) return false;
-            return isPositive == other.isPositive;
-        }
-
-        public boolean sizeMatches(SyncedBorder other) {
-            if (other == null) return false;
-            return other.size == size;
+        public boolean didNegativeSync() {
+            return lastSyncPositive != null && !lastSyncPositive;
         }
     }
 }
