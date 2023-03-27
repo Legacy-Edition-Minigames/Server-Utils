@@ -9,6 +9,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 
 public class DiscordBridgeCommands {
 
@@ -33,7 +34,7 @@ public class DiscordBridgeCommands {
                         .executes(context -> {
                             Text text = TextArgumentType.getTextArgument(context, "msg");
                             MessageSender.sendGameMessageWMentions(text);
-                            context.getSource().getServer().getPlayerManager().broadcast(text, false);
+                            context.getSource().getServer().getPlayerManager().broadcast(Texts.parse(context.getSource(),text,null,0), false);
                             return 1;
                         })));
 
