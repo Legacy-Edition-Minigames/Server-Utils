@@ -13,7 +13,7 @@ public class MessageSender {
 
     public static void sendGameMessageWMentions(Text message) {
         if (DiscordBridgeMod.bot != null) {
-            DiscordBridgeMod.bot.sendMessage(FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message, true));
+            DiscordBridgeMod.bot.sendMessage(FormatToDiscord.toDiscord(DiscordBridgeMod.bot.server, message, true), canDiscordMSGCMDPing());
         }
     }
 
@@ -41,4 +41,8 @@ public class MessageSender {
         return DiscordBridgeMod.config().serverName;
     }
 
+
+    private static boolean canDiscordMSGCMDPing() {
+        return DiscordBridgeMod.config().canDiscordMSGCMDPing;
+    }
 }

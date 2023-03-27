@@ -17,6 +17,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.Collections;
+
 public class BridgeBot extends ListenerAdapter {
     public final MinecraftServer server;
     public final JDA jda;
@@ -28,10 +30,10 @@ public class BridgeBot extends ListenerAdapter {
         BotCommands.registerCommands(jda);
     }
 
-    public void sendMessage(String msg) {
+    public void sendMessage(String msg, boolean mentions) {
         MessageCreateData message = new MessageCreateBuilder()
                 .setContent(msg)
-                .setAllowedMentions(null)
+                .setAllowedMentions(mentions ? null : Collections.emptyList())
                 .build();
 
         jda.getTextChannelById(getChannel()).sendMessage(message).queue();
