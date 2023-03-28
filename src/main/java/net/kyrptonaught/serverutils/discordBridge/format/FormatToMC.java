@@ -25,7 +25,7 @@ public class FormatToMC {
         for(StickerItem stickerItem : discordMessage.getStickers())
             replacementURLs.put("Sticker:"+stickerItem.getName(), stickerItem.getIcon().getUrl());
 
-        int color = discordMessage.getMember() != null ? discordMessage.getMember().getColorRaw() : 0;
+        int color = discordMessage.getMember() != null ? discordMessage.getMember().getColorRaw() : 0xffffff;
         MutableText message = Text.literal("").append(prefix).append(Text.literal("<" + discordMessage.getAuthor().getName() + "> ").styled(style -> style.withColor(color)));
         for (String str : discordMessage.getContentDisplay().split(" ")) {
             message.append(parseText(str, replacementURLs));
