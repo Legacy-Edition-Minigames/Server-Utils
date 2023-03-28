@@ -7,8 +7,6 @@ import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.minecraft.util.JsonHelper;
 
 public class WebhookSender {
-    private static final String mentions = "\"parse\":[\"users\",\"roles\",\"everyone\"]", noMentions = "\"parse\":[]";
-
     public static void sendMessage(String name, String url, String msg) {
         sendMessage(name, url, msg, false);
     }
@@ -16,20 +14,10 @@ public class WebhookSender {
     public static void sendMessage(String name, String url, String msg, boolean allowMentions) {
         String webhookUrl = DiscordBridgeMod.config().webhookURL;
         if (webhookUrl != null) {
-            /*
-            String payload = "{" +
-                    "\"content\":\"" + msg + "\"," +
-                    "\"username\":\"" + name + "\"," +
-                    "\"avatar_url\":\"" + url + "\"," +
-                    "\"allowed_mentions\": {" +
-                    (allowMentions ? mentions : noMentions) +
-                    "}}";
-             */
-
             JsonObject payload = new JsonObject();
             payload.addProperty("content", msg);
-            payload.addProperty("username",name);
-            payload.addProperty("avatar_url",url);
+            payload.addProperty("username", name);
+            payload.addProperty("avatar_url", url);
 
             JsonObject mentions = new JsonObject();
             if (allowMentions) {
@@ -60,13 +48,6 @@ public class WebhookSender {
             JsonObject payload = new JsonObject();
             payload.add("embeds", embeds);
 
-            /*String payload = "{\"embeds\":[{" +
-                    "\"title\":\"" + logSource + "\"," +
-                    "\"description\":\"" + message + "\"," +
-                    "\"color\":\"" + 0xa87132 + "\"" +
-                    "}]}";
-
-             */
             BackendServerModule.asyncPostAlt(webhookUrl, payload.toString());
         }
     }
@@ -89,14 +70,6 @@ public class WebhookSender {
 
             payload.add("allowed_mentions", mentions);
 
-            /*
-            String payload = "{" +
-                    "\"content\":\"" + "**" + logSource + "** <@&" + DiscordBridgeMod.config().moderatorRoleID + ">\\n" + message + "\"," +
-                    "\"allowed_mentions\": {" +
-                    (allowMentions ? mentions : noMentions) +
-                    "}}";
-
-             */
             BackendServerModule.asyncPostAlt(webhookUrl, payload.toString());
         }
     }

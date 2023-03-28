@@ -30,11 +30,11 @@ public class MessageSender {
     }
 
     public static void sendLogMessage(String message) {
-        WebhookSender.log(serverName(), FormatToDiscord.escapeFormatting(message).replaceAll("\\\\", "\\\\\\\\"));
+        WebhookSender.log(serverName(), FormatToDiscord.escapeFormatting(message));
     }
 
     public static void sendLogWMentions(String message) {
-        WebhookSender.logMention(serverName(), FormatToDiscord.escapeFormatting(message).replaceAll("\\\\", "\\\\\\\\"), true);
+        WebhookSender.logMention(serverName(), FormatToDiscord.escapeFormatting(message), true);
     }
 
     private static String serverName() {
