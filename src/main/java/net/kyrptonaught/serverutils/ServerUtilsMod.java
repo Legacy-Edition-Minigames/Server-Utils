@@ -31,6 +31,7 @@ import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepa
 import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.kyrptonaught.serverutils.tntlighter.TNTLighter;
+import net.kyrptonaught.serverutils.userConfig.UserConfigMod;
 import net.kyrptonaught.serverutils.velocitymodifier.VelocityModifierModule;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
 import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
@@ -80,6 +81,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module ServerTranslatorModule = registerModule("servertranslator", new ServerTranslator());
     public static Module CustomWorldBorder = registerModule("customworldborder", new CustomWorldBorderMod());
     public static DiscordBridgeMod DiscordBridgeModule = (DiscordBridgeMod) registerModule("discordbridge", new DiscordBridgeMod());
+    public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
 
     @Override
     public void onInitialize() {
