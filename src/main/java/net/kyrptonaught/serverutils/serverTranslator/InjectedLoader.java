@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.serverTranslator;
 
+import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.client.font.TextVisitFactory;
@@ -12,7 +13,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -27,8 +27,8 @@ public class InjectedLoader implements SimpleSynchronousResourceReloadListener {
 
     @Override
     public void reload(ResourceManager manager) {
-        HashMap<String, String> map = new HashMap<>();
-        BiConsumer<String, String> biConsumer = map::put;
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        BiConsumer<String, String> biConsumer = builder::put;
 
         try (InputStream inputStream = Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json")) {
             Language.load(inputStream, biConsumer);
@@ -46,6 +46,7 @@ public class InjectedLoader implements SimpleSynchronousResourceReloadListener {
                 }
         }
 
+        final ImmutableMap<String, String> map = builder.build();
         Language.setInstance(new Language() {
 
             @Override
