@@ -46,6 +46,8 @@ public class InjectedLoader implements SimpleSynchronousResourceReloadListener {
                 }
         }
 
+        builder.putAll(ServerUtilsMod.ServerTranslatorModule.getConfig().injects);
+
         final ImmutableMap<String, String> map = builder.build();
         Language.setInstance(new Language() {
 

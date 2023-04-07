@@ -3,13 +3,14 @@ package net.kyrptonaught.serverutils.serverTranslator;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ServerTranslator extends Module {
+public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
 
     private static final HashMap<UUID, String> playerLanguages = new HashMap<>();
 
@@ -36,5 +37,10 @@ public class ServerTranslator extends Module {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new TranslationLoader());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new InjectedLoader());
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> playerLanguages.remove(handler.player.getUuid()));
+    }
+
+    @Override
+    public ServerTranslationConfig createDefaultConfig() {
+        return new ServerTranslationConfig();
     }
 }

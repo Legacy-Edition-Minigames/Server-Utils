@@ -78,10 +78,10 @@ public class ServerUtilsMod implements ModInitializer {
     public static PersonatusModule personatusModule = (PersonatusModule) registerModule("personatus", new PersonatusModule());
     public static Module critBlockerModule = registerModule("critblocker", new CritBlockerMod());
     public static Module CustomUIModule = registerModule("customui", new CustomUI());
-    public static Module ServerTranslatorModule = registerModule("servertranslator", new ServerTranslator());
+    public static ServerTranslator ServerTranslatorModule = (ServerTranslator) registerModule("servertranslator", new ServerTranslator());
     public static Module CustomWorldBorder = registerModule("customworldborder", new CustomWorldBorderMod());
     public static DiscordBridgeMod DiscordBridgeModule = (DiscordBridgeMod) registerModule("discordbridge", new DiscordBridgeMod());
-    public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
+    //public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
 
     @Override
     public void onInitialize() {
