@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -27,7 +28,7 @@ public class InjectedLoader implements SimpleSynchronousResourceReloadListener {
 
     @Override
     public void reload(ResourceManager manager) {
-        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        HashMap<String,String> builder = new HashMap<>();
         BiConsumer<String, String> biConsumer = builder::put;
 
         try (InputStream inputStream = Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json")) {
@@ -48,7 +49,7 @@ public class InjectedLoader implements SimpleSynchronousResourceReloadListener {
 
         builder.putAll(ServerUtilsMod.ServerTranslatorModule.getConfig().injects);
 
-        final ImmutableMap<String, String> map = builder.build();
+        final ImmutableMap<String, String> map = ImmutableMap.copyOf(builder);
         Language.setInstance(new Language() {
 
             @Override
