@@ -95,7 +95,7 @@ public class BotCommands {
 
         BackendServerModule.asyncPost("link/sus/add/" + responseUUID, (success, response) -> {
             if (success) {
-                result.accept("Added suspicous player"+ mcName).setEphemeral(true);
+                result.accept("Added suspicous player"+ mcName);
                 MessageSender.sendLogMessage("Added " + mcName + " as a suspicous player");
             } else
                 result.accept("Error");
@@ -112,7 +112,7 @@ public class BotCommands {
 
         BackendServerModule.asyncPost("link/sus/remove/" + responseUUID, (success, response) -> {
             if (success) {
-                result.accept("Removed suspicous player"+ mcName).setEphemeral(true);
+                result.accept("Removed suspicous player"+ mcName);
                 MessageSender.sendLogMessage("Removed " + mcName + " as a suspicous player");
             } else
                 result.accept("Error");

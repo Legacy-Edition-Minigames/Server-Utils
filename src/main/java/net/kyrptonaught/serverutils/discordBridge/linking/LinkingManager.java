@@ -76,7 +76,7 @@ public class LinkingManager {
             event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(DiscordBridgeMod.config().linkRoleID)).queue();
 
             event.getMember();
-            MessageSender.sendLogMessage("<@" + event.getMember().getId() + "> linked their account to MC -> " + response.body());
+            MessageSender.sendLogMessage("<@" + event.getMember().getId() + "> (" + event.getMember().getEffectiveName() + ") linked their account to MC -> " + response.body());
         });
     }
 }
