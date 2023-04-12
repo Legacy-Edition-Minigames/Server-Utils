@@ -36,7 +36,7 @@ public class Integrations {
         if (DiscordBridgeMod.config().loggingWebhookURL != null) {
             BackendServerModule.asyncGet("link/sus/check/" + player.getUuidAsString().replaceAll("-", ""), (success, response) -> {
                 if (success && "true".equals(response.body())) {
-                    MessageSender.sendLogWMentions("A sussy baka joined the server: " + player.getEntityName());
+                    MessageSender.sendLogWMentions("A suspicous player joined the server: " + player.getEntityName());
                 }
             });
         }

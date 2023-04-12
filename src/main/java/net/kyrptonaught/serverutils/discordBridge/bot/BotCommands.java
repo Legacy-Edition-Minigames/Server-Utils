@@ -27,8 +27,8 @@ public class BotCommands {
     public static void registerCommands(JDA jda) {
         jda.updateCommands().addCommands(
                 Commands.slash("info", "Get the server info").setGuildOnly(true),
-                Commands.slash("sus", "Mark a player as sussy").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true),
-                Commands.slash("unsus", "Mark a player as no longer sussy").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true)
+                Commands.slash("sus", "Mark a player as suspicous").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true),
+                Commands.slash("unsus", "Mark a player as no longer suspicous").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true)
         ).queue();
     }
 
@@ -95,8 +95,8 @@ public class BotCommands {
 
         BackendServerModule.asyncPost("link/sus/add/" + responseUUID, (success, response) -> {
             if (success) {
-                result.accept("Added sussy baka");
-                MessageSender.sendLogMessage("Added " + mcName + " as a sussy baka");
+                result.accept("Added suspicous player"+ mcName).setEphemeral(true);
+                MessageSender.sendLogMessage("Added " + mcName + " as a suspicous player");
             } else
                 result.accept("Error");
         });
@@ -112,8 +112,8 @@ public class BotCommands {
 
         BackendServerModule.asyncPost("link/sus/remove/" + responseUUID, (success, response) -> {
             if (success) {
-                result.accept("Removed sussy baka");
-                MessageSender.sendLogMessage("Removed " + mcName + " as a sussy baka");
+                result.accept("Removed suspicous player"+ mcName).setEphemeral(true);
+                MessageSender.sendLogMessage("Removed " + mcName + " as a suspicous player");
             } else
                 result.accept("Error");
         });
