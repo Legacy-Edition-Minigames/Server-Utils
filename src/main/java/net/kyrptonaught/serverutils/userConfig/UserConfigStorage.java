@@ -1,39 +1,85 @@
 package net.kyrptonaught.serverutils.userConfig;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
+import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class UserConfigStorage {
-    private static final HashMap<UUID, DataStorage> players = new HashMap<>();
+    private static final HashMap<UUID, HashMap<Identifier, String>> userConfigs = new HashMap<>();
 
-    public static void setValue(ServerPlayerEntity player, Identifier key, Object value) {
-        if (!players.containsKey(player.getUuid())) players.put(player.getUuid(), new DataStorage());
+    public static void setValue(ServerPlayerEntity player, Identifier key, String value) {
+        setValueInternal(player, key, value);
+        syncValue(player, key, value);
+    }
 
-        players.get(player.getUuid()).setValue(null,key, value.toString());
+    private static void setValueInternal(ServerPlayerEntity player, Identifier key, String value) {
+        if (!userConfigs.containsKey(player.getUuid())) userConfigs.put(player.getUuid(), new HashMap<>());
+
+        userConfigs.get(player.getUuid()).put(key, value);
     }
 
     public static String getValue(ServerPlayerEntity player, Identifier key) {
-        if (!players.containsKey(player.getUuid())) players.put(player.getUuid(), new DataStorage());
+        if (!userConfigs.containsKey(player.getUuid())) userConfigs.put(player.getUuid(), new HashMap<>());
 
-        return players.get(player.getUuid()).getValue(null, key);
+        return userConfigs.get(player.getUuid()).get(key);
     }
 
-    private static class DataStorage {
-        private static final HashMap<String, HashMap<Identifier, String>> values = new HashMap<>();
+    public static void removeValue(ServerPlayerEntity player, Identifier key) {
+        if (userConfigs.containsKey(player.getUuid())) {
+            userConfigs.get(player.getUuid()).remove(key);
 
-        public void setValue(DataType<?> dataType, Identifier key, String value) {
-            if (!values.containsKey(dataType.cmdName)) values.put(dataType.cmdName, new HashMap<>());
-            values.get(dataType.cmdName).put(key, value);
+            if (userConfigs.get(player.getUuid()).size() == 0)
+                userConfigs.remove(player.getUuid());
         }
+        syncRemove(player, key);
+    }
 
-        public String getValue(DataType<?> dataType, Identifier key) {
-            if (values.containsKey(dataType.cmdName))
-                return values.get(dataType.cmdName).get(key);
+    public static void unloadPlayer(ServerPlayerEntity player) {
+        userConfigs.remove(player.getUuid());
+    }
 
-            return null;
+    public static void loadPlayer(ServerPlayerEntity player) {
+        try {
+            BackendServerModule.asyncGet(AdvancementSyncMod.getUrl("getUserConfig", player), (success, response) -> {
+                if (success) {
+                    JsonObject object = ServerUtilsMod.getGson().fromJson(response.body(), JsonObject.class);
+                    for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                        setValueInternal(player, new Identifier(entry.getKey()), entry.getValue().getAsString());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void syncValue(ServerPlayerEntity player, Identifier key, String value) {
+        try {
+            BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("syncUserConfig", player) + "/" + key + "/" + value.replaceAll(" ", "%20"), (success, response) -> {
+                if (!success)
+                    System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void syncRemove(ServerPlayerEntity player, Identifier key) {
+        try {
+            BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("removeUserConfig", player) + "/" + key, (success, response) -> {
+                if (!success)
+                    System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

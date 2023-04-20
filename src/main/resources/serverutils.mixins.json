@@ -47,9 +47,6 @@
     "waterFreezer.FluidBlockMixin",
     "welcomeMessage.ServerPlayNetworkHandlerMixin"
   ],
-  "client": [
-    "bigstructures.StructureBlockEntityRendererMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   }

@@ -81,7 +81,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static ServerTranslator ServerTranslatorModule = (ServerTranslator) registerModule("servertranslator", new ServerTranslator());
     public static Module CustomWorldBorder = registerModule("customworldborder", new CustomWorldBorderMod());
     public static DiscordBridgeMod DiscordBridgeModule = (DiscordBridgeMod) registerModule("discordbridge", new DiscordBridgeMod());
-    //public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
+    public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
 
     @Override
     public void onInitialize() {
