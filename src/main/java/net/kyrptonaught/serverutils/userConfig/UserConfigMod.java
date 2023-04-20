@@ -130,8 +130,11 @@ public class UserConfigMod extends Module {
                             ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
 
                             for (ServerPlayerEntity player : players) {
-                                int setValue = Integer.parseInt(UserConfigStorage.getValue(player, configID));
-                                scoreboard.getPlayerScore(player.getEntityName(), obj).setScore(setValue);
+                                try {
+                                    int setValue = Integer.parseInt(UserConfigStorage.getValue(player, configID));
+                                    scoreboard.getPlayerScore(player.getEntityName(), obj).setScore(setValue);
+                                } catch (NumberFormatException ignored) {
+                                }
                             }
                             return 1;
                         })));
