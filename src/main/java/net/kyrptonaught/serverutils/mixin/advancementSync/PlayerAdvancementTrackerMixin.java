@@ -1,7 +1,9 @@
 package net.kyrptonaught.serverutils.mixin.advancementSync;
 
 import com.google.gson.*;
+import com.google.gson.internal.Streams;
 import com.google.gson.reflect.TypeToken;
+import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
@@ -11,6 +13,7 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -53,9 +56,6 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
     protected abstract void rewardEmptyAdvancements(ServerAdvancementLoader advancementLoader);
 
     @Shadow
-    protected abstract void updateCompleted();
-
-    @Shadow
     protected abstract void beginTrackingAllAdvancements(ServerAdvancementLoader advancementLoader);
 
     @Shadow
@@ -63,15 +63,7 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
 
     @Shadow
     @Final
-    private Map<Advancement, AdvancementProgress> advancementToProgress;
-
-    @Shadow
-    @Final
     private Set<Advancement> visibleAdvancements;
-
-    @Shadow
-    @Final
-    private Set<Advancement> visibilityUpdates;
 
     @Shadow
     @Final
@@ -82,6 +74,21 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
 
     @Shadow
     private @Nullable Advancement currentDisplayTab;
+
+    @Shadow
+    @Final
+    private Map<Advancement, AdvancementProgress> progress;
+
+    @Shadow
+    @Final
+    private Set<Advancement> updatedRoots;
+
+    @Shadow
+    @Final
+    private DataFixer dataFixer;
+
+    @Shadow
+    protected abstract void onStatusUpdate(Advancement advancement);
 
     @Inject(method = "grantCriterion", at = @At("RETURN"))
     public void syncGrantedAdvancements(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
@@ -106,7 +113,7 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
             JsonObject object = new JsonObject();
             object.addProperty("advancement", advancement.getId().toString());
             object.addProperty("criteria", criterionName);
-            object.addProperty("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+            object.addProperty("DataVersion", SharedConstants.getGameVersion().getSaveVersion().getId());
             AdvancementSyncMod.syncRevokedAdvancement(this.owner, GSON2.toJson(object));
         }
     }
@@ -114,42 +121,39 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
     private static String serializeToJson(Identifier id, JsonObject advancementJson) {
         JsonObject object = new JsonObject();
         object.add(id.toString(), advancementJson);
-        object.addProperty("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+        object.addProperty("DataVersion", SharedConstants.getGameVersion().getSaveVersion().getId());
         return GSON2.toJson(object);
     }
 
     @Override
     public void loadFromString(ServerAdvancementLoader advancementLoader, String json) {
         this.clearCriteria();
-        this.advancementToProgress.clear();
+        this.progress.clear();
         this.visibleAdvancements.clear();
-        this.visibilityUpdates.clear();
+        this.updatedRoots.clear();
         this.progressUpdates.clear();
         this.dirty = true;
         this.currentDisplayTab = null;
-        Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, GSON2.fromJson(json, JsonObject.class));
-        //if (!dynamic.get("DataVersion").asNumber().result().isPresent()) {
-        //    dynamic = dynamic.set("DataVersion", dynamic.createInt(1343));
-        //}
-        //dynamic = this.dataFixer.update(DataFixTypes.ADVANCEMENTS.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
-        dynamic = dynamic.remove("DataVersion");
 
+        Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, GSON2.fromJson(json, JsonObject.class));
+        int i = dynamic.get("DataVersion").asInt(1343);
+        dynamic = dynamic.remove("DataVersion");
+        dynamic = DataFixTypes.ADVANCEMENTS.update(this.dataFixer, dynamic, i);
         Map<Identifier, AdvancementProgress> map = GSON2.getAdapter(JSON_TYPE).fromJsonTree(dynamic.getValue());
         if (map == null) {
             throw new JsonParseException("Found null for advancements");
         }
-
-        Stream<Map.Entry<Identifier, AdvancementProgress>> stream = map.entrySet().stream().sorted(Map.Entry.comparingByValue());
-        for (Map.Entry<Identifier, AdvancementProgress> entry : stream.toList()) {
-            Advancement advancement = advancementLoader.get(entry.getKey());
+        map.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry -> {
+            Advancement advancement = advancementLoader.get((Identifier) entry.getKey());
             if (advancement == null) {
                 LOGGER.warn("Ignored synced advancement '{}' for {} - it doesn't exist anymore?", entry.getKey(), owner.getDisplayName());
-                continue;
+                return;
             }
             this.initProgress(advancement, entry.getValue());
-        }
+            this.progressUpdates.add(advancement);
+            this.onStatusUpdate(advancement);
+        });
         this.rewardEmptyAdvancements(advancementLoader);
-        this.updateCompleted();
         this.beginTrackingAllAdvancements(advancementLoader);
     }
 }

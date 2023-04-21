@@ -17,18 +17,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerHandshakeNetworkHandlerMixin {
 
     @Shadow
-    public abstract ClientConnection getConnection();
-
-    @Shadow
     @Final
     private MinecraftServer server;
+
+    @Shadow @Final private ClientConnection connection;
 
     @Inject(method = "onHandshake", at = @At("HEAD"))
     public void getProtocolVersion(HandshakeC2SPacket packet, CallbackInfo ci) {
         server.execute(() -> {
             if (packet.getIntendedState() == NetworkState.LOGIN) {
                 int protocol = packet.getProtocolVersion();
-                ScoreboardPlayerInfo.addClientConnectionProtocol(getConnection(), protocol);
+                ScoreboardPlayerInfo.addClientConnectionProtocol(connection, protocol);
             }
         });
     }

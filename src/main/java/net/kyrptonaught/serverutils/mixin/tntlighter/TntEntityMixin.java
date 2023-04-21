@@ -21,7 +21,7 @@ public abstract class TntEntityMixin extends Entity {
     @Inject(method = "explode", at = @At("HEAD"), cancellable = true)
     public void nonDestructiveExplosion(CallbackInfo ci) {
         if (TNTLighter.ENABLED) {
-            world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f, Explosion.DestructionType.NONE);
+            world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f, World.ExplosionSourceType.NONE);
             ci.cancel();
         }
     }

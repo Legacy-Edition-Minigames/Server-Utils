@@ -5,6 +5,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
@@ -13,9 +18,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionType;
@@ -49,7 +51,7 @@ public class DimensionLoaderMod extends Module {
             return Text.literal("Dim already registered");
         }
 
-        DimensionType dimensionType = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(dimID);
+        DimensionType dimensionType = server.getRegistryManager().get(RegistryKeys.DIMENSION_TYPE).get(dimID);
         if (dimensionType == null) {
             return Text.literal("No Dimension Type found");
         }
@@ -82,14 +84,14 @@ public class DimensionLoaderMod extends Module {
     public static RegistryKey<World> tryGetWorldKey(ServerWorld world) {
         RegistryKey<World> ogKey = world.getRegistryKey();
         if (loadedWorlds.containsKey(ogKey.getValue()))
-            return RegistryKey.of(Registry.WORLD_KEY, loadedWorlds.get(ogKey.getValue()).copyFromID);
+            return RegistryKey.of(RegistryKeys.WORLD, loadedWorlds.get(ogKey.getValue()).copyFromID);
         return ogKey;
     }
 
     public static RegistryKey<DimensionType> tryGetDimKey(ServerWorld world) {
         RegistryKey<World> ogKey = world.getRegistryKey();
         if (loadedWorlds.containsKey(ogKey.getValue()))
-            return RegistryKey.of(Registry.DIMENSION_TYPE_KEY, loadedWorlds.get(ogKey.getValue()).copyFromID);
+            return RegistryKey.of(RegistryKeys.DIMENSION_TYPE, loadedWorlds.get(ogKey.getValue()).copyFromID);
         return world.getDimensionKey();
     }
 
@@ -108,13 +110,13 @@ public class DimensionLoaderMod extends Module {
                 }
             } else if (!holder.wasRegistered()) {
                 //I don't really understand how mc registry key/entry shit works, but this does somehow work
-                Registry<DimensionType> registry = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY);
+                Registry<DimensionType> registry = server.getRegistryManager().get(RegistryKeys.DIMENSION_TYPE);
                 RegistryEntry<DimensionType> entry = registry.getEntry(registry.getKey(registry.get(holder.copyFromID)).get()).get();
 
                 RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
                         .setDimensionType(entry)
                         .setMirrorOverworldGameRules(true)
-                        .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS)));
+                        .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.PLAINS)));
 
                 holder.register(fantasy.openTemporaryWorld(holder.dimID, worldConfig));
                 holder.executeFunctions(server);

@@ -33,7 +33,7 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
             MessageSender.sendGameMessage("Server Stopped", 0xffffff);
             if (bot != null) bot.close();
         });
-        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> MessageSender.sendChatMessage(sender, message.getSignedContent().plain()));
+        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> MessageSender.sendChatMessage(sender, message.getSignedContent()));
     }
 
     @Override

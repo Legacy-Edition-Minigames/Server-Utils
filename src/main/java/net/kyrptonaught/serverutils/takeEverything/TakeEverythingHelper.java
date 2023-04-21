@@ -5,9 +5,11 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -15,6 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
 public class TakeEverythingHelper {
     public static boolean takeEverything(ServerPlayerEntity player) {
@@ -32,7 +35,9 @@ public class TakeEverythingHelper {
                 player.currentScreenHandler.onSlotClick(i, 0, SlotActionType.QUICK_MOVE, player);
             }
         }
-        player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier("serverutils:takeeverything"), SoundCategory.MASTER, player.getPos(), 1, 1, player.getRandom().nextLong()));
+        RegistryEntry<SoundEvent> sound = RegistryEntry.of(SoundEvent.of(new Identifier("serverutils:takeeverything")));
+        Vec3d pos = player.getPos();
+        player.networkHandler.sendPacket(new PlaySoundS2CPacket(sound, SoundCategory.MASTER, pos.x, pos.y, pos.z, 1, 1, player.getRandom().nextLong()));
         return true;
     }
 
@@ -115,7 +120,8 @@ public class TakeEverythingHelper {
     }
 
     public static void playSound(ItemStack stack, ServerPlayerEntity player) {
-        SoundEvent soundEvent = stack.getEquipSound();
+        Equipment equipment = Equipment.fromStack(stack);
+        SoundEvent soundEvent = equipment.getEquipSound();
         if (stack.isEmpty() || soundEvent == null) {
             return;
         }

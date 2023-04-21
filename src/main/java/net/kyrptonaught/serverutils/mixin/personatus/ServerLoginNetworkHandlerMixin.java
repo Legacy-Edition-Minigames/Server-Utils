@@ -67,6 +67,7 @@ public class ServerLoginNetworkHandlerMixin {
             ci.cancel();
     }
 
+    /*
     @Inject(method = "getVerifiedPublicKey", at = @At("HEAD"), cancellable = true)
     private static void noKey4u(PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey, CallbackInfoReturnable<PlayerPublicKey> cir) {
         cir.setReturnValue(null);
@@ -85,4 +86,5 @@ public class ServerLoginNetworkHandlerMixin {
         if (PersonatusModule.isEnabled())
             ci.cancel();
     }
+     */
 }

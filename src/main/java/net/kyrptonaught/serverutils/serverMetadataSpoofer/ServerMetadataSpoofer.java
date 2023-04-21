@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class ServerMetadataSpoofer {
 
-    public static GameProfile[] spoofConnectedPlayers(MinecraftServer server) {
+    public static List<GameProfile> spoofConnectedPlayers(MinecraftServer server) {
         Scoreboard scoreboard = server.getScoreboard();
 
         List<PlayerData> playerDataList = new ArrayList<>();
@@ -37,7 +37,7 @@ public class ServerMetadataSpoofer {
         });
 
         playerDataList.sort(Comparator.comparing(playerData -> playerData.playerNum));
-        return playerDataList.subList(0, Math.min(playerDataList.size(), 16)).stream().map(playerData -> new GameProfile(playerData.uuid, playerData.playerName)).toArray(GameProfile[]::new);
+        return playerDataList.subList(0, Math.min(playerDataList.size(), 16)).stream().map(playerData -> new GameProfile(playerData.uuid, playerData.playerName)).toList();
     }
 
     public record PlayerData(String playerName, UUID uuid, int playerNum) {

@@ -4,8 +4,8 @@ import com.mojang.authlib.GameProfile;
 import net.kyrptonaught.serverutils.personatus.PacketCopier;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketCallbacks;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -30,9 +30,9 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow
     @Final
-    public ClientConnection connection;
+    private ClientConnection connection;
 
-    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "sendPacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"), cancellable = true)
     public void spoofPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
         GameProfile profile = this.player.getGameProfile();
         PersonatusProfile spoofProfile = (PersonatusProfile) profile;
@@ -56,8 +56,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
                 for (int i = 0; i < entries.size(); i++) {
                     PlayerListS2CPacket.Entry entry = entries.get(i);
-                    if (profile.getName().equals(entry.getProfile().getName())) {
-                        entries.set(i, new PlayerListS2CPacket.Entry(spoofProfile.getRealProfile(), entry.getLatency(), entry.getGameMode(), entry.getDisplayName(), entry.getPublicKeyData()));
+                    if (profile.getName().equals(entry.profile().getName())) {
+                        entries.set(i, new PlayerListS2CPacket.Entry(spoofProfile.getRealProfile().getId(), spoofProfile.getRealProfile(), entry.listed(), entry.latency(), entry.gameMode(), entry.displayName(), entry.chatSession()));
                     }
                 }
 

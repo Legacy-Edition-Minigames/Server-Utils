@@ -6,13 +6,13 @@ import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,7 +58,7 @@ public class SpectateSqueakerMod extends Module {
         PlayerSound playerSound = playerSounds.get(player.getUuid());
 
         if (playerSound != null && playerSound.canUse()) {
-            SoundEvent sound = Registry.SOUND_EVENT.get(playerSound.getSoundID());
+            SoundEvent sound = Registries.SOUND_EVENT.get(playerSound.getSoundID());
             if (sound != null) {
                 player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 1, 1);
             }

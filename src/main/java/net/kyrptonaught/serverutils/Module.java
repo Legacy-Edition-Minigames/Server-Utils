@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils;
 
 import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class Module {
@@ -20,5 +21,9 @@ public class Module {
 
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
 
+    }
+
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
+        registerCommands(dispatcher);
     }
 }

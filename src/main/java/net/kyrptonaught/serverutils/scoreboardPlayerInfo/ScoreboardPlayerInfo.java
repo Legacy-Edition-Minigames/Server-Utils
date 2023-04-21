@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.mixin.networking.accessor.ServerPlayNetworkHandlerAccessor;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -83,8 +84,8 @@ public class ScoreboardPlayerInfo extends Module {
             obj.resetScore(scoreboard, handler.player);
         });
 
-        if (connectionProtocolVersion.containsKey(handler.connection)) {
-            int protocolVersion = connectionProtocolVersion.remove(handler.connection);
+        if (connectionProtocolVersion.containsKey(((ServerPlayNetworkHandlerAccessor)handler).getConnection())) {
+            int protocolVersion = connectionProtocolVersion.remove(((ServerPlayNetworkHandlerAccessor)handler).getConnection());
             protocolObjective.setScore(handler.player, protocolVersion);
         }
 

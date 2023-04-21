@@ -3,12 +3,12 @@ package net.kyrptonaught.serverutils.serverTranslator;
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
+import net.minecraft.text.TextVisitFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 
@@ -53,8 +53,8 @@ public class InjectedLoader implements SimpleSynchronousResourceReloadListener {
         Language.setInstance(new Language() {
 
             @Override
-            public String get(String key) {
-                return map.getOrDefault(key, key);
+            public String get(String key, String fallback) {
+                return map.getOrDefault(key, fallback);
             }
 
             @Override

@@ -97,7 +97,7 @@ public class ServerUtilsMod implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             registerCommand(dispatcher);
             for (Module module : modules.values())
-                module.registerCommands(dispatcher);
+                module.registerCommands(dispatcher,registryAccess);
         });
     }
 

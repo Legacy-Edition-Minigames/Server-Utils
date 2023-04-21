@@ -14,18 +14,22 @@ import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.PlaySoundCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.*;
 
@@ -51,7 +55,7 @@ public class CustomUI extends Module {
         for (String slot : config.slots.keySet()) {
             ScreenConfig.SlotDefinition slotDefinition = getSlotDefinition(config.slots.get(slot));
 
-            ItemStack itemStack = Registry.ITEM.get(new Identifier(slotDefinition.itemID)).getDefaultStack();
+            ItemStack itemStack = Registries.ITEM.get(new Identifier(slotDefinition.itemID)).getDefaultStack();
             if (slotDefinition.itemNBT != null)
                 try {
                     NbtCompound compound = StringNbtReader.parse(slotDefinition.itemNBT);
@@ -159,9 +163,11 @@ public class CustomUI extends Module {
     }
 
     private static void playSound(ServerPlayerEntity player, String soundID) {
-        if (soundID != null)
-            player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundID), SoundCategory.MASTER, player.getPos(), 1, 1, player.getRandom().nextLong()));
-
+        if (soundID != null) {
+            RegistryEntry<SoundEvent> sound = RegistryEntry.of(SoundEvent.of(new Identifier(soundID)));
+            Vec3d pos = player.getPos();
+            player.networkHandler.sendPacket(new PlaySoundS2CPacket(sound, SoundCategory.MASTER, pos.x, pos.y, pos.z, 1, 1, player.getRandom().nextLong()));
+        }
     }
 
     public static void addScreen(String screenID, ScreenConfig screenConfig) {

@@ -4,10 +4,10 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.kyrptonaught.serverutils.Module;
 import net.minecraft.block.Block;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class DatapackInteractables extends Module {
             if (player.isSpectator()) return ActionResult.PASS;
 
             Block hitBlock = world.getBlockState(hitResult.getBlockPos()).getBlock();
-            if (!isInteractionAllowed(Registry.BLOCK.getId(hitBlock)))
+            if (!isInteractionAllowed(Registries.BLOCK.getId(hitBlock)))
                 return ActionResult.FAIL;
             return ActionResult.PASS;
         });

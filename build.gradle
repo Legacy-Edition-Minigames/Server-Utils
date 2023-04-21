@@ -5,10 +5,6 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
@@ -32,34 +28,34 @@ dependencies {
 	}
 
 	//SGui
-	modImplementation include("eu.pb4:sgui:1.1.5+1.19.1") { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include("eu.pb4:sgui:1.2.1+1.19.3") { exclude group: "net.fabricmc.fabric-api" }
 
 	//Modified Fantasy
-	modImplementation include('xyz.nucleoid:fantasy:0.4.7-kyrpt-1.19.2') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include('xyz.nucleoid:fantasy:0.4.9-kyrpt-1.19.4') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Starlight
 	modImplementation('maven.modrinth:starlight:1.1.1+1.19') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Luck Perms
-	modImplementation('maven.modrinth:luckperms:v5.4.46-fabric') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:luckperms:v5.4.66-fabric') { exclude group: "net.fabricmc.fabric-api" }
 	modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
 	compileOnly 'net.luckperms:api:5.4'
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 
 	//Fabric Proxy Lite
-	modImplementation('maven.modrinth:fabricproxy-lite:v2.3.0') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:fabricproxy-lite:v2.5.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//crossstitch
-	modImplementation('maven.modrinth:crossstitch:0.1.5') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:crossstitch:0.1.6') { exclude group: "net.fabricmc.fabric-api" }
 
 	//carpet
-	modImplementation('carpet:fabric-carpet:1.19.2-1.4.84+v221018') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('carpet:fabric-carpet:1.19.4-1.4.101+v230319') { exclude group: "net.fabricmc.fabric-api" }
 
 	//NoChatReports
-	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.19.2-v1.13.12') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.19.4-v2.1.1') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Discord Bridge
-	shadow implementation("net.dv8tion:JDA:5.0.0-beta.4") { exclude module: 'opus-java' }
+	shadow implementation("net.dv8tion:JDA:5.0.0-beta.8") { exclude module: 'opus-java' }
 }
 
 loom {
@@ -96,6 +92,10 @@ remapJar {
 	inputFile = tasks.shadowJar.archiveFile
 }
 
+base {
+	archivesName = project.archives_base_name
+}
+
 processResources {
 	inputs.property "version", project.version
 
@@ -105,10 +105,19 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
+	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
 	it.options.release = 17
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {
 	// Store in temporary folder instead of outputting directly
 	destinationDirectory = file("${buildDir}/tmp/thinJar")
+	from("LICENSE") {
+		rename { "${it}_${base.archivesName.get()}"}
+	}
 }

@@ -63,7 +63,7 @@ public class BotCommands {
     public static void infoCommandExecute(MinecraftServer server, SlashCommandInteraction event) {
         if (event.getChannel().getIdLong() != DiscordBridgeMod.config().bridgeChannelID) return;
 
-        double serverTickTime = MathHelper.average(server.lastTickLengths) * 1.0E-6D;
+        double serverTickTime = average(server.lastTickLengths) * 1.0E-6D;
         long freeRam = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
 
         StringBuilder playerString = new StringBuilder();
@@ -117,5 +117,13 @@ public class BotCommands {
             } else
                 result.accept("Error");
         });
+    }
+
+    private static double average(long[] array) {
+        long l = 0L;
+        for (long m : array) {
+            l += m;
+        }
+        return (double)l / (double)array.length;
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +18,7 @@ import static net.kyrptonaught.serverutils.ServerUtilsMod.WaterFreezerModule;
 public class FlowableFluidMixin {
 
     @Inject(method = "tryFlow", at = @At("HEAD"), cancellable = true)
-    private void stopFlowing(WorldAccess world, BlockPos fluidPos, FluidState state, CallbackInfo ci) {
+    private void stopFlowing(World world, BlockPos fluidPos, FluidState state, CallbackInfo ci) {
         if (WaterFreezerModule.getConfig().FROZEN) ci.cancel();
     }
 
