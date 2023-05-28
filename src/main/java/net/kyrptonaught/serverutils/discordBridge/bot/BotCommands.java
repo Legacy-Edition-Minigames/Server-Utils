@@ -39,7 +39,7 @@ public class BotCommands {
                 Commands.slash("info", "Get the server info").setGuildOnly(true),
                 Commands.slash("sus", "Mark a player as suspicous").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true),
                 Commands.slash("unsus", "Mark a player as no longer suspicous").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true),
-                Commands.slash("syncedwhitelist", "Add/Remove a player from the whitelist").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.CREATE_INSTANT_INVITE)).setGuildOnly(true)
+                Commands.slash("syncedwhitelist", "Add/Remove a player from the whitelist").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER)).setGuildOnly(true)
                         .addSubcommands(
                                 new SubcommandData("add", "Add to whitelist").addOption(OptionType.STRING, "mcname", "MC Username"),
                                 new SubcommandData("remove", "Remove from whitelist").addOption(OptionType.STRING, "mcname", "MC Username"))
