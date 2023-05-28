@@ -36,6 +36,7 @@ import net.kyrptonaught.serverutils.velocitymodifier.VelocityModifierModule;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
 import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
 import net.kyrptonaught.serverutils.welcomeMessage.WelcomeModule;
+import net.kyrptonaught.serverutils.whitelistSync.WhitelistSyncMod;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -82,6 +83,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module CustomWorldBorder = registerModule("customworldborder", new CustomWorldBorderMod());
     public static DiscordBridgeMod DiscordBridgeModule = (DiscordBridgeMod) registerModule("discordbridge", new DiscordBridgeMod());
     public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
+    public static WhitelistSyncMod whitelistSyncMod  = (WhitelistSyncMod) registerModule("whitelistsync", new WhitelistSyncMod());
 
     @Override
     public void onInitialize() {

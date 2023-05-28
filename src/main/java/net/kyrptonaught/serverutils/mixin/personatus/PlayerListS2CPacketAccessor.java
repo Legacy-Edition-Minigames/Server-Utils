@@ -10,7 +10,6 @@ import java.util.List;
 @Mixin(PlayerListS2CPacket.class)
 public interface PlayerListS2CPacketAccessor {
 
-
     @Mutable
     @Accessor("entries")
     void setEntries(List<PlayerListS2CPacket.Entry> playerNames);

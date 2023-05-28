@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.discordBridge;
 
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.chatDisabler.ChatDisablerConfig;
+import net.kyrptonaught.serverutils.discordBridge.format.FormatToDiscord;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,17 +20,22 @@ public class Integrations {
         }
     }
 
-    public static void personatusEnable(ServerCommandSource source,  boolean enabled) {
+    public static void personatusEnable(ServerCommandSource source, boolean enabled) {
         MessageSender.sendLogMessage(getSenderName(source) + " set personatus to " + enabled);
     }
 
-    public static void personatusSpoof(ServerCommandSource source,  String player, String spoof) {
+    public static void personatusSpoof(ServerCommandSource source, String player, String spoof) {
         MessageSender.sendLogMessage(getSenderName(source) + " set " + player + "'s personatus to " + spoof);
     }
 
-    public static void personatusClear(ServerCommandSource source,  String player) {
+    public static void personatusClear(ServerCommandSource source, String player) {
         MessageSender.sendLogMessage(getSenderName(source) + " cleared " + player + "'s personatus");
     }
+
+    public static void whitelistSync(ServerCommandSource source, Text text) {
+        MessageSender.sendLogMessage(getSenderName(source) + ": " + FormatToDiscord.toDiscord(source.getServer(), text));
+    }
+
 
     public static void sendJoinMessage(ServerPlayerEntity player, Text message) {
         MessageSender.sendGameMessage(Text.literal("➡️ ").append(message), 0x6332a8);

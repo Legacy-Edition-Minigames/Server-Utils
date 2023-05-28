@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.discordBridge.bot;
 
+import com.mojang.authlib.GameProfile;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -9,17 +10,26 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.discordBridge.MessageSender;
+import net.kyrptonaught.serverutils.discordBridge.format.FormatToDiscord;
 import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
 import net.kyrptonaught.serverutils.personatus.PersonatusModule;
+import net.kyrptonaught.serverutils.whitelistSync.WhitelistSyncMod;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BotCommands {
@@ -28,7 +38,11 @@ public class BotCommands {
         jda.updateCommands().addCommands(
                 Commands.slash("info", "Get the server info").setGuildOnly(true),
                 Commands.slash("sus", "Mark a player as suspicous").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true),
-                Commands.slash("unsus", "Mark a player as no longer suspicous").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true)
+                Commands.slash("unsus", "Mark a player as no longer suspicous").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)).addOption(OptionType.STRING, "mcname", "MC Username").setGuildOnly(true),
+                Commands.slash("syncedwhitelist", "Add/Remove a player from the whitelist").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.CREATE_INSTANT_INVITE)).setGuildOnly(true)
+                        .addSubcommands(
+                                new SubcommandData("add", "Add to whitelist").addOption(OptionType.STRING, "mcname", "MC Username"),
+                                new SubcommandData("remove", "Remove from whitelist").addOption(OptionType.STRING, "mcname", "MC Username"))
         ).queue();
     }
 
@@ -44,6 +58,21 @@ public class BotCommands {
                 event.deferReply().queue();
                 String mcname = event.getOption("mcname").getAsString();
                 unsusCommandExecute(mcname, (result) -> event.getHook().editOriginal(result).queue());
+            }
+            case "syncedwhitelist" -> {
+                event.deferReply().queue();
+                String mcname = event.getOption("mcname").getAsString();
+                Optional<GameProfile> optional = bot.server.getUserCache().findByName(mcname);
+
+                if (optional.isEmpty()) {
+                    event.getHook().editOriginal(FormatToDiscord.toDiscord(bot.server, Text.translatable("argument.player.unknown"))).queue();
+                    return;
+                }
+                ServerCommandSource source = new ServerCommandSource(new DiscordCommandOutput(bot.server, event.getHook()), Vec3d.ZERO, Vec2f.ZERO, bot.server.getOverworld(), 4, "Discord/" + event.getMember().getEffectiveName(), Text.literal("Discord/" + event.getMember().getEffectiveName()), bot.server, null);
+                if ("add".equals(event.getSubcommandName()))
+                    WhitelistSyncMod.addWhitelist(source, Collections.singleton(optional.get()));
+                else
+                    WhitelistSyncMod.removeWhitelist(source, Collections.singleton(optional.get()));
             }
         }
     }
