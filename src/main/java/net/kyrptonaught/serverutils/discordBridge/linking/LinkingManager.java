@@ -45,7 +45,7 @@ public class LinkingManager {
 
     public static void generateDiscordInput(JDA jda, long channel) {
         MessageEmbed embed = new EmbedBuilder()
-                .setDescription("To start the linking process, in Minecraft type `/discordLink` and then click `Link` below to link your account.\n\nIf you are unable to link your account, please contact a moderator.")
+                .setDescription("To start the linking process, in Minecraft join the server `lem.derpbox.xyz`, enter a battle match and type `/discordLink` and then click `Link` below to link your account.\n\nIf you are unable to link your account, please contact a moderator.")
                 .build();
 
         jda.getTextChannelById(channel).sendMessageEmbeds(Collections.singleton(embed))
