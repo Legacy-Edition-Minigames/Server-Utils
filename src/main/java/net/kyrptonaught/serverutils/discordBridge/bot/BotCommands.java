@@ -23,7 +23,6 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +67,7 @@ public class BotCommands {
                     event.getHook().editOriginal(FormatToDiscord.toDiscord(bot.server, Text.translatable("argument.player.unknown"))).queue();
                     return;
                 }
-                ServerCommandSource source = new ServerCommandSource(new DiscordCommandOutput(bot.server, event.getHook()), Vec3d.ZERO, Vec2f.ZERO, bot.server.getOverworld(), 4, "Discord/" + event.getMember().getEffectiveName(), Text.literal("Discord/" + event.getMember().getEffectiveName()), bot.server, null);
+                ServerCommandSource source = getCommandSource(bot, event);
                 if ("add".equals(event.getSubcommandName()))
                     WhitelistSyncMod.addWhitelist(source, Collections.singleton(optional.get()));
                 else
@@ -154,5 +153,10 @@ public class BotCommands {
             l += m;
         }
         return (double)l / (double)array.length;
+    }
+
+
+    private static ServerCommandSource getCommandSource(BridgeBot bot, SlashCommandInteraction event){
+         return new ServerCommandSource(new DiscordCommandOutput(bot.server, event.getHook()), Vec3d.ZERO, Vec2f.ZERO, bot.server.getOverworld(), 4, "Discord/" + event.getMember().getEffectiveName(), Text.literal("Discord/" + event.getMember().getEffectiveName()), bot.server, null);
     }
 }

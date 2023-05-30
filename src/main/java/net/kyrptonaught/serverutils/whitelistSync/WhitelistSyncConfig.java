@@ -7,4 +7,6 @@ public class WhitelistSyncConfig extends AbstractConfigFile {
     public boolean syncOnStart = true;
 
     public boolean attemptKickOnUpdate = true;
+
+    public String whitelistKickMSG = "";
 }

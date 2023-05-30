@@ -45,7 +45,9 @@
     "tntlighter.TntEntityMixin",
     "waterFreezer.FlowableFluidMixin",
     "waterFreezer.FluidBlockMixin",
-    "welcomeMessage.ServerPlayNetworkHandlerMixin"
+    "welcomeMessage.ServerPlayNetworkHandlerMixin",
+    "whitelistSync.MinecraftServerMixin",
+    "whitelistSync.PlayerManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
