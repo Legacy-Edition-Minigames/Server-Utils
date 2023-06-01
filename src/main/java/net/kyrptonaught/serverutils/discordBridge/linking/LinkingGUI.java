@@ -15,7 +15,7 @@ public class LinkingGUI {
     public static void showLinkGUI(ServerPlayerEntity player, String linkID) {
         BookElementBuilder bookBuilder = BookElementBuilder.from(Items.WRITTEN_BOOK.getDefaultStack())
                 .addPage(
-                        Text.literal("Linking your accounts allows you to send messages to the server using the bridge channels."),
+                        Text.literal("Linking your accounts allows you to send messages to the server."),
                         Text.empty(),
                         Text.literal("All rules apply, this role may be revoked if you break the rules."),
                         Text.empty(),
@@ -25,9 +25,9 @@ public class LinkingGUI {
                 .addPage(
                         Text.literal("§lHow to link: "),
                         Text.empty(),
-                        Text.literal("1. Join the ").append(Text.literal("Legacy Edition Minigames Discord Server").styled(style -> urlStyle(style, "https://discord.gg/5q2zz3EdYf"))),
+                        Text.literal("1. Join the ").append(Text.literal("Legacy Edition Mini Games Discord Server").styled(style -> urlStyle(style, "https://discord.gg/t52nM7X6nd"))),
                         Text.empty(),
-                        Text.literal("2. Find the ").append(Text.literal("\"Account Link\" channel").styled(style -> urlStyle(style, "https://discord.com/channels/860805393441357834/1082945943827128360"))),
+                        Text.literal("2. Find the ").append(Text.literal("\"Verification\" channel").styled(style -> urlStyle(style, "https://discord.com/channels/860805393441357834/1082945943827128360"))),
                         Text.empty(),
                         Text.literal("3. Click on the link button and enter the following code: ").append(Text.literal(linkID).styled(style -> copyStyle(style, linkID)))
                 ).signed();
