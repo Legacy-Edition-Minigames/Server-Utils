@@ -27,6 +27,7 @@ import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
+import net.kyrptonaught.serverutils.snowballKnockback.SnowballKnockbackMod;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
@@ -84,6 +85,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static DiscordBridgeMod DiscordBridgeModule = (DiscordBridgeMod) registerModule("discordbridge", new DiscordBridgeMod());
     public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
     public static WhitelistSyncMod whitelistSyncMod  = (WhitelistSyncMod) registerModule("whitelistsync", new WhitelistSyncMod());
+    public static SnowballKnockbackMod snowballKnockback  = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
 
     @Override
     public void onInitialize() {
@@ -102,7 +104,6 @@ public class ServerUtilsMod implements ModInitializer {
                 module.registerCommands(dispatcher,registryAccess);
         });
     }
-
 
     public static Module registerModule(String MOD_ID, Module module) {
         module.setMOD_ID(MOD_ID);
