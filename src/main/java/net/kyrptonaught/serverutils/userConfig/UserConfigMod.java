@@ -24,7 +24,7 @@ import java.util.Collection;
 
 public class UserConfigMod extends Module {
     private enum EQUATION_TYPE {
-        LESS, GREATER, LESS_EQUAL, GREATER_EQUAL, EQUAL, NOT_EQUAL;
+        LESS, GREATER, LESS_EQUAL, GREATER_EQUAL, EQUAL, NOT_EQUAL
     }
 
     @Override
@@ -143,9 +143,9 @@ public class UserConfigMod extends Module {
         dispatcher.register(CommandManager.literal("userconfig").requires((source) -> source.hasPermissionLevel(2)).then(baseNode));
     }
 
-    public static boolean evaluate(EQUATION_TYPE type, String obj1, String obj2) {
+    private static boolean evaluate(EQUATION_TYPE type, String obj1, String obj2) {
         if (obj1 == null || obj2 == null) return false;
-        int compares = obj1.compareTo(obj2);
+        int compares = compare(obj1, obj2);
         return switch (type) {
             case EQUAL -> compares == 0;
             case NOT_EQUAL -> compares != 0;
@@ -154,5 +154,14 @@ public class UserConfigMod extends Module {
             case LESS_EQUAL -> compares <= 0;
             case GREATER_EQUAL -> compares >= 0;
         };
+    }
+
+    private static int compare(String obj1, String obj2) {
+        try {
+            return Integer.compare(Integer.parseInt(obj1), Integer.parseInt(obj2));
+        } catch (Exception ignored) {
+
+        }
+        return obj1.compareTo(obj2);
     }
 }
