@@ -84,10 +84,6 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
     private Set<Advancement> updatedRoots;
 
     @Shadow
-    @Final
-    private DataFixer dataFixer;
-
-    @Shadow
     protected abstract void onStatusUpdate(Advancement advancement);
 
     @Inject(method = "grantCriterion", at = @At("RETURN"))
@@ -135,16 +131,15 @@ public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString
         this.dirty = true;
         this.currentDisplayTab = null;
 
+
         Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, GSON2.fromJson(json, JsonObject.class));
-        int i = dynamic.get("DataVersion").asInt(1343);
         dynamic = dynamic.remove("DataVersion");
-        dynamic = DataFixTypes.ADVANCEMENTS.update(this.dataFixer, dynamic, i);
         Map<Identifier, AdvancementProgress> map = GSON2.getAdapter(JSON_TYPE).fromJsonTree(dynamic.getValue());
         if (map == null) {
             throw new JsonParseException("Found null for advancements");
         }
         map.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry -> {
-            Advancement advancement = advancementLoader.get((Identifier) entry.getKey());
+            Advancement advancement = advancementLoader.get(entry.getKey());
             if (advancement == null) {
                 LOGGER.warn("Ignored synced advancement '{}' for {} - it doesn't exist anymore?", entry.getKey(), owner.getDisplayName());
                 return;
