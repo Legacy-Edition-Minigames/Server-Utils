@@ -148,7 +148,7 @@ public class UserConfigMod extends Module {
         int compares = obj1.compareTo(obj2);
         return switch (type) {
             case EQUAL -> compares == 0;
-            case NOT_EQUAl -> compares != 0;
+            case NOT_EQUAL -> compares != 0;
             case LESS -> compares < 0;
             case GREATER -> compares > 0;
             case LESS_EQUAL -> compares <= 0;
