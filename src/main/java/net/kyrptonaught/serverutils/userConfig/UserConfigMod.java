@@ -41,6 +41,7 @@ public class UserConfigMod extends Module {
 
         var testCMDNode = CommandManager.literal("test");
         for (EQUATION_TYPE equationtype : EQUATION_TYPE.values()) {
+
             testCMDNode.then(CommandManager.argument("configID", IdentifierArgumentType.identifier())
                     .then(CommandManager.literal(equationtype.name())
                             .then(CommandManager.argument("testValue", StringArgumentType.string())
@@ -143,9 +144,18 @@ public class UserConfigMod extends Module {
         dispatcher.register(CommandManager.literal("userconfig").requires((source) -> source.hasPermissionLevel(2)).then(baseNode));
     }
 
-    private static boolean evaluate(EQUATION_TYPE type, String obj1, String obj2) {
-        if (obj1 == null || obj2 == null) return false;
-        int compares = compare(obj1, obj2);
+    private static boolean evaluate(EQUATION_TYPE type, String setValue, String testValue) {
+        if (type == EQUATION_TYPE.EQUAL) {
+            if ("_ANYTHING_".equals(testValue)) return setValue != null;
+            if ("_NOTHING_".equals(testValue)) return setValue == null;
+        }
+        if (type == EQUATION_TYPE.NOT_EQUAL) {
+            if ("_ANYTHING_".equals(testValue)) return setValue == null;
+            if ("_NOTHING_".equals(testValue)) return setValue != null;
+        }
+
+        if (setValue == null || testValue == null) return false;
+        int compares = compare(setValue, testValue);
         return switch (type) {
             case EQUAL -> compares == 0;
             case NOT_EQUAL -> compares != 0;
