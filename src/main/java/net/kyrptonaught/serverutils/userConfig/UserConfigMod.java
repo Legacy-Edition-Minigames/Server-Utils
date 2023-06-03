@@ -24,7 +24,7 @@ import java.util.Collection;
 
 public class UserConfigMod extends Module {
     private enum EQUATION_TYPE {
-        LESS, GREATER, LESS_EQUAL, GREATER_EQUAL, EQUAL, NOT_EQUAl;
+        LESS, GREATER, LESS_EQUAL, GREATER_EQUAL, EQUAL, NOT_EQUAL;
     }
 
     @Override
