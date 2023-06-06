@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.serverutils.SpectateSqueaker.SpectateSqueakerMod;
 import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
+import net.kyrptonaught.serverutils.armorHudToggle.ArmorHudMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
@@ -86,6 +87,8 @@ public class ServerUtilsMod implements ModInitializer {
     public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
     public static WhitelistSyncMod whitelistSyncMod  = (WhitelistSyncMod) registerModule("whitelistsync", new WhitelistSyncMod());
     public static SnowballKnockbackMod snowballKnockback  = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
+    public static Module armorHudModule = registerModule("armorhud", new ArmorHudMod());
+
 
     @Override
     public void onInitialize() {
