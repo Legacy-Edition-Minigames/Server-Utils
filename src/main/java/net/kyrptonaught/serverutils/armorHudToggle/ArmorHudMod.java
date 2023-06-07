@@ -22,12 +22,12 @@ public class ArmorHudMod extends Module{
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.argument("entity", EntityArgumentType.players()).then(CommandManager.argument("state", BoolArgumentType.bool())
                         .executes(context -> {
-                            Collection<ServerPlayerEntity> entity = EntityArgumentType.getPlayers(context, "entity");
+                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "entity");
                             boolean state = BoolArgumentType.getBool(context, "state");
                             PacketByteBuf buf = PacketByteBufs.create();
                             buf.writeBoolean(state);
-                            if (entity!=null)
-                                for (ServerPlayerEntity player : entity) {
+                            if (players!=null)
+                                for (ServerPlayerEntity player : players) {
                                     ServerPlayNetworking.send(player, ARMOR_HUD_STATE, buf);
                                 }
                             return 1;
