@@ -14,8 +14,9 @@ import net.minecraft.util.Identifier;
 
 import java.util.Collection;
 
-public class ArmorHudMod extends Module{
-    public static final Identifier ARMOR_HUD_STATE = new Identifier("lem", "armor_hud_state_packet");
+public class ArmorHudMod extends Module {
+    private static final Identifier ARMOR_HUD_ENABLE = new Identifier("armorhud", "armor_hud_render_enable");
+    private static final Identifier ARMOR_HUD_DISABLE = new Identifier("armorhud", "armor_hud_render_disable");
 
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("armorHud")
@@ -24,11 +25,10 @@ public class ArmorHudMod extends Module{
                         .executes(context -> {
                             Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "entity");
                             boolean state = BoolArgumentType.getBool(context, "state");
-                            PacketByteBuf buf = PacketByteBufs.create();
-                            buf.writeBoolean(state);
-                            if (players!=null)
+
+                            if (players != null)
                                 for (ServerPlayerEntity player : players) {
-                                    ServerPlayNetworking.send(player, ARMOR_HUD_STATE, buf);
+                                    ServerPlayNetworking.send(player, state ? ARMOR_HUD_ENABLE : ARMOR_HUD_DISABLE, PacketByteBufs.create());
                                 }
                             return 1;
                         }))));
