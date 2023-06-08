@@ -21,6 +21,7 @@
     "discordBridge.PlayerAdvancementTrackerMixin",
     "discordBridge.ServerPlayerEntityMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
+    "editablePlayerNBT.EntityDataObjectMixin",
     "personatus.FixLuckPermsMixin",
     "personatus.GameProfileMixin",
     "personatus.PlayerListS2CPacketAccessor",
