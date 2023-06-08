@@ -34,7 +34,7 @@ dependencies {
 	modImplementation include('xyz.nucleoid:fantasy:0.4.9-kyrpt-1.19.4') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Starlight
-	modImplementation('maven.modrinth:starlight:1.1.1+1.19') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:starlight:1.1.2+') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Luck Perms
 	modImplementation('maven.modrinth:luckperms:v5.4.66-fabric') { exclude group: "net.fabricmc.fabric-api" }
