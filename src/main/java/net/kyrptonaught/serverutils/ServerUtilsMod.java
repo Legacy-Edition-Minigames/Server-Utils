@@ -21,6 +21,7 @@ import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
+import net.kyrptonaught.serverutils.noteblockMusic.NoteblockMusicMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
 import net.kyrptonaught.serverutils.personatus.PersonatusModule;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
@@ -88,6 +89,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static WhitelistSyncMod whitelistSyncMod  = (WhitelistSyncMod) registerModule("whitelistsync", new WhitelistSyncMod());
     public static SnowballKnockbackMod snowballKnockback  = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
     public static Module armorHudModule = registerModule("armorhud", new ArmorHudMod());
+    public static Module noteblockMusic = registerModule("noteblockmusic", new NoteblockMusicMod());
 
 
     @Override

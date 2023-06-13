@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "serverutils",
-  "version": "1.0.6b32-1.19.4",
+  "version": "1.0.6b33-1.19.4",
   "name": "Server Utils",
   "description": "A group of utilities for servers",
   "authors": [
