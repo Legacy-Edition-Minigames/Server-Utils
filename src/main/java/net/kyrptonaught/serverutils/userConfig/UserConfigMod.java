@@ -141,6 +141,22 @@ public class UserConfigMod extends Module {
                         })));
         baseNode.then(copyCMDNode);
 
+        var cloneCMDNode = CommandManager.literal("clone");
+        cloneCMDNode.then(CommandManager.argument("configID", IdentifierArgumentType.identifier())
+                .then(CommandManager.argument("configID2", IdentifierArgumentType.identifier())
+                        .executes(context -> {
+                            Identifier configID = IdentifierArgumentType.getIdentifier(context, "configID");
+                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "player");
+                            Identifier configID2 = IdentifierArgumentType.getIdentifier(context, "configID2");
+
+                            for (ServerPlayerEntity player : players) {
+                                String value = UserConfigStorage.getValue(player, configID);
+                                UserConfigStorage.setValue(player, configID2, value);
+                            }
+                            return 1;
+                        })));
+        baseNode.then(cloneCMDNode);
+
         dispatcher.register(CommandManager.literal("userconfig").requires((source) -> source.hasPermissionLevel(2)).then(baseNode));
     }
 

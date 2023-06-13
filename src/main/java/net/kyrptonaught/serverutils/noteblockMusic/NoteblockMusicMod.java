@@ -125,6 +125,7 @@ public class NoteblockMusicMod extends Module {
         boolean looping = BoolArgumentType.getBool(context, "looping");
         String songFile = StringArgumentType.getString(context, "song");
 
+        songPlayer.setEnable10Octave(true);
         songPlayer.setAutoDestroy(true);
         songPlayer.setRepeatMode(looping ? RepeatMode.ALL : RepeatMode.NONE);
         players.forEach(songPlayer::addPlayer);
