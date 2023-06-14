@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.userConfig;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
@@ -8,12 +9,11 @@ import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class UserConfigStorage {
     private static final HashMap<UUID, HashMap<Identifier, String>> userConfigs = new HashMap<>();
+    private static final HashMap<Identifier, Set<Identifier>> groups = new HashMap<>();
 
     public static void setValue(ServerPlayerEntity player, Identifier key, String value) {
         setValueInternal(player, key, value);
@@ -42,6 +42,36 @@ public class UserConfigStorage {
         syncRemove(player, key);
     }
 
+    public static void removeGroup(Identifier groupID) {
+        groups.remove(groupID);
+    }
+
+    public static void addToGroup(Identifier groupID, Identifier key) {
+        if (!groups.containsKey(groupID)) groups.put(groupID, new HashSet<>());
+
+        groups.get(groupID).add(key);
+    }
+
+    public static void saveGroupToPreset(ServerPlayerEntity player, Identifier groupID, Identifier presetID) {
+        JsonArray array = new JsonArray();
+        groups.get(groupID).forEach(id -> array.add(id.toString()));
+        BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("userConfigSaveToPreset", player) + "/" + presetID, array.toString(), (success, response) -> {
+            if (!success)
+                System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
+        });
+    }
+
+    public static void loadGroupFromPreset(ServerPlayerEntity player, Identifier groupID, Identifier presetID) {
+        JsonArray array = new JsonArray();
+        groups.get(groupID).forEach(id -> array.add(id.toString()));
+        BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("userConfigLoadFromPreset", player) + "/" + presetID, array.toString(), (success, response) -> {
+            if (success) loadPlayer(player);
+            else {
+                System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
+            }
+        });
+    }
+
     public static void unloadPlayer(ServerPlayerEntity player) {
         userConfigs.remove(player.getUuid());
     }
@@ -54,6 +84,8 @@ public class UserConfigStorage {
                     for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
                         setValueInternal(player, new Identifier(entry.getKey()), entry.getValue().getAsString());
                     }
+                } else {
+                    System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
                 }
             });
         } catch (Exception e) {

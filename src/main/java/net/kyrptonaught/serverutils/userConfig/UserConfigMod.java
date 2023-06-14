@@ -35,8 +35,6 @@ public class UserConfigMod extends Module {
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        super.registerCommands(dispatcher);
-
         var baseNode = CommandManager.argument("player", EntityArgumentType.players());
 
         var testCMDNode = CommandManager.literal("test");
@@ -158,6 +156,50 @@ public class UserConfigMod extends Module {
         baseNode.then(cloneCMDNode);
 
         dispatcher.register(CommandManager.literal("userconfig").requires((source) -> source.hasPermissionLevel(2)).then(baseNode));
+
+        dispatcher.register(CommandManager.literal("userconfiggroup").requires((source) -> source.hasPermissionLevel(2))
+                .then(CommandManager.literal("ADD")
+                        .then(CommandManager.argument("groupID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("configID", IdentifierArgumentType.identifier())
+                                        .executes(context -> {
+                                            Identifier groupID = IdentifierArgumentType.getIdentifier(context, "groupID");
+                                            Identifier configID = IdentifierArgumentType.getIdentifier(context, "configID");
+                                            UserConfigStorage.addToGroup(groupID, configID);
+                                            return 1;
+                                        }))))
+                .then(CommandManager.literal("CLEAR")
+                        .then(CommandManager.argument("groupID", IdentifierArgumentType.identifier())
+                                .executes(context -> {
+                                    Identifier groupID = IdentifierArgumentType.getIdentifier(context, "groupID");
+                                    UserConfigStorage.removeGroup(groupID);
+                                    return 1;
+                                })))
+                .then(CommandManager.literal("SAVE")
+                        .then(CommandManager.argument("player", EntityArgumentType.players())
+                                .then(CommandManager.argument("groupID", IdentifierArgumentType.identifier())
+                                        .then(CommandManager.argument("presetID", IdentifierArgumentType.identifier())
+                                                .executes(context -> {
+                                                    Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "player");
+                                                    Identifier groupID = IdentifierArgumentType.getIdentifier(context, "groupID");
+                                                    Identifier presetID = IdentifierArgumentType.getIdentifier(context, "presetID");
+
+                                                    for (ServerPlayerEntity player : players)
+                                                        UserConfigStorage.saveGroupToPreset(player, groupID, presetID);
+                                                    return 1;
+                                                })))))
+                .then(CommandManager.literal("LOAD")
+                        .then(CommandManager.argument("player", EntityArgumentType.players())
+                                .then(CommandManager.argument("groupID", IdentifierArgumentType.identifier())
+                                        .then(CommandManager.argument("presetID", IdentifierArgumentType.identifier())
+                                                .executes(context -> {
+                                                    Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "player");
+                                                    Identifier groupID = IdentifierArgumentType.getIdentifier(context, "groupID");
+                                                    Identifier presetID = IdentifierArgumentType.getIdentifier(context, "presetID");
+
+                                                    for (ServerPlayerEntity player : players)
+                                                        UserConfigStorage.loadGroupFromPreset(player, groupID, presetID);
+                                                    return 1;
+                                                }))))));
     }
 
     private static boolean evaluate(EQUATION_TYPE type, String setValue, String testValue) {
