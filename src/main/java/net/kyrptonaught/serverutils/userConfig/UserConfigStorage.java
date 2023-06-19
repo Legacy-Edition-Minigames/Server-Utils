@@ -53,8 +53,11 @@ public class UserConfigStorage {
     }
 
     public static void saveGroupToPreset(ServerPlayerEntity player, Identifier groupID, Identifier presetID) {
-        JsonArray array = new JsonArray();
-        groups.get(groupID).forEach(id -> array.add(id.toString()));
+        JsonObject array = new JsonObject();
+        for(Identifier config :groups.get(groupID)){
+            array.addProperty(config.toString(), getValue(player, config));
+        }
+
         BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("userConfigSaveToPreset", player) + "/" + presetID, array.toString(), (success, response) -> {
             if (!success)
                 System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
