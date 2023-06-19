@@ -16,8 +16,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.level.storage.LevelStorage;
 import nota.model.RepeatMode;
@@ -29,8 +27,6 @@ import nota.player.SongPlayer;
 import nota.utils.NBSDecoder;
 import xyz.nucleoid.fantasy.mixin.MinecraftServerAccess;
 
-import java.io.File;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
