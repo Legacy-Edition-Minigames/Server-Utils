@@ -9,12 +9,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 public class VelocityProxyHelper {
     private static final Identifier BUNGEECORD_ID = new Identifier("bungeecord", "main");
+
+    public static void getPlayerCount(ServerPlayerEntity player) {
+        sendVelocityCommand(player, "PlayerList", "ALL");
+    }
 
     public static void switchServer(ServerPlayerEntity player, String servername) {
         sendVelocityCommand(player, "Connect", servername);
@@ -31,48 +31,29 @@ public class VelocityProxyHelper {
     }
 
     private static void sendVelocityCommand(ServerPlayerEntity player, String command, String... args) {
-        try (ByteBufDataOutput output = new ByteBufDataOutput(new PacketByteBuf(Unpooled.buffer()))) {
+        try (VelocityPacket.ByteBufDataOutput output = new VelocityPacket.ByteBufDataOutput(new PacketByteBuf(Unpooled.buffer()))) {
             output.writeUTF(command);
             for (String arg : args)
                 output.writeUTF(arg);
 
-            ServerPlayNetworking.send(player, BUNGEECORD_ID, output.getBuf());
+            ServerPlayNetworking.send(player, BUNGEECORD_ID, (PacketByteBuf) output.getBuf());
         } catch (Exception e) {
             System.out.println("Failed to send command to Velocity Proxy: ");
             e.printStackTrace();
         }
     }
 
-    public static class ByteBufDataOutput extends OutputStream {
-        private final PacketByteBuf packetByteBuf;
-        private final DataOutputStream dataOutputStream;
+    public static void registerReceive() {
+        /*
+        ServerPlayNetworking.registerGlobalReceiver(BUNGEECORD_ID, (server, player, handler, buf, responseSender) -> {
+            VelocityPacket.ByteBufDataInput input = new VelocityPacket.ByteBufDataInput(buf);
 
-        public ByteBufDataOutput(PacketByteBuf buf) {
-            this.packetByteBuf = buf;
-            this.dataOutputStream = new DataOutputStream(this);
-        }
+            String test = input.readUTF();
+            String test2 = input.readUTF();
+            String test3 = input.readUTF();
 
-        public PacketByteBuf getBuf() {
-            return packetByteBuf;
-        }
-
-        @Override
-        public void write(int b) {
-            packetByteBuf.writeByte(b);
-        }
-
-        public void writeUTF(String s) {
-            try {
-                this.dataOutputStream.writeUTF(s);
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-
-        @Override
-        public void close() throws IOException {
-            super.close();
-            dataOutputStream.close();
-        }
+            System.out.println(buf);
+        });
+         */
     }
 }

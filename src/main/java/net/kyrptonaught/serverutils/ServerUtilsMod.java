@@ -95,6 +95,7 @@ public class ServerUtilsMod implements ModInitializer {
     @Override
     public void onInitialize() {
         registerPresence();
+        VelocityProxyHelper.registerReceive();
 
         for (Module module : modules.values()) {
             module.onInitialize();
@@ -106,7 +107,7 @@ public class ServerUtilsMod implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             registerCommand(dispatcher);
             for (Module module : modules.values())
-                module.registerCommands(dispatcher,registryAccess);
+                module.registerCommands(dispatcher, registryAccess);
         });
     }
 
