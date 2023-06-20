@@ -68,10 +68,10 @@ public class UserConfigStorage {
         JsonArray array = new JsonArray();
         groups.get(groupID).forEach(id -> array.add(id.toString()));
         BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("userConfigLoadFromPreset", player) + "/" + presetID, array.toString(), (success, response) -> {
-            if (success) loadPlayer(player);
-            else {
+            if (success)
+                loadPlayerJson(player, ServerUtilsMod.getGson().fromJson(response.body(), JsonObject.class));
+            else
                 System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
-            }
         });
     }
 
@@ -83,17 +83,19 @@ public class UserConfigStorage {
     public static void loadPlayer(ServerPlayerEntity player) {
         try {
             BackendServerModule.asyncGet(AdvancementSyncMod.getUrl("getUserConfig", player), (success, response) -> {
-                if (success) {
-                    JsonObject object = ServerUtilsMod.getGson().fromJson(response.body(), JsonObject.class);
-                    for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-                        setValueInternal(player, new Identifier(entry.getKey()), entry.getValue().getAsString());
-                    }
-                } else {
+                if (success)
+                    loadPlayerJson(player, ServerUtilsMod.getGson().fromJson(response.body(), JsonObject.class));
+                else
                     System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
-                }
             });
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void loadPlayerJson(ServerPlayerEntity player, JsonObject object){
+        for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+            setValueInternal(player, new Identifier(entry.getKey()), entry.getValue().getAsString());
         }
     }
 
