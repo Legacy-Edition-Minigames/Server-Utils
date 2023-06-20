@@ -77,6 +77,7 @@ public class UserConfigStorage {
 
     public static void unloadPlayer(ServerPlayerEntity player) {
         userConfigs.remove(player.getUuid());
+        BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("unloadUserConfig", player));
     }
 
     public static void loadPlayer(ServerPlayerEntity player) {

@@ -49,6 +49,11 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    public static void asyncPost(String url) {
+        HttpRequest request = buildPostRequest(getApiUrl(url));
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
+
     public static void asyncPostAlt(String url, String json) {
         HttpRequest request = buildPostRequest(url, json);
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString());

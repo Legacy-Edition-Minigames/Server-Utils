@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
+import net.kyrptonaught.serverutils.userConfig.UserConfigStorage;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
@@ -23,6 +24,7 @@ public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
                 }
             }
         });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("unloadPlayer", handler.player)));
     }
 
     @Override
