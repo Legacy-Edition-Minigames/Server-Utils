@@ -43,7 +43,7 @@ dependencies {
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 
 	//Fabric Proxy Lite
-	modImplementation('maven.modrinth:fabricproxy-lite:v2.5.0') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:fabricproxy-lite:v2.6.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//crossstitch
 	modImplementation('maven.modrinth:crossstitch:0.1.6') { exclude group: "net.fabricmc.fabric-api" }
