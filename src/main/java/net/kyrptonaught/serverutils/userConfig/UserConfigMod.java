@@ -155,6 +155,15 @@ public class UserConfigMod extends Module {
                         })));
         baseNode.then(cloneCMDNode);
 
+        baseNode.then(CommandManager.literal("sync").executes(context -> {
+            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "player");
+
+            for (ServerPlayerEntity player : players) {
+                UserConfigStorage.syncPlayer(player);
+            }
+            return 1;
+        }));
+
         dispatcher.register(CommandManager.literal("userconfig").requires((source) -> source.hasPermissionLevel(2)).then(baseNode));
 
         dispatcher.register(CommandManager.literal("userconfiggroup").requires((source) -> source.hasPermissionLevel(2))
