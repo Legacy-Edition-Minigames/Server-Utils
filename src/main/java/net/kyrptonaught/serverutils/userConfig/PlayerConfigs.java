@@ -26,8 +26,6 @@ public class PlayerConfigs {
     }
 
     public void saveToPreset(Identifier presetID, Set<Identifier> group) {
-        presets.remove(presetID);
-
         for (Identifier config : group) {
             setPresetValueInternal(presetID, config, configs.get(config));
         }
