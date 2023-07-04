@@ -58,7 +58,7 @@ dependencies {
 	modImplementation include("ru.pinkgoosik:nota:0.2.0-1.19.4")
 
 	//Discord Bridge
-	shadow implementation("net.dv8tion:JDA:5.0.0-beta.11") { exclude module: 'opus-java' }
+	shadow implementation("net.dv8tion:JDA:5.0.0-beta.12") { exclude module: 'opus-java' }
 }
 
 loom {
