@@ -14,7 +14,6 @@ import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.cpslimiter.CPSLimiter;
 import net.kyrptonaught.serverutils.critBlocker.CritBlockerMod;
-import net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod;
 import net.kyrptonaught.serverutils.customUI.CustomUI;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
@@ -91,7 +90,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static SnowballKnockbackMod snowballKnockback  = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
     public static Module armorHudModule = registerModule("armorhud", new ArmorHudMod());
     public static Module noteblockMusic = registerModule("noteblockmusic", new NoteblockMusicMod());
-    public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
+    //public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
 
 
     @Override
