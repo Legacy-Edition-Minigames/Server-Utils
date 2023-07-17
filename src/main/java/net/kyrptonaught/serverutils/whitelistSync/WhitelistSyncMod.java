@@ -148,7 +148,7 @@ public class WhitelistSyncMod extends ModuleWConfig<WhitelistSyncConfig> {
     }
 
     private static void output(ServerCommandSource source, Text text) {
-        source.sendFeedback(text, false);
+        source.sendFeedback(()->text, false);
         Integrations.whitelistSync(source, text);
     }
 

@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.ride;
 
 import com.mojang.brigadier.CommandDispatcher;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ public class RideMod extends Module {
                             PlayerEntity player = context.getSource().getPlayer();
                             if (entity != player && entity != null && player != null)
                                 player.startRiding(entity);
-                            else context.getSource().sendFeedback(Text.literal("You cannot ride yourself"), false);
+                            else context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("You cannot ride yourself"), false);
                             return 1;
                         })));
     }

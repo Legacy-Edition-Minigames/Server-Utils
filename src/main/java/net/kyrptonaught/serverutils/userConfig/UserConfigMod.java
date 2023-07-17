@@ -101,7 +101,7 @@ public class UserConfigMod extends Module {
                     for (ServerPlayerEntity player : players) {
                         String setValue = UserConfigStorage.getValue(player, configID);
                         if (setValue != null)
-                            context.getSource().sendFeedback(player.getDisplayName().copy().append(" : ").append(Text.literal(setValue)), false);
+                            context.getSource().sendFeedback(() -> player.getDisplayName().copy().append(" : ").append(Text.literal(setValue)), false);
                     }
                     return 1;
                 }));

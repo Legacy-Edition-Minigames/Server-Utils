@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.entity.boss.BossBarManager;
@@ -62,14 +63,14 @@ public class PanoramaCommand {
 
                                     for (int i = begin; i < end; i++) {
                                         String output = "a" + Padder.smartPad(i, "") + "a";
-                                        context.getSource().sendFeedback(Text.literal(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
+                                        context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
                                     }
                                     return 1;
                                 }))
                         .executes(context -> {
                             int begin = IntegerArgumentType.getInteger(context, "begin");
                             String output = "a" + Padder.smartPad(begin, "") + "a";
-                            context.getSource().sendFeedback(Text.literal(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
+                            context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(output).setStyle(Style.EMPTY.withFont(new Identifier("4jmenu:panorama/1/day/3"))), false);
                             return 1;
                         })));
          */
@@ -107,7 +108,7 @@ public class PanoramaCommand {
 
     public static int execute(CommandContext<ServerCommandSource> commandContext, Panorama panorama, Collection<ServerPlayerEntity> players) {
         if (panorama == null) {
-            commandContext.getSource().sendFeedback(Text.literal("Panorama was not found"), false);
+            commandContext.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Panorama was not found"), false);
             return 1;
         }
 

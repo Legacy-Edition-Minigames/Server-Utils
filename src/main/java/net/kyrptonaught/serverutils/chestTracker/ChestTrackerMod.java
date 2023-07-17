@@ -88,7 +88,7 @@ public class ChestTrackerMod extends Module {
     }
 
     public static void addChestForPlayer(PlayerEntity player, BlockPos pos) {
-        BlockPos secondHalf = getSecondHalf(player.world, pos);
+        BlockPos secondHalf = getSecondHalf(player.getWorld(), pos);
 
         chestsWParticle.remove(pos);
         chestsWParticle.remove(secondHalf);

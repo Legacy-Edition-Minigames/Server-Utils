@@ -7,11 +7,12 @@ import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 public class CustomDimHolder {
     public Identifier dimID;
     public Identifier copyFromID;
-    private Collection<CommandFunction> functions;
+    private Consumer<MinecraftServer> completionTask;
 
     public RuntimeWorldHandle world;
     private boolean scheduleDelete = false;
@@ -19,7 +20,13 @@ public class CustomDimHolder {
     public CustomDimHolder(Identifier dimID, Identifier copyFromID, Collection<CommandFunction> functions) {
         this.dimID = dimID;
         this.copyFromID = copyFromID;
-        this.functions = functions;
+        setFunctions(functions);
+    }
+
+    public CustomDimHolder(Identifier dimID, Identifier copyFromID, Consumer<MinecraftServer> functions) {
+        this.dimID = dimID;
+        this.copyFromID = copyFromID;
+        setFunctions(functions);
     }
 
     public void scheduleToDelete() {
@@ -47,14 +54,21 @@ public class CustomDimHolder {
         this.world = handle;
     }
 
+    public void setFunctions(Consumer<MinecraftServer> execute) {
+        this.completionTask = execute;
+    }
+
     public void setFunctions(Collection<CommandFunction> functions) {
-        this.functions = functions;
+        setFunctions(server -> {
+            if (functions != null) {
+                for (CommandFunction commandFunction : functions) {
+                    server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
+                }
+            }
+        });
     }
 
     public void executeFunctions(MinecraftServer server) {
-        if (functions != null)
-            for (CommandFunction commandFunction : functions) {
-                server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
-            }
+        if (completionTask != null) completionTask.accept(server);
     }
 }

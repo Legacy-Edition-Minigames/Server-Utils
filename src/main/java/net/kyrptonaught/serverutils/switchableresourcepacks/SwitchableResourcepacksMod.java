@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.switchableresourcepacks;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -62,10 +63,18 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
     }
 
     public int execute(CommandContext<ServerCommandSource> commandContext, String packname, Collection<ServerPlayerEntity> players) {
+        if (execute(packname, players)) {
+            commandContext.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Enabled pack: " + packname), false);
+        } else {
+            commandContext.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Packname: " + packname + " was not found"), false);
+        }
+        return 1;
+    }
+
+    public boolean execute(String packname, Collection<ServerPlayerEntity> players) {
         ResourcePackConfig.RPOption rpOption = rpOptionHashMap.get(packname);
         if (rpOption == null) {
-            commandContext.getSource().sendFeedback(Text.literal("Packname: ").append(packname).append(" was not found"), false);
-            return 1;
+            return false;
         }
         players.forEach(player -> {
             if (getConfig().autoRevoke) {
@@ -76,7 +85,6 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
 
             player.sendResourcePackUrl(rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null);
         });
-        commandContext.getSource().sendFeedback(Text.literal("Enabled pack: ").append(rpOption.packname), false);
-        return 1;
+        return true;
     }
 }

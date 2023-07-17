@@ -31,7 +31,7 @@ public class CustomWorldBorderMod extends Module {
         });
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            getCustomWorldBorderManager(newPlayer.getWorld()).playerBorders.remove(newPlayer.getUuid());
+            getCustomWorldBorderManager(newPlayer.getServerWorld()).playerBorders.remove(newPlayer.getUuid());
         });
 
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {

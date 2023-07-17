@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.snowballKnockback;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -21,12 +22,12 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                 .executes(cmd -> {
                                     getConfig().snowKnockbackMult = FloatArgumentType.getFloat(cmd, "mult");
                                     saveConfig();
-                                    cmd.getSource().sendFeedback(Text.literal("Set knockback multiplier to " + getConfig().snowKnockbackMult), false);
+                                    cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set knockback multiplier to " + getConfig().snowKnockbackMult), false);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("get")
                         .executes(cmd -> {
-                            cmd.getSource().sendFeedback(Text.literal("Knockback multiplier is " + getConfig().snowKnockbackMult), false);
+                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Knockback multiplier is " + getConfig().snowKnockbackMult), false);
                             return 1;
                         })
                         .then(CommandManager.literal("add")
@@ -34,7 +35,7 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                         .executes(cmd -> {
                                             getConfig().snowKnockbackMult += FloatArgumentType.getFloat(cmd, "added_mult");
                                             saveConfig();
-                                            cmd.getSource().sendFeedback(Text.literal("Set knockback multiplier to " + getConfig().snowKnockbackMult), false);
+                                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set knockback multiplier to " + getConfig().snowKnockbackMult), false);
                                             return 1;
                                         }))))
                 .then(CommandManager.literal("damage")
@@ -43,12 +44,12 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                         .executes(cmd -> {
                                             getConfig().snowDamage = FloatArgumentType.getFloat(cmd, "damage");
                                             saveConfig();
-                                            cmd.getSource().sendFeedback(Text.literal("Set damage to " + getConfig().snowDamage), false);
+                                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set damage to " + getConfig().snowDamage), false);
                                             return 1;
                                         })))
                         .then(CommandManager.literal("get")
                                 .executes(cmd -> {
-                                    cmd.getSource().sendFeedback(Text.literal("Damage is set to  " + getConfig().snowDamage), false);
+                                    cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Damage is set to  " + getConfig().snowDamage), false);
                                     return 1;
                                 })
                                 .then(CommandManager.literal("add")
@@ -56,7 +57,7 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                                 .executes(cmd -> {
                                                     getConfig().snowDamage += FloatArgumentType.getFloat(cmd, "damage");
                                                     saveConfig();
-                                                    cmd.getSource().sendFeedback(Text.literal("Set damage to " + getConfig().snowDamage), false);
+                                                    cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set damage to " + getConfig().snowDamage), false);
                                                     return 1;
                                                 }))))));
         dispatcher.register(knockbackCommand);
@@ -70,12 +71,12 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                 .executes(cmd -> {
                                     getConfig().eggKnockBackMult = FloatArgumentType.getFloat(cmd, "mult");
                                     saveConfig();
-                                    cmd.getSource().sendFeedback(Text.literal("Set knockback multiplier to " + getConfig().eggKnockBackMult), false);
+                                    cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set knockback multiplier to " + getConfig().eggKnockBackMult), false);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("get")
                         .executes(cmd -> {
-                            cmd.getSource().sendFeedback(Text.literal("Knockback multiplier is " + getConfig().eggKnockBackMult), false);
+                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Knockback multiplier is " + getConfig().eggKnockBackMult), false);
                             return 1;
                         })
                         .then(CommandManager.literal("add")
@@ -83,7 +84,7 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                         .executes(cmd -> {
                                             getConfig().eggKnockBackMult += FloatArgumentType.getFloat(cmd, "added_mult");
                                             saveConfig();
-                                            cmd.getSource().sendFeedback(Text.literal("Set knockback multiplier to " + getConfig().eggKnockBackMult), false);
+                                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set knockback multiplier to " + getConfig().eggKnockBackMult), false);
                                             return 1;
                                         }))))
                 .then(CommandManager.literal("damage")
@@ -92,12 +93,12 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                         .executes(cmd -> {
                                             getConfig().eggDamage = FloatArgumentType.getFloat(cmd, "damage");
                                             saveConfig();
-                                            cmd.getSource().sendFeedback(Text.literal("Set damage to " + getConfig().eggDamage), false);
+                                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set damage to " + getConfig().eggDamage), false);
                                             return 1;
                                         })))
                         .then(CommandManager.literal("get")
                                 .executes(cmd -> {
-                                    cmd.getSource().sendFeedback(Text.literal("Damage is set to  " + getConfig().eggDamage), false);
+                                    cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Damage is set to  " + getConfig().eggDamage), false);
                                     return 1;
                                 })
                                 .then(CommandManager.literal("add")
@@ -105,7 +106,7 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                                                 .executes(cmd -> {
                                                     getConfig().eggDamage += FloatArgumentType.getFloat(cmd, "damage");
                                                     saveConfig();
-                                                    cmd.getSource().sendFeedback(Text.literal("Set damage to " + getConfig().eggDamage), false);
+                                                    cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set damage to " + getConfig().eggDamage), false);
                                                     return 1;
                                                 }))))));
         dispatcher.register(eggKnockbackCommand);
@@ -116,19 +117,19 @@ public class SnowballKnockbackMod extends ModuleWConfig<SnowballKnockbackConfig>
                         .executes(cmd -> {
                             getConfig().fishingRodPullMult = FloatArgumentType.getFloat(cmd, "value");
                             saveConfig();
-                            cmd.getSource().sendFeedback(Text.literal("Set pull multiplier to " + getConfig().fishingRodPullMult), false);
+                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set pull multiplier to " + getConfig().fishingRodPullMult), false);
                             return 1;
                         })))
                 .then(CommandManager.literal("add").then(CommandManager.argument("value", FloatArgumentType.floatArg())
                         .executes(cmd -> {
                             getConfig().fishingRodPullMult += FloatArgumentType.getFloat(cmd, "value");
                             saveConfig();
-                            cmd.getSource().sendFeedback(Text.literal("Set pull multiplier to " + getConfig().fishingRodPullMult), false);
+                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Set pull multiplier to " + getConfig().fishingRodPullMult), false);
                             return 1;
                         })))
                 .then(CommandManager.literal("get")
                         .executes(cmd -> {
-                            cmd.getSource().sendFeedback(Text.literal("Pull multiplier is " + getConfig().fishingRodPullMult), false);
+                            cmd.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Pull multiplier is " + getConfig().fishingRodPullMult), false);
                             return 1;
                         }));
         dispatcher.register(bobber);

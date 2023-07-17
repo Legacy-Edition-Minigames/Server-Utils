@@ -28,7 +28,7 @@ public abstract class ScreenHandlerMixin {
 
     @Inject(method = "onSlotClick", at = @At("HEAD"), cancellable = true)
     public void takeEverything(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if (!player.world.isClient) {
+        if (!player.getWorld().isClient) {
             if (actionType.equals(SlotActionType.QUICK_MOVE)) {
                 Slot slot = slots.get(slotIndex);
                 if (slot.canTakeItems(player) && !(slot.inventory instanceof PlayerInventory) && !slot.getStack().isEmpty() && TakeEverythingHelper.isSwappableItem(slot.getStack())) {

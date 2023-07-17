@@ -14,6 +14,7 @@ import net.kyrptonaught.serverutils.chatDisabler.ChatDisabler;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.cpslimiter.CPSLimiter;
 import net.kyrptonaught.serverutils.critBlocker.CritBlockerMod;
+import net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod;
 import net.kyrptonaught.serverutils.customUI.CustomUI;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
@@ -62,7 +63,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module TNTLighterModule = registerModule("tntlighter", new TNTLighter());
     public static TakeEverythingMod TakeEverythingModule = (TakeEverythingMod) registerModule("takeeverything", new TakeEverythingMod());
     public static SyncedKeybinds SyncedKeybindsModule = (SyncedKeybinds) registerModule("syncedkeybinds", new SyncedKeybinds());
-    public static Module SwitchableResourcepacksModule = registerModule("switchableresourcepacks", new SwitchableResourcepacksMod());
+    public static SwitchableResourcepacksMod SwitchableResourcepacksModule = (SwitchableResourcepacksMod) registerModule("switchableresourcepacks", new SwitchableResourcepacksMod());
     public static Module SpectatorSqueakModule = registerModule("spectatesqueak", new SpectateSqueakerMod());
     public static Module ScoreboardSuffixModule = registerModule("scoreboardsuffix", new ScoreboardSuffixMod());
     public static Module ScoreboardPlayerInfoModule = registerModule("scoreboardplayerinfo", new ScoreboardPlayerInfo());
@@ -90,6 +91,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static SnowballKnockbackMod snowballKnockback  = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
     public static Module armorHudModule = registerModule("armorhud", new ArmorHudMod());
     public static Module noteblockMusic = registerModule("noteblockmusic", new NoteblockMusicMod());
+    public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
 
 
     @Override
@@ -128,7 +130,7 @@ public class ServerUtilsMod implements ModInitializer {
                                     moduleWConfig.saveConfig();
                                 }
                             }
-                            context.getSource().sendFeedback(Text.literal("Configs reloaded. Note: not all modules may reflect these changes"), false);
+                            context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Configs reloaded. Note: not all modules may reflect these changes"), false);
                             return 1;
                         })));
     }

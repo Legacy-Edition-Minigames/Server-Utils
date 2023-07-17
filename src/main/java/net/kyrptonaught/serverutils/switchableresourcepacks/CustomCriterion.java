@@ -7,6 +7,7 @@ import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -38,7 +39,8 @@ public class CustomCriterion implements Criterion<CustomCriterion.Conditions> {
 
     @Override
     public Conditions conditionsFromJson(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
-        return new Conditions(this.getId(), EntityPredicate.Extended.getInJson(jsonObject, "player", advancementEntityPredicateDeserializer));
+        LootContextPredicate lootContextPredicate = EntityPredicate.contextPredicateFromJson(jsonObject, "player", advancementEntityPredicateDeserializer);
+        return new Conditions(this.getId(), lootContextPredicate);
     }
 
 
@@ -61,8 +63,8 @@ public class CustomCriterion implements Criterion<CustomCriterion.Conditions> {
     }
 
     static class Conditions extends AbstractCriterionConditions {
-        public Conditions(Identifier identifier, EntityPredicate.Extended extended) {
-            super(identifier, extended);
+        public Conditions(Identifier id, LootContextPredicate entity) {
+            super(id,entity);
         }
     }
 }

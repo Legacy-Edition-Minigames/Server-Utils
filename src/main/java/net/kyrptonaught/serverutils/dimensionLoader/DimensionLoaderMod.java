@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -116,7 +115,7 @@ public class DimensionLoaderMod extends Module {
                 RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
                         .setDimensionType(entry)
                         .setMirrorOverworldGameRules(true)
-                        .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.PLAINS)));
+                        .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.THE_VOID)));
 
                 holder.register(fantasy.openTemporaryWorld(holder.dimID, worldConfig));
                 holder.executeFunctions(server);
@@ -136,7 +135,7 @@ public class DimensionLoaderMod extends Module {
         return FileHelper.copyDirectory(newArenaDir, arenaDir);
     }
 
-    private static Path getWorldDir(Path worldDirectory, Identifier world) {
+    public static Path getWorldDir(Path worldDirectory, Identifier world) {
         return worldDirectory.resolve("dimensions").resolve(world.getNamespace()).resolve(world.getPath());
     }
 }

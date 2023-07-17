@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.discordBridge;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.discordBridge.bot.BotCommands;
 import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
 import net.minecraft.command.argument.TextArgumentType;
@@ -42,7 +43,7 @@ public class DiscordBridgeCommands {
                 .then(CommandManager.argument("player", StringArgumentType.word())
                         .executes(context -> {
                             String mcname = StringArgumentType.getString(context, "player");
-                            BotCommands.susCommandExecute(mcname, (result) -> context.getSource().sendFeedback(Text.literal(result), false));
+                            BotCommands.susCommandExecute(mcname, (result) -> context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(result), false));
                             return 1;
                         })));
 
@@ -50,7 +51,7 @@ public class DiscordBridgeCommands {
                 .then(CommandManager.argument("player", StringArgumentType.word())
                         .executes(context -> {
                             String mcname = StringArgumentType.getString(context, "player");
-                            BotCommands.unsusCommandExecute(mcname, (result) -> context.getSource().sendFeedback(Text.literal(result), false));
+                            BotCommands.unsusCommandExecute(mcname, (result) -> context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(result), false));
                             return 1;
                         })));
     }

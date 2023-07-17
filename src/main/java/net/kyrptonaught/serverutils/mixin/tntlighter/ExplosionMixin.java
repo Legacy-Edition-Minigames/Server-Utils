@@ -17,7 +17,7 @@ import java.util.Set;
 public class ExplosionMixin {
 
     @Inject(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/World;getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Ljava/util/List;"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void dontEffectItemEntities(CallbackInfo ci, Set set, int i, float q, int k, int l, int r, int s, int t, int u, List<Entity> list) {
+    public void dontEffectItemEntities(CallbackInfo ci, Set set, float q, int k, int l, int r, int s, int t, int u, List<Entity> list) {
         if (TNTLighter.ENABLED)
             list.removeIf(entity -> entity instanceof ItemEntity);
     }

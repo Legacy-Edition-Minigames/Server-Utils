@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.takeEverything;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -49,7 +50,7 @@ public class TakeEverythingMod extends ModuleWConfig<TakeEverythingConfig> {
                 .requires((source) -> source.hasPermissionLevel(2))
                 .executes(context -> {
                     if (!TakeEverythingHelper.takeEverything(context.getSource().getPlayer()))
-                        context.getSource().sendFeedback(Text.literal("You must have an inventory open"), false);
+                        context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("You must have an inventory open"), false);
                     return 1;
                 })
                 .then(CommandManager.literal("enabled").then(CommandManager.argument("enabled", BoolArgumentType.bool())

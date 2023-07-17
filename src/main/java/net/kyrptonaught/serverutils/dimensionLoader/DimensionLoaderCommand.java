@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -40,7 +41,7 @@ public class DimensionLoaderCommand {
                         .executes(context -> executeUnload(context, getID(context, "id"), null))));
 
         dispatcher.register(CommandManager.literal("whereami").executes(context -> {
-            context.getSource().sendFeedback(DimensionLoaderMod.whereAmI(context.getSource().getPlayer()), false);
+            context.getSource().sendFeedback(()->DimensionLoaderMod.whereAmI(context.getSource().getPlayer()), false);
             return 1;
         }));
 
@@ -48,12 +49,12 @@ public class DimensionLoaderCommand {
     }
 
     private static int executePrepare(CommandContext<ServerCommandSource> context, Identifier id, Identifier dimType, Collection<CommandFunction> functions) {
-        context.getSource().sendFeedback(DimensionLoaderMod.loadDimension(context.getSource().getServer(), id, dimType, functions), false);
+        context.getSource().sendFeedback(()->DimensionLoaderMod.loadDimension(context.getSource().getServer(), id, dimType, functions), false);
         return 1;
     }
 
     private static int executeUnload(CommandContext<ServerCommandSource> context, Identifier id, Collection<CommandFunction> functions) {
-        context.getSource().sendFeedback(DimensionLoaderMod.unLoadDimension(context.getSource().getServer(), id, functions), false);
+        context.getSource().sendFeedback(()->DimensionLoaderMod.unLoadDimension(context.getSource().getServer(), id, functions), false);
         return 1;
     }
 

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
@@ -37,9 +38,9 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                     try {
                                         String responseName = URLGetValue(false, "kvs/get/personatus/" + player, "value");
                                         if (responseName != null)
-                                            context.getSource().sendFeedback(Text.literal(player + " is being spoofed as " + responseName), false);
+                                            context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(player + " is being spoofed as " + responseName), false);
                                         else
-                                            context.getSource().sendFeedback(Text.literal(player + " is not spoofing"), false);
+                                            context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(player + " is not spoofing"), false);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -50,7 +51,7 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(context -> {
                                     ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
-                                    context.getSource().sendFeedback(Text.literal(player.getEntityName() + " is actually " + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getName()), false);
+                                    context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(player.getEntityName() + " is actually " + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getName()), false);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("spoof")
@@ -62,7 +63,7 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                                 String spoofedName = StringArgumentType.getString(context, "spoofedName");
 
                                                 if (URLGet("kvs/set/personatus/" + player + "/" + spoofedName)) {
-                                                    context.getSource().sendFeedback(Text.literal("Spoofing set. Please check the spoof first with /personatus checkSpoof " + player + " to verify. Relog to apply spoof."), false);
+                                                    context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Spoofing set. Please check the spoof first with /personatus checkSpoof " + player + " to verify. Relog to apply spoof."), false);
                                                     Integrations.personatusSpoof(context.getSource(), player, spoofedName);
                                                 }
                                             } catch (Exception e) {
@@ -76,7 +77,7 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                                     String player = StringArgumentType.getString(context, "player");
                                     try {
                                         if (URLGet("kvs/reset/personatus/" + player)) {
-                                            context.getSource().sendFeedback(Text.literal("Spoof reset"), false);
+                                            context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Spoof reset"), false);
                                             Integrations.personatusClear(context.getSource(), player);
                                         }
                                     } catch (Exception e) {

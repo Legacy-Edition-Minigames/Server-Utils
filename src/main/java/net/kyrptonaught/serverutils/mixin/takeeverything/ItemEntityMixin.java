@@ -31,7 +31,7 @@ public abstract class ItemEntityMixin extends Entity {
                 stack = TakeEverythingHelper.equipOrSwapArmor(instance.player, stack, false);
                 instance.insertStack(stack);
                 if (!stack.isEmpty() && !TakeEverythingModule.getConfig().deleteItemNotDrop) {
-                    World world = instance.player.world;
+                    World world = instance.player.getWorld();
                     ItemEntity itemEntity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), stack);
                     itemEntity.setToDefaultPickupDelay();
                     world.spawnEntity(itemEntity);
