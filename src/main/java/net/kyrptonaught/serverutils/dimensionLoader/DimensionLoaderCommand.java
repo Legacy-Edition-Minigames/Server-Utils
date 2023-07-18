@@ -13,6 +13,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.FunctionCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Collection;
@@ -41,7 +42,7 @@ public class DimensionLoaderCommand {
                         .executes(context -> executeUnload(context, getID(context, "id"), null))));
 
         dispatcher.register(CommandManager.literal("whereami").executes(context -> {
-            context.getSource().sendFeedback(()->DimensionLoaderMod.whereAmI(context.getSource().getPlayer()), false);
+            context.getSource().sendFeedback(() -> DimensionLoaderMod.whereAmI(context.getSource().getPlayer()), false);
             return 1;
         }));
 
@@ -49,12 +50,14 @@ public class DimensionLoaderCommand {
     }
 
     private static int executePrepare(CommandContext<ServerCommandSource> context, Identifier id, Identifier dimType, Collection<CommandFunction> functions) {
-        context.getSource().sendFeedback(()->DimensionLoaderMod.loadDimension(context.getSource().getServer(), id, dimType, functions), false);
+        Text output = DimensionLoaderMod.loadDimension(context.getSource().getServer(), id, dimType, functions);
+        context.getSource().sendFeedback(() -> output, false);
         return 1;
     }
 
     private static int executeUnload(CommandContext<ServerCommandSource> context, Identifier id, Collection<CommandFunction> functions) {
-        context.getSource().sendFeedback(()->DimensionLoaderMod.unLoadDimension(context.getSource().getServer(), id, functions), false);
+        Text output = DimensionLoaderMod.unLoadDimension(context.getSource().getServer(), id, functions);
+        context.getSource().sendFeedback(() -> output, false);
         return 1;
     }
 

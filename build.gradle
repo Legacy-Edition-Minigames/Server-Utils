@@ -16,6 +16,7 @@ repositories {
 	maven { url "https://api.modrinth.com/maven"; content { includeGroup "maven.modrinth" } }
 	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 	maven { url "https://masa.dy.fi/maven" }
+	maven { url "https://repo.opencollab.dev/main/" }
 	mavenCentral()
 }
 
@@ -42,8 +43,11 @@ dependencies {
 	//Fabric Proxy Lite
 	modImplementation('maven.modrinth:fabricproxy-lite:v2.6.0') { exclude group: "net.fabricmc.fabric-api" }
 
-	//crossstitch
+	//Crossstitch
 	modImplementation('maven.modrinth:crossstitch:0.1.6') { exclude group: "net.fabricmc.fabric-api" }
+
+	//Floodgate
+	//modImplementation("org.geysermc.floodgate:GeyserMC_Floodgate-Fabric_master:2.1.0-SNAPSHOT")
 
 	//carpet
 	modImplementation('carpet:fabric-carpet:1.20-1.4.112+v230608') { exclude group: "net.fabricmc.fabric-api" }
@@ -57,8 +61,8 @@ dependencies {
 	//Discord Bridge
 	shadow implementation("net.dv8tion:JDA:5.0.0-beta.12") { exclude module: 'opus-java' }
 
+	//Apache Compress
 	shadow implementation("org.apache.commons:commons-compress:1.23.0")
-
 }
 
 loom {
