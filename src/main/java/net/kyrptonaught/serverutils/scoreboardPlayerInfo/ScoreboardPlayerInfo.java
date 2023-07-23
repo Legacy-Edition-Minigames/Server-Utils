@@ -20,6 +20,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +35,7 @@ public class ScoreboardPlayerInfo extends Module {
     private static final CustomObjective hasControllerModObjective = createObj("hascontroller", "Client has Controller Mod");
     private static final CustomObjective fabricClientObjective = createObj("fabricclient", "Client is using Fabric");
     private static final CustomObjective forgeClientObjective = createObj("forgeclient", "Client is using Forge");
+    private static final CustomObjective bedrockClientObjective = createObj("bedrockclient", "Client is using Bedrock");
     private static final CustomObjective clientGUIScaleObjective = createObj("clientguiscale", "Client's GUI Scale");
     private static final CustomObjective clientPanScaleObjective = createObj("clientpanscale", "Client's Panorama Scale");
 
@@ -84,14 +86,15 @@ public class ScoreboardPlayerInfo extends Module {
             obj.resetScore(scoreboard, handler.player);
         });
 
-        if (connectionProtocolVersion.containsKey(((ServerPlayNetworkHandlerAccessor)handler).getConnection())) {
-            int protocolVersion = connectionProtocolVersion.remove(((ServerPlayNetworkHandlerAccessor)handler).getConnection());
+        if (connectionProtocolVersion.containsKey(((ServerPlayNetworkHandlerAccessor) handler).getConnection())) {
+            int protocolVersion = connectionProtocolVersion.remove(((ServerPlayNetworkHandlerAccessor) handler).getConnection());
             protocolObjective.setScore(handler.player, protocolVersion);
         }
 
         if (ServerPlayNetworking.canSend(handler, new Identifier("fabric:registry/sync")))
             setFabricClient(handler.player, true);
 
+        setBedrockClient(handler.player, FloodgateApi.getInstance().isFloodgatePlayer(handler.player.getUuid()));
     }
 
     public static void checkBrand(ServerPlayerEntity player, String brand) {
@@ -123,6 +126,10 @@ public class ScoreboardPlayerInfo extends Module {
 
     public static void setForgeClient(PlayerEntity player, boolean forgeClient) {
         forgeClientObjective.setScore(player, forgeClient ? 2 : 1);
+    }
+
+    public static void setBedrockClient(PlayerEntity player, boolean bedrockClient) {
+        bedrockClientObjective.setScore(player, bedrockClient ? 2 : 1);
     }
 
     public static void setGUIScale(PlayerEntity player, int scale) {
