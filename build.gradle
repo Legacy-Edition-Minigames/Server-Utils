@@ -36,7 +36,7 @@ dependencies {
 
 	//Luck Perms
 	modImplementation('maven.modrinth:luckperms:v5.4.88-fabric') { exclude group: "net.fabricmc.fabric-api" }
-	modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('me.lucko:fabric-permissions-api:0.3-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
 	compileOnly 'net.luckperms:api:5.4'
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 
