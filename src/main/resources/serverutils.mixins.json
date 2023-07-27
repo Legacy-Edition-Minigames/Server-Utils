@@ -30,6 +30,7 @@
     "personatus.ServerLoginNetworkHandlerMixin",
     "personatus.ServerPlayNetworkHandlerMixin",
     "personatus.TeamS2CPacketAccessor",
+    "playerJoinLocation.PlayerManagerMixin",
     "playerlockdown.ServerPlayerInteractionManager",
     "scoreboardplayerinfo.LocalServerHandshakeNetworkHandlerMixin",
     "scoreboardplayerinfo.ServerHandshakeNetworkHandlerMixin",

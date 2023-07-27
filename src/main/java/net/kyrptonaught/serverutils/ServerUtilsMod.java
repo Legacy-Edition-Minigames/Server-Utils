@@ -25,6 +25,7 @@ import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.noteblockMusic.NoteblockMusicMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
 import net.kyrptonaught.serverutils.personatus.PersonatusModule;
+import net.kyrptonaught.serverutils.playerJoinLocation.PlayerJoinLocationMod;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
@@ -91,6 +92,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module armorHudModule = registerModule("armorhud", new ArmorHudMod());
     public static Module noteblockMusic = registerModule("noteblockmusic", new NoteblockMusicMod());
     public static Module floodgateCompatModule = registerModule("floodgatecompat", new FloodgateCompatMod());
+    public static PlayerJoinLocationMod playerJoinLocationMod = (PlayerJoinLocationMod) registerModule("playerjoinlocation", new PlayerJoinLocationMod());
     //public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
 
 
