@@ -20,7 +20,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,8 +92,6 @@ public class ScoreboardPlayerInfo extends Module {
 
         if (ServerPlayNetworking.canSend(handler, new Identifier("fabric:registry/sync")))
             setFabricClient(handler.player, true);
-
-        setBedrockClient(handler.player, FloodgateApi.getInstance().isFloodgatePlayer(handler.player.getUuid()));
     }
 
     public static void checkBrand(ServerPlayerEntity player, String brand) {

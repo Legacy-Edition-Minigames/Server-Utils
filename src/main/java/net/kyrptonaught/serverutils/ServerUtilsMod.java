@@ -20,6 +20,7 @@ import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
+import net.kyrptonaught.serverutils.floodgateCompat.FloodgateCompatMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
 import net.kyrptonaught.serverutils.noteblockMusic.NoteblockMusicMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
@@ -42,7 +43,6 @@ import net.kyrptonaught.serverutils.welcomeMessage.WelcomeModule;
 import net.kyrptonaught.serverutils.whitelistSync.WhitelistSyncMod;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -90,6 +90,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static SnowballKnockbackMod snowballKnockback  = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
     public static Module armorHudModule = registerModule("armorhud", new ArmorHudMod());
     public static Module noteblockMusic = registerModule("noteblockmusic", new NoteblockMusicMod());
+    public static Module floodgateCompatModule = registerModule("floodgatecompat", new FloodgateCompatMod());
     //public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
 
 
@@ -110,6 +111,7 @@ public class ServerUtilsMod implements ModInitializer {
             for (Module module : modules.values())
                 module.registerCommands(dispatcher, registryAccess);
         });
+
     }
 
     public static Module registerModule(String MOD_ID, Module module) {
