@@ -20,5 +20,4 @@ public class FloodgateCompatMod extends Module {
             ScoreboardPlayerInfo.setBedrockClient(handler.player, FloodgateApi.getInstance().isFloodgatePlayer(handler.player.getUuid()));
         });
     }
-
 }

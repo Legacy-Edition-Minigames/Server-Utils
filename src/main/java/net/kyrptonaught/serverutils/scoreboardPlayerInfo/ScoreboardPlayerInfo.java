@@ -44,6 +44,7 @@ public class ScoreboardPlayerInfo extends Module {
         ScoreboardPlayerInfoNetworking.registerReceivePacket();
 
         ServerLifecycleEvents.SERVER_STARTED.register(ScoreboardPlayerInfo::registerScoreboardOBJs);
+        ServerPlayConnectionEvents.INIT.register(ScoreboardPlayerInfo::onPlayerPreConnect);
         ServerPlayConnectionEvents.JOIN.register(ScoreboardPlayerInfo::onPlayerConnect);
     }
 
@@ -74,17 +75,15 @@ public class ScoreboardPlayerInfo extends Module {
                 scoreboard.removeObjective(objectives[i]);
         }
 
-        ScoreboardPlayerInfo.objectives.forEach(obj -> {
-            obj.addToScoreboard(scoreboard);
-        });
+        ScoreboardPlayerInfo.objectives.forEach(obj -> obj.addToScoreboard(scoreboard));
+    }
+
+    public static void onPlayerPreConnect(ServerPlayNetworkHandler handler,MinecraftServer server){
+        Scoreboard scoreboard = server.getScoreboard();
+        ScoreboardPlayerInfo.objectives.forEach(obj -> obj.resetScore(scoreboard, handler.player));
     }
 
     public static void onPlayerConnect(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
-        Scoreboard scoreboard = server.getScoreboard();
-        ScoreboardPlayerInfo.objectives.forEach(obj -> {
-            obj.resetScore(scoreboard, handler.player);
-        });
-
         if (connectionProtocolVersion.containsKey(((ServerPlayNetworkHandlerAccessor) handler).getConnection())) {
             int protocolVersion = connectionProtocolVersion.remove(((ServerPlayNetworkHandlerAccessor) handler).getConnection());
             protocolObjective.setScore(handler.player, protocolVersion);
