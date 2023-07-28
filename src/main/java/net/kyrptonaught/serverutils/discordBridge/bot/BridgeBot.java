@@ -57,7 +57,8 @@ public class BridgeBot extends ListenerAdapter {
             }
 
             Text message = FormatToMC.parseMessage(event.getMessage(), Text.literal("[Discord] ").formatted(Formatting.BLUE));
-            server.getPlayerManager().broadcast(message, false);
+            if (message != null)
+                server.getPlayerManager().broadcast(message, false);
         }
     }
 

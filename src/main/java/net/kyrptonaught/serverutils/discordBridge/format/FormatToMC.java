@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.discordBridge.format;
 
+import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
@@ -19,14 +20,20 @@ public class FormatToMC {
         HashMap<String, String> replacementURLs = new HashMap<>();
 
         for (MessageEmbed embed : discordMessage.getEmbeds())
-            replacementURLs.put(embed.getUrl(), embed.getUrl());
+            if (embed.getType() == EmbedType.IMAGE || embed.getType() == EmbedType.LINK || embed.getType() == EmbedType.VIDEO)
+                replacementURLs.put(embed.getUrl(), embed.getUrl());
         for (Message.Attachment attachment : discordMessage.getAttachments())
             replacementURLs.put(attachment.getFileName(), attachment.getUrl());
-        for(StickerItem stickerItem : discordMessage.getStickers())
-            replacementURLs.put("Sticker:"+stickerItem.getName(), stickerItem.getIcon().getUrl());
+        for (StickerItem stickerItem : discordMessage.getStickers())
+            replacementURLs.put("Sticker:" + stickerItem.getName(), stickerItem.getIcon().getUrl());
 
-        int color = discordMessage.getMember() != null ? discordMessage.getMember().getColorRaw() : 0xffffff;
-        MutableText message = Text.literal("").append(prefix).append(Text.literal("<" + discordMessage.getAuthor().getEffectiveName() + "> ").styled(style -> style.withColor(color)));
+
+        if (discordMessage.getContentDisplay().isEmpty() && replacementURLs.size() == 0) {
+            return null;
+        }
+
+        MutableText message = Text.literal("").append(prefix).append(getAuthor(discordMessage));
+
         for (String str : discordMessage.getContentDisplay().split(" ")) {
             message.append(parseText(str, replacementURLs));
         }
@@ -41,7 +48,15 @@ public class FormatToMC {
             }
             message.append("}");
         }
+
         return message;
+    }
+
+    private static Text getAuthor(Message discordMessage) {
+        int color = discordMessage.getMember() != null ? discordMessage.getMember().getColorRaw() : 0xffffff;
+        String author = discordMessage.getMember() != null ? discordMessage.getMember().getEffectiveName() : discordMessage.getAuthor().getEffectiveName();
+
+        return Text.literal("<" + author + "> ").styled(style -> style.withColor(color));
     }
 
     private static void format(List<Text> texts, String message) {
@@ -55,10 +70,13 @@ public class FormatToMC {
     }
 
     private static Text parseText(String text, HashMap<String, String> replacementURLs) {
-        if (!replacementURLs.containsKey(text))
-            return Text.literal(text + " ");
+        if (replacementURLs.containsKey(text))
+            return Text.literal(text + " ").setStyle(styleURL(replacementURLs.remove(text)));
 
-        return Text.literal(text + " ").setStyle(styleURL(replacementURLs.remove(text)));
+        if (replacementURLs.containsKey(text + "/"))
+            return Text.literal(text + " ").setStyle(styleURL(replacementURLs.remove(text + "/")));
+
+        return Text.literal(text + " ");
     }
 
     private static Style styleURL(String url) {
