@@ -80,6 +80,7 @@ configurations {
 }
 
 shadowJar {
+	minimize()
 	// Store in temporary folder instead of outputting directly
 	destinationDirectory = file("${buildDir}/tmp/allJar")
 	// Only shade dependencies not provided by Minecraft/FAPI/FLoader
