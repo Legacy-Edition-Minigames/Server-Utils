@@ -2,9 +2,7 @@ package net.kyrptonaught.serverutils.scoreboardPlayerInfo;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.*;
 import net.fabricmc.fabric.mixin.networking.accessor.ServerPlayNetworkHandlerAccessor;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
@@ -38,7 +36,7 @@ public class ScoreboardPlayerInfo extends Module {
     private static final CustomObjective clientGUIScaleObjective = createObj("clientguiscale", "Client's GUI Scale");
     private static final CustomObjective clientPanScaleObjective = createObj("clientpanscale", "Client's Panorama Scale");
 
-    private final static HashMap<ClientConnection, Integer> connectionProtocolVersion = new HashMap<>();
+    private final static HashMap<ClientConnection, QueuedPlayerData> queuedPlayerData = new HashMap<>();
 
     public void onInitialize() {
         ScoreboardPlayerInfoNetworking.registerReceivePacket();
@@ -67,6 +65,12 @@ public class ScoreboardPlayerInfo extends Module {
                                 }))));
     }
 
+    public static QueuedPlayerData getQueuedPlayerData(ClientConnection connection, boolean create) {
+        if (create && !queuedPlayerData.containsKey(connection))
+            queuedPlayerData.put(connection, new QueuedPlayerData());
+        return queuedPlayerData.get(connection);
+    }
+
     public static void registerScoreboardOBJs(MinecraftServer server) {
         ServerScoreboard scoreboard = server.getScoreboard();
         ScoreboardObjective[] objectives = scoreboard.getObjectives().toArray(ScoreboardObjective[]::new);
@@ -78,15 +82,20 @@ public class ScoreboardPlayerInfo extends Module {
         ScoreboardPlayerInfo.objectives.forEach(obj -> obj.addToScoreboard(scoreboard));
     }
 
-    public static void onPlayerPreConnect(ServerPlayNetworkHandler handler,MinecraftServer server){
+    public static void onPlayerPreConnect(ServerPlayNetworkHandler handler, MinecraftServer server) {
         Scoreboard scoreboard = server.getScoreboard();
         ScoreboardPlayerInfo.objectives.forEach(obj -> obj.resetScore(scoreboard, handler.player));
     }
 
     public static void onPlayerConnect(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
-        if (connectionProtocolVersion.containsKey(((ServerPlayNetworkHandlerAccessor) handler).getConnection())) {
-            int protocolVersion = connectionProtocolVersion.remove(((ServerPlayNetworkHandlerAccessor) handler).getConnection());
-            protocolObjective.setScore(handler.player, protocolVersion);
+        if (queuedPlayerData.containsKey(((ServerPlayNetworkHandlerAccessor) handler).getConnection())) {
+            QueuedPlayerData playerData = queuedPlayerData.remove(((ServerPlayNetworkHandlerAccessor) handler).getConnection());
+            protocolObjective.setScore(handler.player, playerData.protocolVersion);
+            setHasLEMClient(handler.player, playerData.hasLCH);
+            setHasOptifine(handler.player, playerData.hasOptishit);
+            setHasControllerMod(handler.player, playerData.hasController);
+            setGUIScale(handler.player, playerData.guiScale);
+            setPanScale(handler.player, playerData.panScale);
         }
 
         if (ServerPlayNetworking.canSend(handler, new Identifier("fabric:registry/sync")))
@@ -98,22 +107,6 @@ public class ScoreboardPlayerInfo extends Module {
             setForgeClient(player, true);
         else if (brand.contains("fabric"))
             setFabricClient(player, true);
-    }
-
-    public static void addClientConnectionProtocol(ClientConnection connection, int protocol) {
-        connectionProtocolVersion.put(connection, protocol);
-    }
-
-    public static void setHasLEMClient(PlayerEntity player, boolean hasLEMClient) {
-        hasLEMClientObjective.setScore(player, hasLEMClient ? 2 : 1);
-    }
-
-    public static void setHasOptifine(PlayerEntity player, boolean hasOptifine) {
-        hasOptifineObjective.setScore(player, hasOptifine ? 2 : 1);
-    }
-
-    public static void setHasControllerMod(PlayerEntity player, boolean hasController) {
-        hasControllerModObjective.setScore(player, hasController ? 2 : 1);
     }
 
     public static void setFabricClient(PlayerEntity player, boolean fabricClient) {
@@ -128,12 +121,33 @@ public class ScoreboardPlayerInfo extends Module {
         bedrockClientObjective.setScore(player, bedrockClient ? 2 : 1);
     }
 
-    public static void setGUIScale(PlayerEntity player, int scale) {
-        clientGUIScaleObjective.setScore(player, scale);
+    public static void addClientConnectionProtocol(ClientConnection connection, int protocol) {
+        getQueuedPlayerData(connection, true).protocolVersion = protocol;
     }
 
-    public static void setPanScale(PlayerEntity player, int scale) {
-        clientPanScaleObjective.setScore(player, scale);
+    public static void setHasLEMClient(PlayerEntity player, Boolean hasLEMClient) {
+        if (hasLEMClient != null)
+            hasLEMClientObjective.setScore(player, hasLEMClient ? 2 : 1);
+    }
+
+    public static void setHasOptifine(PlayerEntity player, Boolean hasOptifine) {
+        if (hasOptifine != null)
+            hasOptifineObjective.setScore(player, hasOptifine ? 2 : 1);
+    }
+
+    public static void setHasControllerMod(PlayerEntity player, Boolean hasController) {
+        if (hasController != null)
+            hasControllerModObjective.setScore(player, hasController ? 2 : 1);
+    }
+
+    public static void setGUIScale(PlayerEntity player, Integer scale) {
+        if (scale != null)
+            clientGUIScaleObjective.setScore(player, scale);
+    }
+
+    public static void setPanScale(PlayerEntity player, Integer scale) {
+        if (scale != null)
+            clientPanScaleObjective.setScore(player, scale);
     }
 
     public static CustomObjective createObj(String key, String displayName) {
