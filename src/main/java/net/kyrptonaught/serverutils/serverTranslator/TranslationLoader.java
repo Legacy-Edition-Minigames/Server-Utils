@@ -43,6 +43,7 @@ public class TranslationLoader implements SimpleSynchronousResourceReloadListene
                 e.printStackTrace();
             }
         }
+        ServerTranslator.injectTranslations();
     }
 
     private static String getRawFileName(String fileName) {
