@@ -19,9 +19,10 @@ import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.PlaySoundCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -68,10 +69,25 @@ public class CustomUI extends Module {
                 try {
                     String value = ServerTranslator.translate(player, slotDefinition.customModelData);
                     int intValue = Integer.parseInt(value);
-                    itemStack.getNbt().putInt("CustomModelData", intValue);
+                    itemStack.getOrCreateNbt().putInt("CustomModelData", intValue);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
+
+            if(slotDefinition.isDynamic()) {
+                try {
+                ScreenConfig.SlotDefinition.DynamicModel model = slotDefinition.dynamicModel;
+                ServerScoreboard scoreboard = player.getServer().getScoreboard();
+                ScoreboardObjective objective = scoreboard.getObjective(model.score);
+                int score = scoreboard.getPlayerScore(model.player, objective).getScore();
+
+                String value = ServerTranslator.translate(player, model.models.get(score));
+                int intValue = Integer.parseInt(value);
+                itemStack.getOrCreateNbt().putInt("CustomModelData", intValue);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
 
             if (slotDefinition.displayName != null)
                 itemStack.setCustomName(getAsText(slotDefinition.displayName));
@@ -97,6 +113,17 @@ public class CustomUI extends Module {
         }
 
         gui.open();
+    }
+
+    public static void replaceScreen(String screen, ServerPlayerEntity player){
+        if (!screenHistory.get(player.getUuid()).isEmpty())
+            screenHistory.get(player.getUuid()).pop();
+        showScreenFor(screen, player);
+    }
+
+    public static void refreshScreen(ServerPlayerEntity player){
+        String screen = screenHistory.get(player.getUuid()).pop();
+        showScreenFor(screen, player);
     }
 
     private static void showLastScreen(ServerPlayerEntity player) {
@@ -142,8 +169,8 @@ public class CustomUI extends Module {
             CommandFunctionManager functionManager = player.getServer().getCommandFunctionManager();
             functionManager.getFunction(new Identifier(cmd)).ifPresent(commandFunction -> functionManager.execute(commandFunction, player.getServer().getCommandSource().withLevel(2).withSilent()));
         } else if (action.startsWith("openUI/")) {
-            if (slot.replaceOpenScreen() && screenHistory.get(player.getUuid()).size() > 0)
-                screenHistory.get(player.getUuid()).pop();
+            if (slot.replaceOpenScreen())
+                replaceScreen(cmd, player);
             showScreenFor(cmd, player);
         } else if (action.startsWith("close/")) {
             player.closeHandledScreen();
@@ -151,6 +178,10 @@ public class CustomUI extends Module {
             showLastScreen(player);
         } else if (action.startsWith("kick/")) {
             VelocityProxyHelper.kickPlayer(player, cmd);
+        }
+
+        if (slot.refreshOnInteract()) {
+            refreshScreen(player);
         }
     }
 

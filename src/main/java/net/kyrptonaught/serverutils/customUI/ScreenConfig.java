@@ -16,7 +16,6 @@ public class ScreenConfig extends AbstractConfigFile {
 
     public HashMap<String, SlotDefinition> slots = new HashMap<>();
 
-
     public static class SlotDefinition {
         public String itemID;
         public String itemNBT;
@@ -30,12 +29,24 @@ public class ScreenConfig extends AbstractConfigFile {
         public Boolean replaceOpenScreen;
         public String customModelData;
 
+        public Boolean refreshOnInteract;
+
+        public DynamicModel dynamicModel;
+
         public boolean replaceOpenScreen() {
             return replaceOpenScreen != null && replaceOpenScreen;
         }
 
+        public boolean refreshOnInteract() {
+            return refreshOnInteract != null && refreshOnInteract;
+        }
+
         public boolean isFieldBlank(String field) {
             return field == null || field.isEmpty() || field.isBlank();
+        }
+
+        public boolean isDynamic(){
+            return dynamicModel != null;
         }
 
         public SlotDefinition copyFrom(SlotDefinition other) {
@@ -63,12 +74,26 @@ public class ScreenConfig extends AbstractConfigFile {
             if (isFieldBlank(presetID))
                 presetID = other.presetID;
 
+            if (replaceOpenScreen == null)
+                replaceOpenScreen = other.replaceOpenScreen;
+
             if (isFieldBlank(customModelData))
                 customModelData = other.customModelData;
 
-            if (replaceOpenScreen == null)
-                replaceOpenScreen = other.replaceOpenScreen;
+            if (dynamicModel == null)
+                dynamicModel = other.dynamicModel;
+
+            if (refreshOnInteract == null)
+                refreshOnInteract = other.refreshOnInteract;
+
             return this;
+        }
+
+        public static class DynamicModel {
+            public String score;
+            public String player;
+
+            public HashMap<Integer, String> models;
         }
     }
 }
