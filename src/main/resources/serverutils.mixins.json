@@ -23,6 +23,7 @@
     "discordBridge.ServerPlayerEntityMixin",
     "dropevent.ServerPlayNetworkHandlerMixin",
     "editablePlayerNBT.EntityDataObjectMixin",
+    "knockback.LivingEntityMixin",
     "personatus.FixLuckPermsMixin",
     "personatus.GameProfileMixin",
     "personatus.PlayerListS2CPacketAccessor",

@@ -22,6 +22,7 @@ import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
 import net.kyrptonaught.serverutils.dropevent.DropEventMod;
 import net.kyrptonaught.serverutils.floodgateCompat.FloodgateCompatMod;
 import net.kyrptonaught.serverutils.healthcmd.HealthCMDMod;
+import net.kyrptonaught.serverutils.knockback.KnockbackMod;
 import net.kyrptonaught.serverutils.noteblockMusic.NoteblockMusicMod;
 import net.kyrptonaught.serverutils.panoramaViewer.PanoramaViewer;
 import net.kyrptonaught.serverutils.personatus.PersonatusModule;
@@ -93,6 +94,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module noteblockMusic = registerModule("noteblockmusic", new NoteblockMusicMod());
     public static Module floodgateCompatModule = registerModule("floodgatecompat", new FloodgateCompatMod());
     public static PlayerJoinLocationMod playerJoinLocationMod = (PlayerJoinLocationMod) registerModule("playerjoinlocation", new PlayerJoinLocationMod());
+    public static Module knockbackModule  = registerModule("knockback", new KnockbackMod());
     //public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
 
 
