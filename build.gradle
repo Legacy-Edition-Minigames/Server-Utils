@@ -48,7 +48,7 @@ dependencies {
 
 	//Floodgate
 	//modImplementation('maven.modrinth:floodgate:2.2.0-SNAPSHOT-8') { exclude group: "net.fabricmc.fabric-api" }
-	compileOnly('org.geysermc.floodgate:api:2.2.2-SNAPSHOT')
+	//compileOnly('org.geysermc.floodgate:api:2.2.2-SNAPSHOT')
 	//modImplementation("org.geysermc.floodgate:floodgate-fabric:2.2.2-SNAPSHOT")
 
 	//carpet
