@@ -55,8 +55,10 @@ public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
             e.printStackTrace();
         }
 
-
-        builder.putAll(TranslationStorage.getAllTranslations(TranslationStorage.EN_US));
+        HashMap<String,String> loadedTranslations = TranslationStorage.getAllTranslations(TranslationStorage.EN_US);
+        if(loadedTranslations !=null) {
+            builder.putAll(TranslationStorage.getAllTranslations(TranslationStorage.EN_US));
+        }
         builder.putAll(ServerUtilsMod.ServerTranslatorModule.getConfig().injects);
 
         final ImmutableMap<String, String> map = ImmutableMap.copyOf(builder);
