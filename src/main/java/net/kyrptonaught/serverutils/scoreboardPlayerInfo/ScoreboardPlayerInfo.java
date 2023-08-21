@@ -94,6 +94,7 @@ public class ScoreboardPlayerInfo extends Module {
             setHasLEMClient(handler.player, playerData.hasLCH);
             setHasOptifine(handler.player, playerData.hasOptishit);
             setHasControllerMod(handler.player, playerData.hasController);
+            setBedrockClient(handler.player, playerData.isBedrock);
             setGUIScale(handler.player, playerData.guiScale);
             setPanScale(handler.player, playerData.panScale);
         }
@@ -117,8 +118,9 @@ public class ScoreboardPlayerInfo extends Module {
         forgeClientObjective.setScore(player, forgeClient ? 2 : 1);
     }
 
-    public static void setBedrockClient(PlayerEntity player, boolean bedrockClient) {
-        bedrockClientObjective.setScore(player, bedrockClient ? 2 : 1);
+    public static void setBedrockClient(PlayerEntity player, Boolean bedrockClient) {
+        if (bedrockClient != null)
+            bedrockClientObjective.setScore(player, bedrockClient ? 2 : 1);
     }
 
     public static void addClientConnectionProtocol(ClientConnection connection, int protocol) {
