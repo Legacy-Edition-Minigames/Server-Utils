@@ -13,7 +13,7 @@ public class LivingEntityMixin {
     @Redirect(method = "takeKnockback", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isOnGround()Z"))
     public boolean forceKnockbackAsIfOnGround(LivingEntity livingentity) {
         if (KnockbackMod.ENABLED)
-            return false;
+            return true;
 
         return livingentity.isOnGround();
     }
