@@ -169,9 +169,8 @@ public class CustomUI extends Module {
             CommandFunctionManager functionManager = player.getServer().getCommandFunctionManager();
             functionManager.getFunction(new Identifier(cmd)).ifPresent(commandFunction -> functionManager.execute(commandFunction, player.getServer().getCommandSource().withLevel(2).withSilent()));
         } else if (action.startsWith("openUI/")) {
-            if (slot.replaceOpenScreen())
-                replaceScreen(cmd, player);
-            showScreenFor(cmd, player);
+            if (slot.replaceOpenScreen()) replaceScreen(cmd, player);
+            else showScreenFor(cmd, player);
         } else if (action.startsWith("close/")) {
             player.closeHandledScreen();
         } else if (action.startsWith("back/")) {
