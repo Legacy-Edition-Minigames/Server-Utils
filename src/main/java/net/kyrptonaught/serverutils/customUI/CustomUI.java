@@ -11,6 +11,7 @@ import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
@@ -23,6 +24,7 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ScoreboardCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -76,14 +78,17 @@ public class CustomUI extends Module {
 
             if(slotDefinition.isDynamic()) {
                 try {
-                ScreenConfig.SlotDefinition.DynamicModel model = slotDefinition.dynamicModel;
-                ServerScoreboard scoreboard = player.getServer().getScoreboard();
-                ScoreboardObjective objective = scoreboard.getObjective(model.score);
-                int score = scoreboard.getPlayerScore(model.player, objective).getScore();
+                    ScreenConfig.SlotDefinition.DynamicModel model = slotDefinition.dynamicModel;
+                    ServerScoreboard scoreboard = player.getServer().getScoreboard();
+                    ScoreboardObjective objective = scoreboard.getObjective(model.score);
+                    String playerName = model.player;
+                    if (playerName.equals("@s"))
+                        playerName = player.getEntityName();
+                    int score = scoreboard.getPlayerScore(playerName, objective).getScore();
 
-                String value = ServerTranslator.translate(player, model.models.get(score));
-                int intValue = Integer.parseInt(value);
-                itemStack.getOrCreateNbt().putInt("CustomModelData", intValue);
+                    String value = ServerTranslator.translate(player, model.models.get(score));
+                    int intValue = Integer.parseInt(value);
+                    itemStack.getOrCreateNbt().putInt("CustomModelData", intValue);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
@@ -233,6 +238,8 @@ public class CustomUI extends Module {
                 .then(CommandManager.literal("append")
                         .then(arg.executes(context -> {
                             ServerPlayerEntity player = context.getSource().getPlayer();
+                            ScoreboardCommand
+                            EntityArgumentType
                             String screenID = StringArgumentType.getString(context, "screenID");
                             showScreenFor(screenID, player);
                             return 1;
