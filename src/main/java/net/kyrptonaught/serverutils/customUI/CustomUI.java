@@ -238,8 +238,6 @@ public class CustomUI extends Module {
                 .then(CommandManager.literal("append")
                         .then(arg.executes(context -> {
                             ServerPlayerEntity player = context.getSource().getPlayer();
-                            ScoreboardCommand
-                            EntityArgumentType
                             String screenID = StringArgumentType.getString(context, "screenID");
                             showScreenFor(screenID, player);
                             return 1;
