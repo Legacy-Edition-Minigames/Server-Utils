@@ -26,19 +26,18 @@ public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
         DatapackInteractables.clear();
         Map<Identifier, Resource> resources = manager.findResources(ID.getPath(), (identifier) -> identifier.getPath().endsWith(".json") || identifier.getPath().endsWith(".json5"));
         for (Identifier id : resources.keySet()) {
-            if (id.getNamespace().equals(ID.getNamespace()))
-                try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
+            try (InputStreamReader reader = new InputStreamReader(resources.get(id).getInputStream(), StandardCharsets.UTF_8)) {
 
-                    BlockList blockList = ServerUtilsMod.getGson().fromJson(reader, BlockList.class);
-                    if (blockList == null) {
-                        System.out.println(ID + " - Error parsing file: " + id);
-                        continue;
-                    }
-                    DatapackInteractables.addBlockList(blockList.isWhitelist, blockList.blockIDs);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                BlockList blockList = ServerUtilsMod.getGson().fromJson(reader, BlockList.class);
+                if (blockList == null) {
+                    System.out.println(ID + " - Error parsing file: " + id);
+                    continue;
                 }
+                DatapackInteractables.addBlockList(blockList.isWhitelist, blockList.blockIDs);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
