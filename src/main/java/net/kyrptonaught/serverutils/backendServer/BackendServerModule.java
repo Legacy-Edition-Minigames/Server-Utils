@@ -31,17 +31,23 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
 
     public static void asyncPost(String url, BiConsumer<Boolean, HttpResponse<String>> response) {
         HttpRequest request = buildPostRequest(getApiUrl(url));
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(stringHttpResponse -> response.accept(didRequestPass(stringHttpResponse), stringHttpResponse));
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .exceptionally(throwable -> null)
+                .thenAccept(stringHttpResponse -> response.accept(didRequestPass(stringHttpResponse), stringHttpResponse));
     }
 
     public static void asyncGet(String url, BiConsumer<Boolean, HttpResponse<String>> response) {
         HttpRequest request = buildGetRequest(getApiUrl(url));
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(stringHttpResponse -> response.accept(didRequestPass(stringHttpResponse), stringHttpResponse));
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .exceptionally(throwable -> null)
+                .thenAccept(stringHttpResponse -> response.accept(didRequestPass(stringHttpResponse), stringHttpResponse));
     }
 
     public static void asyncPost(String url, String json, BiConsumer<Boolean, HttpResponse<String>> response) {
         HttpRequest request = buildPostRequest(getApiUrl(url), json);
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(stringHttpResponse -> response.accept(didRequestPass(stringHttpResponse), stringHttpResponse));
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .exceptionally(throwable -> null)
+                .thenAccept(stringHttpResponse -> response.accept(didRequestPass(stringHttpResponse), stringHttpResponse));
     }
 
     public static void asyncPost(String url, String json) {
