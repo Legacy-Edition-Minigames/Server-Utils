@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(SnowballEntity.class)
 public abstract class SnowballEntityMixin extends ThrownItemEntity {
@@ -20,7 +19,7 @@ public abstract class SnowballEntityMixin extends ThrownItemEntity {
         super(entityType, world);
     }
 
-    @Inject(method = "onEntityHit", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    @Inject(method = "onEntityHit", at = @At("TAIL"))
     protected void onHitPlayer(EntityHitResult entityHitResult, CallbackInfo ci) {
         Entity entity = entityHitResult.getEntity();
         if (entity instanceof PlayerEntity && !((PlayerEntity) entity).getAbilities().invulnerable) {
