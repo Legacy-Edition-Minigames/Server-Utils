@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.discordBridge.DiscordBridgeMod;
-import net.minecraft.util.JsonHelper;
 
 public class WebhookSender {
     public static void sendMessage(String name, String url, String msg) {

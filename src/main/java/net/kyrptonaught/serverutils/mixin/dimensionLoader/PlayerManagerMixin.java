@@ -41,13 +41,13 @@ public class PlayerManagerMixin {
         Optional<Vec3d> optional = target != null && blockPos != null ? PlayerEntity.findRespawnPosition(target, blockPos, player.getSpawnAngle(), player.isSpawnForced(), alive) : Optional.empty();
         target = target != null && optional.isPresent() ? target : this.server.getOverworld();
 
-        return new PlayerRespawnS2CPacket(DimensionLoaderMod.tryGetDimKey(target), DimensionLoaderMod.tryGetWorldKey(target), sha256Seed, gameMode, previousGameMode, debugWorld, flatWorld, alive ? (byte)1 : 0, lastDeathPos, portalCooldown);
+        return new PlayerRespawnS2CPacket(DimensionLoaderMod.tryGetDimKey(target), DimensionLoaderMod.tryGetWorldKey(target), sha256Seed, gameMode, previousGameMode, debugWorld, flatWorld, alive ? (byte) 1 : 0, lastDeathPos, portalCooldown);
     }
 
 
     @Redirect(method = "onPlayerConnect", at = @At(value = "NEW", target = "(IZLnet/minecraft/world/GameMode;Lnet/minecraft/world/GameMode;Ljava/util/Set;Lnet/minecraft/registry/DynamicRegistryManager$Immutable;Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/registry/RegistryKey;JIIIZZZZLjava/util/Optional;I)Lnet/minecraft/network/packet/s2c/play/GameJoinS2CPacket;"))
-    public GameJoinS2CPacket mtwSpoofDim(int playerEntityId, boolean hardcore, GameMode gameMode, @Nullable GameMode previousGameMode, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Immutable registryManager, RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimensionId, long sha256Seed, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld, Optional<GlobalPos> lastDeathLocation,int portalCooldown, ClientConnection connection, ServerPlayerEntity player) {
+    public GameJoinS2CPacket mtwSpoofDim(int playerEntityId, boolean hardcore, GameMode gameMode, @Nullable GameMode previousGameMode, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Immutable registryManager, RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimensionId, long sha256Seed, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld, Optional<GlobalPos> lastDeathLocation, int portalCooldown, ClientConnection connection, ServerPlayerEntity player) {
         ServerWorld target = player.getServerWorld();
-        return new GameJoinS2CPacket(playerEntityId, hardcore, gameMode, previousGameMode, dimensionIds, registryManager, DimensionLoaderMod.tryGetDimKey(target), DimensionLoaderMod.tryGetWorldKey(target), sha256Seed, maxPlayers, viewDistance, simulationDistance, reducedDebugInfo, showDeathScreen, debugWorld, flatWorld, lastDeathLocation,portalCooldown);
+        return new GameJoinS2CPacket(playerEntityId, hardcore, gameMode, previousGameMode, dimensionIds, registryManager, DimensionLoaderMod.tryGetDimKey(target), DimensionLoaderMod.tryGetWorldKey(target), sha256Seed, maxPlayers, viewDistance, simulationDistance, reducedDebugInfo, showDeathScreen, debugWorld, flatWorld, lastDeathLocation, portalCooldown);
     }
 }

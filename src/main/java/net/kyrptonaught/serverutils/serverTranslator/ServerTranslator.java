@@ -46,8 +46,8 @@ public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> playerLanguages.remove(handler.player.getUuid()));
     }
 
-    public static void injectTranslations(){
-        HashMap<String,String> builder = new HashMap<>();
+    public static void injectTranslations() {
+        HashMap<String, String> builder = new HashMap<>();
 
         try (InputStream inputStream = Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json")) {
             Language.load(inputStream, builder::put);
@@ -55,8 +55,8 @@ public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
             e.printStackTrace();
         }
 
-        HashMap<String,String> loadedTranslations = TranslationStorage.getAllTranslations(TranslationStorage.EN_US);
-        if(loadedTranslations !=null) {
+        HashMap<String, String> loadedTranslations = TranslationStorage.getAllTranslations(TranslationStorage.EN_US);
+        if (loadedTranslations != null) {
             builder.putAll(TranslationStorage.getAllTranslations(TranslationStorage.EN_US));
         }
         builder.putAll(ServerUtilsMod.ServerTranslatorModule.getConfig().injects);

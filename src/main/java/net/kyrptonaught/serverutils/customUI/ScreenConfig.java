@@ -45,7 +45,7 @@ public class ScreenConfig extends AbstractConfigFile {
             return field == null || field.isEmpty() || field.isBlank();
         }
 
-        public boolean isDynamic(){
+        public boolean isDynamic() {
             return dynamicModel != null;
         }
 

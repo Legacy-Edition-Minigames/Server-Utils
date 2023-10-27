@@ -88,13 +88,13 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module CustomWorldBorder = registerModule("customworldborder", new CustomWorldBorderMod());
     public static DiscordBridgeMod DiscordBridgeModule = (DiscordBridgeMod) registerModule("discordbridge", new DiscordBridgeMod());
     public static UserConfigMod UserConfigModule = (UserConfigMod) registerModule("userconfig", new UserConfigMod());
-    public static WhitelistSyncMod whitelistSyncMod  = (WhitelistSyncMod) registerModule("whitelistsync", new WhitelistSyncMod());
-    public static SnowballKnockbackMod snowballKnockback  = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
+    public static WhitelistSyncMod whitelistSyncMod = (WhitelistSyncMod) registerModule("whitelistsync", new WhitelistSyncMod());
+    public static SnowballKnockbackMod snowballKnockback = (SnowballKnockbackMod) registerModule("snowballknockback", new SnowballKnockbackMod());
     public static Module armorHudModule = registerModule("armorhud", new ArmorHudMod());
     public static Module noteblockMusic = registerModule("noteblockmusic", new NoteblockMusicMod());
     public static Module floodgateCompatModule = registerModule("floodgatecompat", new FloodgateCompatMod());
     public static PlayerJoinLocationMod playerJoinLocationMod = (PlayerJoinLocationMod) registerModule("playerjoinlocation", new PlayerJoinLocationMod());
-    public static Module knockbackModule  = registerModule("knockback", new KnockbackMod());
+    public static Module knockbackModule = registerModule("knockback", new KnockbackMod());
     //public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
 
 

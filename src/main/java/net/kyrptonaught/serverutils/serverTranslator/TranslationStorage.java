@@ -27,7 +27,7 @@ public class TranslationStorage {
         translations.clear();
     }
 
-    public static HashMap<String, String> getAllTranslations(String lang){
+    public static HashMap<String, String> getAllTranslations(String lang) {
         return translations.get(lang).translations;
     }
 

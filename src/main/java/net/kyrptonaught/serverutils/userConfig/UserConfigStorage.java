@@ -7,7 +7,10 @@ import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class UserConfigStorage {
     private static final HashMap<UUID, PlayerConfigs> playerCache = new HashMap<>();

@@ -5,7 +5,6 @@ import net.kyrptonaught.serverutils.mixin.personatus.PlayerListS2CPacketAccessor
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.ArrayList;
 import java.util.Collections;

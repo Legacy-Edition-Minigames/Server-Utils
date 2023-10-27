@@ -8,7 +8,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 
 public class RideMod extends Module {
 
@@ -21,7 +20,8 @@ public class RideMod extends Module {
                             PlayerEntity player = context.getSource().getPlayer();
                             if (entity != player && entity != null && player != null)
                                 player.startRiding(entity);
-                            else context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("You cannot ride yourself"), false);
+                            else
+                                context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("You cannot ride yourself"), false);
                             return 1;
                         })));
     }

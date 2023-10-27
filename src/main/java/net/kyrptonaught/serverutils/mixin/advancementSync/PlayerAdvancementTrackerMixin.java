@@ -1,9 +1,7 @@
 package net.kyrptonaught.serverutils.mixin.advancementSync;
 
 import com.google.gson.*;
-import com.google.gson.internal.Streams;
 import com.google.gson.reflect.TypeToken;
-import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
@@ -13,7 +11,6 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -28,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @Mixin(PlayerAdvancementTracker.class)
 public abstract class PlayerAdvancementTrackerMixin implements PATLoadFromString {

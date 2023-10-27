@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;

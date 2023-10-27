@@ -2,7 +2,9 @@ package net.kyrptonaught.serverutils.scoreboardPlayerInfo;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.*;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.mixin.networking.accessor.ServerPlayNetworkHandlerAccessor;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.ServerUtilsMod;

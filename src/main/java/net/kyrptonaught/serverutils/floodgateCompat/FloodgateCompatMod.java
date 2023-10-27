@@ -9,6 +9,6 @@ public class FloodgateCompatMod extends Module {
     public void onInitialize() {
         //temp hack to fix compat with Fabric Proxy lite/floodgate/LuckPerms
         if (FabricLoader.getInstance().isModLoaded("fabricproxy-lite"))
-           FabricProxyLite.hackEarlySendFix();
+            FabricProxyLite.hackEarlySendFix();
     }
 }

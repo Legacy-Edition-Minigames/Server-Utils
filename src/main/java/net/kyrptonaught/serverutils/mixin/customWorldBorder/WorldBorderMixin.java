@@ -4,14 +4,11 @@ import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderArea;
 import net.kyrptonaught.serverutils.customWorldBorder.duckInterface.CustomWorldBorder;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin(WorldBorder.class)
 public abstract class WorldBorderMixin implements CustomWorldBorder {

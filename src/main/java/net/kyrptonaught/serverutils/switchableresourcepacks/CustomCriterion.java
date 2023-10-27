@@ -64,7 +64,7 @@ public class CustomCriterion implements Criterion<CustomCriterion.Conditions> {
 
     static class Conditions extends AbstractCriterionConditions {
         public Conditions(Identifier id, LootContextPredicate entity) {
-            super(id,entity);
+            super(id, entity);
         }
     }
 }

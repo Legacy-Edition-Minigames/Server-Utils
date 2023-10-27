@@ -11,7 +11,6 @@ import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
-import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
@@ -24,7 +23,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ScoreboardCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -76,7 +74,7 @@ public class CustomUI extends Module {
                     e.printStackTrace();
                 }
 
-            if(slotDefinition.isDynamic()) {
+            if (slotDefinition.isDynamic()) {
                 try {
                     ScreenConfig.SlotDefinition.DynamicModel model = slotDefinition.dynamicModel;
                     ServerScoreboard scoreboard = player.getServer().getScoreboard();
@@ -120,13 +118,13 @@ public class CustomUI extends Module {
         gui.open();
     }
 
-    public static void replaceScreen(String screen, ServerPlayerEntity player){
+    public static void replaceScreen(String screen, ServerPlayerEntity player) {
         if (!screenHistory.get(player.getUuid()).isEmpty())
             screenHistory.get(player.getUuid()).pop();
         showScreenFor(screen, player);
     }
 
-    public static void refreshScreen(ServerPlayerEntity player){
+    public static void refreshScreen(ServerPlayerEntity player) {
         String screen = screenHistory.get(player.getUuid()).pop();
         showScreenFor(screen, player);
     }

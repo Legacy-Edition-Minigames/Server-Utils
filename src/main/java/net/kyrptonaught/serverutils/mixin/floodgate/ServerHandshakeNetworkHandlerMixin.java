@@ -15,13 +15,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerHandshakeNetworkHandler.class)
 public class ServerHandshakeNetworkHandlerMixin {
 
-    @Shadow @Final private ClientConnection connection;
+    @Shadow
+    @Final
+    private ClientConnection connection;
 
-    @Inject(method = "onHandshake", at= @At("HEAD"))
-    public void checkForFloodgate(HandshakeC2SPacket packet, CallbackInfo ci){
+    @Inject(method = "onHandshake", at = @At("HEAD"))
+    public void checkForFloodgate(HandshakeC2SPacket packet, CallbackInfo ci) {
         QueuedPlayerData playerDara = ScoreboardPlayerInfo.getQueuedPlayerData(this.connection, true);
 
-        if(playerDara.isBedrock == null){
+        if (playerDara.isBedrock == null) {
             playerDara.isBedrock = packet.getAddress().contains("^Floodgate^");
         }
     }

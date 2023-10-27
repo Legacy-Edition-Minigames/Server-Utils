@@ -116,7 +116,7 @@ public class CustomWorldBorderManager {
             player.teleport(player.getX(), maxY - .5, player.getZ());
     }
 
-    public static void sendWorldBorderPacket(ServerPlayerEntity player, WorldBorder worldBorder){
+    public static void sendWorldBorderPacket(ServerPlayerEntity player, WorldBorder worldBorder) {
         player.networkHandler.sendPacket(new WorldBorderInitializeS2CPacket(worldBorder));
     }
 

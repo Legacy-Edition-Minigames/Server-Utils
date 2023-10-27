@@ -20,7 +20,9 @@ public abstract class LocalServerHandshakeNetworkHandlerMixin {
     private MinecraftServer server;
 
 
-    @Shadow @Final private ClientConnection connection;
+    @Shadow
+    @Final
+    private ClientConnection connection;
 
     @Inject(method = "onHandshake", at = @At("HEAD"))
     public void getProtocolVersion(HandshakeC2SPacket packet, CallbackInfo ci) {

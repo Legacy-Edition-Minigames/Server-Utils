@@ -123,7 +123,7 @@ public class BotCommands {
 
         BackendServerModule.asyncPost("link/sus/add/" + responseUUID, (success, response) -> {
             if (success) {
-                result.accept("Added suspicous player"+ mcName);
+                result.accept("Added suspicous player" + mcName);
                 MessageSender.sendLogMessage("Added " + mcName + " as a suspicous player");
             } else
                 result.accept("Error");
@@ -140,7 +140,7 @@ public class BotCommands {
 
         BackendServerModule.asyncPost("link/sus/remove/" + responseUUID, (success, response) -> {
             if (success) {
-                result.accept("Removed suspicous player"+ mcName);
+                result.accept("Removed suspicous player" + mcName);
                 MessageSender.sendLogMessage("Removed " + mcName + " as a suspicous player");
             } else
                 result.accept("Error");
@@ -152,11 +152,11 @@ public class BotCommands {
         for (long m : array) {
             l += m;
         }
-        return (double)l / (double)array.length;
+        return (double) l / (double) array.length;
     }
 
 
-    private static ServerCommandSource getCommandSource(BridgeBot bot, SlashCommandInteraction event){
-         return new ServerCommandSource(new DiscordCommandOutput(bot.server, event.getHook()), Vec3d.ZERO, Vec2f.ZERO, bot.server.getOverworld(), 4, "Discord/" + event.getMember().getEffectiveName(), Text.literal("Discord/" + event.getMember().getEffectiveName()), bot.server, null);
+    private static ServerCommandSource getCommandSource(BridgeBot bot, SlashCommandInteraction event) {
+        return new ServerCommandSource(new DiscordCommandOutput(bot.server, event.getHook()), Vec3d.ZERO, Vec2f.ZERO, bot.server.getOverworld(), 4, "Discord/" + event.getMember().getEffectiveName(), Text.literal("Discord/" + event.getMember().getEffectiveName()), bot.server, null);
     }
 }

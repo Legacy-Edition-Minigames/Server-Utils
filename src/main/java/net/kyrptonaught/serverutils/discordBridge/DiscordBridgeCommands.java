@@ -35,7 +35,7 @@ public class DiscordBridgeCommands {
                         .executes(context -> {
                             Text text = TextArgumentType.getTextArgument(context, "msg");
                             MessageSender.sendGameMessageWMentions(text);
-                            context.getSource().getServer().getPlayerManager().broadcast(Texts.parse(context.getSource(),text,null,0), false);
+                            context.getSource().getServer().getPlayerManager().broadcast(Texts.parse(context.getSource(), text, null, 0), false);
                             return 1;
                         })));
 
