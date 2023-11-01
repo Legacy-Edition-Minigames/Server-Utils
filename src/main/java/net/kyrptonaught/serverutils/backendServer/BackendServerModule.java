@@ -74,8 +74,7 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception ignored) {
             return null;
         }
 
