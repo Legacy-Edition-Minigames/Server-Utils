@@ -56,8 +56,11 @@ public class UserConfigStorage {
             BackendServerModule.asyncGet(AdvancementSyncMod.getUrl("getUserConfig", player), (success, response) -> {
                 if (success) {
                     playerCache.put(player.getUuid(), PlayerConfigs.load(ServerUtilsMod.getGson().fromJson(response.body(), JsonObject.class)));
-                } else
-                    System.out.println("Loading user config for " + player.getDisplayName().getString() + " failed");
+                } else {
+                    System.out.println("Loading user config for " + player.getDisplayName().getString() + " failed... loading local");
+                    playerCache.put(player.getUuid(), PlayerConfigs.load(UserConfigLocalStorage.loadPlayer(player.getUuidAsString())));
+                }
+
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,8 +70,10 @@ public class UserConfigStorage {
     public static void syncPlayer(ServerPlayerEntity player) {
         String json = ServerUtilsMod.getGson().toJson(playerCache.get(player.getUuid()));
         BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("syncUserConfig", player), json, (success, response) -> {
-            if (!success)
-                System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed");
+            if (!success) {
+                System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed... saving local");
+                UserConfigLocalStorage.syncPlayer(player.getUuidAsString(), json);
+            }
         });
     }
 }
