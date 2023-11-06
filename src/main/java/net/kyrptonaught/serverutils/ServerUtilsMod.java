@@ -38,6 +38,7 @@ import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
 import net.kyrptonaught.serverutils.takeEverything.TakeEverythingMod;
 import net.kyrptonaught.serverutils.tntlighter.TNTLighter;
 import net.kyrptonaught.serverutils.userConfig.UserConfigMod;
+import net.kyrptonaught.serverutils.utilityCommands.UtilCommandsMod;
 import net.kyrptonaught.serverutils.velocitymodifier.VelocityModifierModule;
 import net.kyrptonaught.serverutils.velocityserverswitch.VelocityServerSwitchMod;
 import net.kyrptonaught.serverutils.waterFreezer.WaterFreezer;
@@ -96,6 +97,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static PlayerJoinLocationMod playerJoinLocationMod = (PlayerJoinLocationMod) registerModule("playerjoinlocation", new PlayerJoinLocationMod());
     public static Module knockbackModule = registerModule("knockback", new KnockbackMod());
     //public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
+    public static Module utilModule = registerModule("util", new UtilCommandsMod());
 
 
     @Override
