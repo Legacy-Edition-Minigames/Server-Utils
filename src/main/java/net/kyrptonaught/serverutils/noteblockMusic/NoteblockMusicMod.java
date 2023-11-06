@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -16,8 +17,11 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.level.storage.LevelStorage;
+import nota.Nota;
+import nota.event.SongEndEvent;
 import nota.model.RepeatMode;
 import nota.model.Song;
 import nota.player.EntitySongPlayer;
@@ -37,6 +41,14 @@ import java.util.stream.Stream;
 public class NoteblockMusicMod extends Module {
 
     private static final HashMap<String, SongPlayer> songPlayers = new HashMap<>();
+
+    @Override
+    public void onInitialize() {
+        SongEndEvent.EVENT.register(songPlayer -> {
+            String song = songPlayer.getId().getPath();
+            songPlayers.remove(song).destroy();
+        });
+    }
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -124,6 +136,7 @@ public class NoteblockMusicMod extends Module {
         songPlayer.setEnable10Octave(true);
         songPlayer.setAutoDestroy(true);
         songPlayer.setRepeatMode(looping ? RepeatMode.ALL : RepeatMode.NONE);
+        songPlayer.setId(new Identifier(ServerUtilsMod.MOD_ID, songFile));
         players.forEach(songPlayer::addPlayer);
 
         if (songPlayers.containsKey(songFile)) songPlayers.remove(songFile).destroy();
