@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.backendServer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.kyrptonaught.LEMBackend.LEMBackend;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 
@@ -16,6 +17,10 @@ import java.util.function.BiConsumer;
 public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
     private static HttpClient client;
 
+    public BackendServerModule(String MOD_ID) {
+        setMOD_ID(MOD_ID);
+    }
+
     @Override
     public void onInitialize() {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -27,6 +32,15 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
                 .build();
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> executorService.shutdown());
+
+        if (ServerUtilsMod.backendModule.getConfig().runBackendServer) {
+            ServerLifecycleEvents.SERVER_STOPPED.register(server -> LEMBackend.shutdown());
+            ServerLifecycleEvents.SERVER_STARTED.register(LEMBackend::start);
+        }
+    }
+
+    public static boolean backendRunning() {
+        return LEMBackend.app != null;
     }
 
     public static void asyncPost(String url, BiConsumer<Boolean, HttpResponse<String>> response) {
@@ -86,7 +100,7 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
     }
 
     private static String getApiURL() {
-        BackendServerConfig config = ServerUtilsMod.BackendModule.getConfig();
+        BackendServerConfig config = ServerUtilsMod.backendModule.getConfig();
         return config.apiUrl + "/v0/" + config.secretKey;
     }
 

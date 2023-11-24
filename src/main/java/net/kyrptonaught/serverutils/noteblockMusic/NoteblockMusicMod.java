@@ -20,7 +20,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.level.storage.LevelStorage;
-import nota.Nota;
 import nota.event.SongEndEvent;
 import nota.model.RepeatMode;
 import nota.model.Song;

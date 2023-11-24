@@ -1,11 +1,8 @@
-package net.kyrptonaught.serverutils.userConfig;
+package net.kyrptonaught.LEMBackend;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import net.fabricmc.loader.api.FabricLoader;
-import net.kyrptonaught.serverutils.FileHelper;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -13,22 +10,35 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class UserConfigLocalStorage {
-    private static final Path savePath = FabricLoader.getInstance().getGameDir().resolve("userConfigs");
+public class Module {
 
-    public static JsonObject loadPlayer(String player) {
-        JsonObject obj = readFileJson(ServerUtilsMod.getGson(), player + ".json", JsonObject.class);
-        if (obj == null) obj = new JsonObject();
+    protected final Path savePath;
 
-        return obj;
+    public Module() {
+        this.savePath = LEMBackend.getBaseConfigPath();
     }
 
-    public static void syncPlayer(String player, String json) {
-        FileHelper.createDir(savePath);
-        writeFile(player + ".json", json);
+    public Module(String savePath) {
+        this.savePath = LEMBackend.getBaseConfigPath().resolve(savePath);
     }
 
-    public static <T> T readFileJson(Gson gson, String file, Class<T> clazz) {
+    protected void save() {
+        save(LEMBackend.gson);
+    }
+
+    protected void load() {
+        load(LEMBackend.gson);
+    }
+
+    public void save(Gson gson) {
+
+    }
+
+    public void load(Gson gson) {
+
+    }
+
+    public <T> T readFileJson(Gson gson, String file, Class<T> clazz) {
         Path saveFile = savePath.resolve(file);
         if (Files.exists(saveFile) && Files.isReadable(saveFile)) {
             try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(saveFile, StandardOpenOption.READ), StandardCharsets.UTF_8)) {
@@ -41,12 +51,20 @@ public class UserConfigLocalStorage {
         return null;
     }
 
-    public static void writeFile(String file, String data) {
+    public void writeFile(String file, String data) {
         Path saveFile = savePath.resolve(file);
         try (OutputStreamWriter out = new OutputStreamWriter(Files.newOutputStream(saveFile), StandardCharsets.UTF_8)) {
             out.write(data);
         } catch (Exception e) {
             System.out.println("Error writing file: " + saveFile);
+            e.printStackTrace();
+        }
+    }
+
+    protected void createDirectories() {
+        try {
+            Files.createDirectories(savePath);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

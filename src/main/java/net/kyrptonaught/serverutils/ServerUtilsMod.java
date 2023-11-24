@@ -57,8 +57,8 @@ public class ServerUtilsMod implements ModInitializer {
     public static ConfigManager config = new ConfigManager(MOD_ID);
     public static HashMap<String, Module> modules = new HashMap<>();
 
+    public static final BackendServerModule backendModule = new BackendServerModule("backend");
 
-    public static BackendServerModule BackendModule = (BackendServerModule) registerModule("backend", new BackendServerModule());
     public static WaterFreezer WaterFreezerModule = (WaterFreezer) registerModule("waterfreezer", new WaterFreezer());
     public static Module VelocityServerSwitchMod = registerModule("velocityserverswitch", new VelocityServerSwitchMod());
     public static Module VelocityModifierModule = registerModule("velocitycommand", new VelocityModifierModule());
@@ -104,6 +104,10 @@ public class ServerUtilsMod implements ModInitializer {
     public void onInitialize() {
         registerPresence();
         VelocityProxyHelper.registerReceive();
+
+        backendModule.setConfig(config.load(backendModule.getMOD_ID(), backendModule.getDefaultConfig()));
+        backendModule.saveConfig();
+        backendModule.onInitialize();
 
         for (Module module : modules.values()) {
             module.onInitialize();
