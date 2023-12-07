@@ -45,7 +45,7 @@ public class LinkingManager {
 
     public static void generateDiscordInput(JDA jda, long channel) {
         MessageEmbed embed = new EmbedBuilder()
-                .setDescription("To start the linking process, in Minecraft join the server `legacyminigames.xyz`, enter a battle match and type `/discordLink` and then click `Link` below to link your account.\n\nIf you are unable to link your account, please contact <@793437875685425154>.\n\nIf you are coming from patreon, send Emmie a message **on Patreon**.")
+                .setDescription("To start the linking process, in Minecraft join the server `legacyminigames.net`, enter a battle match and type `/discordLink` and then click `Link` below to link your account.\n\nIf you are unable to link your account, please contact <@793437875685425154>.\n\nIf you are coming from patreon, send Emmie a message **on Patreon**.")
                 .build();
 
         jda.getTextChannelById(channel).sendMessageEmbeds(Collections.singleton(embed))
