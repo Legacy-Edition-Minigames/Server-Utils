@@ -29,22 +29,22 @@ dependencies {
 	}
 
 	//SGui
-	modImplementation include("eu.pb4:sgui:1.2.2+1.20") { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include("eu.pb4:sgui:1.3.0+1.20.2") { exclude group: "net.fabricmc.fabric-api" }
 
 	//Modified Fantasy
-	modImplementation include('xyz.nucleoid:fantasy:0.4.11-lem-v1-1.20.1') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include('xyz.nucleoid:fantasy:0.5.0-lem-v1-1.20.4') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Luck Perms
-	modImplementation('maven.modrinth:luckperms:v5.4.88-fabric') { exclude group: "net.fabricmc.fabric-api" }
-	modImplementation('me.lucko:fabric-permissions-api:0.3-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
-	compileOnly 'net.luckperms:api:5.4'
+	//modImplementation('maven.modrinth:luckperms:v5.4.111-fabric') { exclude group: "net.fabricmc.fabric-api" }
+	//modImplementation('me.lucko:fabric-permissions-api:0.3-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
+	//compileOnly 'net.luckperms:api:5.4'
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 
 	//Fabric Proxy Lite
-	modImplementation('maven.modrinth:fabricproxy-lite:v2.6.0') { exclude group: "net.fabricmc.fabric-api" }
+	//modImplementation('maven.modrinth:fabricproxy-lite:v2.7.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Crossstitch
-	modImplementation('maven.modrinth:crossstitch:0.1.6') { exclude group: "net.fabricmc.fabric-api" }
+	//modImplementation('maven.modrinth:crossstitch:0.1.6') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Floodgate
 	//modImplementation('maven.modrinth:floodgate:2.2.0-SNAPSHOT-8') { exclude group: "net.fabricmc.fabric-api" }
@@ -52,13 +52,13 @@ dependencies {
 	//modImplementation("org.geysermc.floodgate:floodgate-fabric:2.2.2-SNAPSHOT")
 
 	//carpet
-	modImplementation('carpet:fabric-carpet:1.20-1.4.112+v230608') { exclude group: "net.fabricmc.fabric-api" }
+	//modImplementation('carpet:fabric-carpet:1.20.3-1.4.128+v231205') { exclude group: "net.fabricmc.fabric-api" }
 
 	//NoChatReports
-	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.20.1-v2.2.2') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.20.3-v2.4.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//NOTA
-	modImplementation include("ru.pinkgoosik:nota:0.2.0-lem-v1-1.20.1")
+	//modImplementation include("ru.pinkgoosik:nota:0.2.0-lem-v1-1.20.1")
 
 	//Discord Bridge
 	shadow implementation("net.dv8tion:JDA:5.0.0-beta.16") { exclude module: 'opus-java' }

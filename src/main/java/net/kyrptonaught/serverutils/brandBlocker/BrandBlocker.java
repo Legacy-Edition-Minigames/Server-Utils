@@ -20,7 +20,7 @@ public class BrandBlocker extends ModuleWConfig<BrandBlockerConfig> {
     private static Text getKickMsg(String msg, String kickMsg) {
         if (msg.equals("$KICKMSG$")) msg = kickMsg;
         try {
-            return Text.Serializer.fromJson(msg);
+            return Text.Serialization.fromJson(msg);
         } catch (Exception ignored) {
             return Text.of(msg);
         }

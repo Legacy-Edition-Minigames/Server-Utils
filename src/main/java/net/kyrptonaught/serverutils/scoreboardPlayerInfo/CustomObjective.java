@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.scoreboardPlayerInfo;
 
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -23,33 +24,33 @@ public class CustomObjective {
     }
 
     public void addToScoreboard(Scoreboard scoreboard) {
-        if (!scoreboard.containsObjective(objName))
-            scoreboard.addObjective(objName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER);
+        if (scoreboard.getNullableObjective(objName) == null)
+            scoreboard.addObjective(objName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER, false, null);
     }
 
     public void addPlayerScoresToScoreboard(Scoreboard scoreboard) {
-        ScoreboardObjective objective = scoreboard.getObjective(objName);
+        ScoreboardObjective objective = scoreboard.getNullableObjective(objName);
         for (String player : savedPlayerValues.keySet()) {
-            scoreboard.getPlayerScore(player, objective).setScore(savedPlayerValues.get(player));
+            scoreboard.getOrCreateScore(ScoreHolder.fromName(player), objective).setScore(savedPlayerValues.get(player));
         }
     }
 
 
     public void addPlayerScoresToScoreboard(Scoreboard scoreboard, Collection<ServerPlayerEntity> players) {
-        ScoreboardObjective objective = scoreboard.getObjective(objName);
+        ScoreboardObjective objective = scoreboard.getNullableObjective(objName);
         for (ServerPlayerEntity player : players) {
-            if (savedPlayerValues.containsKey(player.getEntityName()))
-                scoreboard.getPlayerScore(player.getEntityName(), objective).setScore(savedPlayerValues.get(player.getEntityName()));
+            if (savedPlayerValues.containsKey(player.getNameForScoreboard()))
+                scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), objective).setScore(savedPlayerValues.get(player.getNameForScoreboard()));
         }
     }
 
     public void setScore(PlayerEntity player, int score) {
-        savedPlayerValues.put(player.getEntityName(), score);
+        savedPlayerValues.put(player.getNameForScoreboard(), score);
     }
 
     public void resetScore(Scoreboard scoreboard, PlayerEntity player) {
         setScore(player, 0);
-        ScoreboardObjective objective = scoreboard.getObjective(objName);
-        scoreboard.getPlayerScore(player.getEntityName(), objective).setScore(0);
+        ScoreboardObjective objective = scoreboard.getNullableObjective(objName);
+        scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), objective).setScore(0);
     }
 }

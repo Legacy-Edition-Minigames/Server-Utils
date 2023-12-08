@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.scoreboardsuffix.SuffixFormat;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -39,13 +40,12 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
         Scoreboard scoreboard = this.server.getScoreboard();
         String player = this.getName().getString();
-        Team team = scoreboard.getPlayerTeam(player);
+        Team team = scoreboard.getScoreHolderTeam(player);
         MutableText suffix = Team.decorateName(team, playerName);
         ScoreboardSuffixMod.playerSuffixStorage.suffixFormat.scoreboardSuffixes.forEach(newSuffix -> {
             if (newSuffix instanceof SuffixFormat.ScoreboardSuffix) {
                 String scoreboardName = newSuffix.suffix;
-                int score = scoreboard.playerHasObjective(player, scoreboard.getObjective(scoreboardName)) ?
-                        scoreboard.getPlayerScore(player, scoreboard.getObjective(scoreboardName)).getScore() : 0;
+                int score = scoreboard.getOrCreateScore(ScoreHolder.fromName(player), scoreboard.getNullableObjective(scoreboardName)).getScore();
                 ((SuffixFormat.ScoreboardSuffix) newSuffix).updateText(score);
             }
 

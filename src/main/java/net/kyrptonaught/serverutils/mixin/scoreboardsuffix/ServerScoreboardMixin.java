@@ -2,9 +2,7 @@ package net.kyrptonaught.serverutils.mixin.scoreboardsuffix;
 
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.scoreboard.ServerScoreboard;
+import net.minecraft.scoreboard.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
@@ -22,10 +20,10 @@ public abstract class ServerScoreboardMixin extends Scoreboard {
     private MinecraftServer server;
 
     @Inject(method = "updateScore", at = @At("TAIL"))
-    public void updateTeamSuffix(ScoreboardPlayerScore score, CallbackInfo ci) {
-        String name = score.getObjective() != null ? score.getObjective().getName() : "";
+    public void updateTeamSuffix(ScoreHolder scoreHolder, ScoreboardObjective objective, ScoreboardScore score, CallbackInfo ci) {
+        String name = objective != null ? objective.getName() : "";
         if (ScoreboardSuffixMod.playerSuffixStorage != null && ScoreboardSuffixMod.playerSuffixStorage.suffixFormat != null && ScoreboardSuffixMod.playerSuffixStorage.suffixFormat.scoreboardNames.contains(name)) {
-            ServerPlayerEntity player = this.server.getPlayerManager().getPlayer(score.getPlayerName());
+            ServerPlayerEntity player = this.server.getPlayerManager().getPlayer(scoreHolder.getNameForScoreboard());
 
             PlayerListS2CPacket packet = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player);
             this.server.getPlayerManager().sendToAll(packet);

@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.mixin.networking.accessor.ServerPlayNetworkHandlerAccessor;
+import net.fabricmc.fabric.mixin.networking.accessor.ServerCommonNetworkHandlerAccessor;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -90,8 +90,8 @@ public class ScoreboardPlayerInfo extends Module {
     }
 
     public static void onPlayerConnect(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
-        if (queuedPlayerData.containsKey(((ServerPlayNetworkHandlerAccessor) handler).getConnection())) {
-            QueuedPlayerData playerData = queuedPlayerData.remove(((ServerPlayNetworkHandlerAccessor) handler).getConnection());
+        if (queuedPlayerData.containsKey(((ServerCommonNetworkHandlerAccessor) handler).getConnection())) {
+            QueuedPlayerData playerData = queuedPlayerData.remove(((ServerCommonNetworkHandlerAccessor) handler).getConnection());
             protocolObjective.setScore(handler.player, playerData.protocolVersion);
             setHasLEMClient(handler.player, playerData.hasLCH);
             setHasOptifine(handler.player, playerData.hasOptishit);

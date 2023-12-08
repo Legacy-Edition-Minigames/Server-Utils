@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.dimensionLoader;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -17,7 +18,7 @@ public class CustomDimHolder {
     public RuntimeWorldHandle world;
     private boolean scheduleDelete = false;
 
-    public CustomDimHolder(Identifier dimID, Identifier copyFromID, Collection<CommandFunction> functions) {
+    public CustomDimHolder(Identifier dimID, Identifier copyFromID, Collection<CommandFunction<ServerCommandSource>> functions) {
         this.dimID = dimID;
         this.copyFromID = copyFromID;
         setFunctions(functions);
@@ -58,7 +59,7 @@ public class CustomDimHolder {
         this.completionTask = execute;
     }
 
-    public void setFunctions(Collection<CommandFunction> functions) {
+    public void setFunctions(Collection<CommandFunction<ServerCommandSource>> functions) {
         setFunctions(server -> {
             if (functions != null) {
                 for (CommandFunction commandFunction : functions) {

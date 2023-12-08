@@ -1,10 +1,7 @@
 package net.kyrptonaught.serverutils.mixin.personatus;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
-import com.mojang.util.UUIDTypeAdapter;
 import net.kyrptonaught.serverutils.personatus.PersonatusModule;
-import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
@@ -15,8 +12,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.UUID;
 
 @Mixin(ServerLoginNetworkHandler.class)
 public class ServerLoginNetworkHandlerMixin {
@@ -31,13 +26,13 @@ public class ServerLoginNetworkHandlerMixin {
     private boolean profileChecked = false;
 
 
-    @Inject(method = "onHello", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;profile:Lcom/mojang/authlib/GameProfile;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
+    @Inject(method = "onHello", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;profileName:Ljava/lang/String;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
     public void requestSpoof(LoginHelloC2SPacket packet, CallbackInfo ci) {
         if (!PersonatusModule.isEnabled()) {
             profileChecked = true;
-            return;
         }
 
+        /*
         new Thread(() -> {
             if (server.getSessionService() instanceof YggdrasilMinecraftSessionService sessionService) {
                 String responseName = PersonatusModule.URLGetValue(false, "kvs/get/personatus/" + profile.getName(), "value");
@@ -54,9 +49,11 @@ public class ServerLoginNetworkHandlerMixin {
             }
             profileChecked = true;
         }).start();
+
+         */
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;acceptPlayer()V"), cancellable = true)
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;sendSuccessPacket(Lcom/mojang/authlib/GameProfile;)V"), cancellable = true)
     public void delayAcceptUntilCheck(CallbackInfo ci) {
         if (!PersonatusModule.isEnabled()) return;
         if (!profileChecked)

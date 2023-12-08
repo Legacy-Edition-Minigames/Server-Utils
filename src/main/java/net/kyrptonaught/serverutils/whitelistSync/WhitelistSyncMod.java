@@ -18,7 +18,6 @@ import net.minecraft.server.WhitelistEntry;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 import net.minecraft.util.JsonHelper;
 
 import java.util.Collection;
@@ -100,9 +99,9 @@ public class WhitelistSyncMod extends ModuleWConfig<WhitelistSyncConfig> {
             whitelist.add(whitelistEntry);
             BackendServerModule.asyncPost("whitelist/add/" + gameProfile.getId().toString() + "/" + gameProfile.getName(), (success, stringHttpResponse) -> {
                 if (success)
-                    output(source, Text.translatable("commands.whitelist.add.success", Texts.toText(gameProfile)));
+                    output(source, Text.translatable("commands.whitelist.add.success", gameProfile.getName()));
                 else
-                    output(source, Text.literal("Error syncing whitelist add: ").append(Texts.toText(gameProfile)));
+                    output(source, Text.literal("Error syncing whitelist add: ").append(gameProfile.getName()));
             });
         }
     }
@@ -115,9 +114,9 @@ public class WhitelistSyncMod extends ModuleWConfig<WhitelistSyncConfig> {
             whitelist.remove(whitelistEntry);
             BackendServerModule.asyncPost("whitelist/remove/" + gameProfile.getId().toString() + "/" + gameProfile.getName(), (success, stringHttpResponse) -> {
                 if (success)
-                    output(source, Text.translatable("commands.whitelist.remove.success", Texts.toText(gameProfile)));
+                    output(source, Text.translatable("commands.whitelist.remove.success", gameProfile.getName()));
                 else
-                    output(source, Text.literal("Error syncing whitelist remove: ").append(Texts.toText(gameProfile)));
+                    output(source, Text.literal("Error syncing whitelist remove: ").append(gameProfile.getName()));
 
                 if (ServerUtilsMod.whitelistSyncMod.getConfig().attemptKickOnUpdate)
                     source.getServer().kickNonWhitelistedPlayers(source);

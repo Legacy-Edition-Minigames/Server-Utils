@@ -15,6 +15,7 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -83,7 +84,7 @@ public class ChestTrackerMod extends Module {
         chestsWParticle.clear();
         ServerScoreboard scoreboard = server.getScoreboard();
         server.getPlayerManager().getPlayerList().forEach(player -> {
-            scoreboard.getPlayerScore(player.getEntityName(), scoreboard.getObjective(scoreboardObjective)).setScore(0);
+            scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), scoreboard.getNullableObjective(scoreboardObjective)).setScore(0);
         });
     }
 
@@ -98,7 +99,7 @@ public class ChestTrackerMod extends Module {
         playerUsedChests.computeIfAbsent(uuid, k -> new HashSet<>()).add(secondHalf);
 
         ServerScoreboard scoreboard = (ServerScoreboard) player.getScoreboard();
-        scoreboard.getPlayerScore(player.getEntityName(), scoreboard.getObjective(scoreboardObjective)).setScore(playerUsedChests.get(uuid).size());
+        scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), scoreboard.getNullableObjective(scoreboardObjective)).setScore(playerUsedChests.get(uuid).size());
     }
 
     public static void spawnParticleTick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {

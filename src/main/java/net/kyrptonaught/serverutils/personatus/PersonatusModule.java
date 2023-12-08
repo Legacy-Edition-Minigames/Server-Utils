@@ -50,7 +50,7 @@ public class PersonatusModule extends ModuleWConfig<PersonatusConfig> {
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(context -> {
                                     ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
-                                    context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(player.getEntityName() + " is actually " + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getName()), false);
+                                    context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral(player.getNameForScoreboard() + " is actually " + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getName()), false);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("spoof")

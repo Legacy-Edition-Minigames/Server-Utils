@@ -18,10 +18,10 @@ public class ServerMetadataSpoofer {
         List<PlayerData> playerDataList = new ArrayList<>();
 
         server.getPlayerManager().getPlayerList().forEach(playerEntity -> {
-            String playerName = playerEntity.allowsServerListing() ? playerEntity.getEntityName() : MinecraftServer.ANONYMOUS_PLAYER_PROFILE.getName();
+            String playerName = playerEntity.allowsServerListing() ? playerEntity.getNameForScoreboard() : MinecraftServer.ANONYMOUS_PLAYER_PROFILE.getName();
             UUID uuid = playerEntity.allowsServerListing() ? playerEntity.getGameProfile().getId() : MinecraftServer.ANONYMOUS_PLAYER_PROFILE.getId();
 
-            Team playerTeam = scoreboard.getPlayerTeam(playerEntity.getEntityName());
+            Team playerTeam = scoreboard.getScoreHolderTeam(playerEntity.getNameForScoreboard());
             if (playerTeam == null)
                 playerDataList.add(new PlayerData(playerName, uuid, 999));
             else {

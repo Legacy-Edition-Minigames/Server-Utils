@@ -54,7 +54,7 @@ public class SuffixFormat {
         public Suffix(String suffix) {
             this.suffix = suffix;
             try {
-                displayText = Objects.requireNonNullElseGet(Text.Serializer.fromJson(suffix), () -> Text.literal(suffix));
+                displayText = Objects.requireNonNullElseGet(Text.Serialization.fromJson(suffix), () -> Text.literal(suffix));
             } catch (JsonParseException var4) {
                 //System.out.println("\"" + suffix + "\" created error: " + var4);
                 displayText = Text.literal(suffix);

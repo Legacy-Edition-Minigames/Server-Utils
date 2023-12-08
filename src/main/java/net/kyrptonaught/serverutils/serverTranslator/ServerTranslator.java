@@ -1,10 +1,10 @@
 package net.kyrptonaught.serverutils.serverTranslator;
 
 import com.google.common.collect.ImmutableMap;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.mixin.serverTranslator.ServerPlayerEntityLanguageAccessor;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.OrderedText;
@@ -16,20 +16,11 @@ import net.minecraft.util.Language;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.UUID;
 
 public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
 
-    private static final HashMap<UUID, String> playerLanguages = new HashMap<>();
-
-    public static void registerPlayerLanguage(ServerPlayerEntity player, String language) {
-        playerLanguages.put(player.getUuid(), language);
-    }
-
     public static String getLanguage(ServerPlayerEntity player) {
-        if (player == null || playerLanguages.containsKey(player.getUuid()))
-            return playerLanguages.get(player.getUuid());
-        return "en_us";
+        return ((ServerPlayerEntityLanguageAccessor) player).getLanguage();
     }
 
     public static String translate(ServerPlayerEntity player, String key) {
@@ -43,7 +34,6 @@ public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
     @Override
     public void onInitialize() {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new TranslationLoader());
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> playerLanguages.remove(handler.player.getUuid()));
     }
 
     public static void injectTranslations() {

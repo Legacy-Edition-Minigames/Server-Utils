@@ -30,7 +30,7 @@ public class UtilCommandsMod extends Module {
                                         .executes(context -> {
                                             ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
                                             MinecraftServer server = context.getSource().getServer();
-                                            Collection<CommandFunction> functions = CommandFunctionArgumentType.getFunctions(context, "function");
+                                            Collection<CommandFunction<ServerCommandSource>> functions = CommandFunctionArgumentType.getFunctions(context, "function");
 
                                             if (server.getPlayerManager().isOperator(player.getGameProfile()))
                                                 for (CommandFunction commandFunction : functions)

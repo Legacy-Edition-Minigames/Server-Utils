@@ -24,7 +24,7 @@ public class ServerHandshakeNetworkHandlerMixin {
         QueuedPlayerData playerDara = ScoreboardPlayerInfo.getQueuedPlayerData(this.connection, true);
 
         if (playerDara.isBedrock == null) {
-            playerDara.isBedrock = packet.getAddress().contains("^Floodgate^");
+            playerDara.isBedrock = packet.address().contains("^Floodgate^");
         }
     }
 }

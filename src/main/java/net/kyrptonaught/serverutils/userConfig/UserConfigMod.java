@@ -8,6 +8,7 @@ import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
@@ -50,7 +51,7 @@ public class UserConfigMod extends Module {
                                                         Identifier configID = IdentifierArgumentType.getIdentifier(context, "configID");
                                                         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "player");
                                                         MinecraftServer server = context.getSource().getServer();
-                                                        Collection<CommandFunction> functions = CommandFunctionArgumentType.getFunctions(context, "function");
+                                                        Collection<CommandFunction<ServerCommandSource>> functions = CommandFunctionArgumentType.getFunctions(context, "function");
                                                         String testValue = StringArgumentType.getString(context, "testValue");
 
                                                         for (ServerPlayerEntity player : players) {
@@ -131,7 +132,7 @@ public class UserConfigMod extends Module {
                             for (ServerPlayerEntity player : players) {
                                 try {
                                     int setValue = Integer.parseInt(UserConfigStorage.getValue(player, configID));
-                                    scoreboard.getPlayerScore(player.getEntityName(), obj).setScore(setValue);
+                                    scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), obj).setScore(setValue);
                                 } catch (NumberFormatException ignored) {
                                 }
                             }

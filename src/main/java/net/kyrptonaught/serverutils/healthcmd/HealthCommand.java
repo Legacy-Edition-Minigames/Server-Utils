@@ -16,6 +16,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -73,7 +74,7 @@ public class HealthCommand {
             dmgSource = new CustomDeathMessage(commandContext.getSource().getServer().getRegistryManager(), StringArgumentType.getString(commandContext, "deathMessage"));
 
         for (PlayerEntity player : EntityArgumentType.getPlayers(commandContext, "entity")) {
-            int amount = commandContext.getSource().getServer().getScoreboard().getPlayerScore(player.getEntityName(), obj).getScore();
+            int amount = commandContext.getSource().getServer().getScoreboard().getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), obj).getScore();
             execute(player, amount, modType, dmgSource);
         }
         return 1;

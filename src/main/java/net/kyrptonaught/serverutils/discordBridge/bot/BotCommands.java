@@ -91,14 +91,14 @@ public class BotCommands {
     public static void infoCommandExecute(MinecraftServer server, SlashCommandInteraction event) {
         if (event.getChannel().getIdLong() != DiscordBridgeMod.config().bridgeChannelID) return;
 
-        double serverTickTime = average(server.lastTickLengths) * 1.0E-6D;
+        double serverTickTime = average(server.getTickTimes()) * 1.0E-6D;
         long freeRam = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
 
         StringBuilder playerString = new StringBuilder();
         PlayerManager players = server.getPlayerManager();
         playerString.append("```css\n").append("Online Players (").append(players.getCurrentPlayerCount()).append("/").append(players.getMaxPlayerCount()).append(")\n");
         for (ServerPlayerEntity player : players.getPlayerList())
-            playerString.append("[").append(player.pingMilliseconds).append("ms] ").append(player.getEntityName()).append("\n");
+            playerString.append("[").append(player.networkHandler.getLatency()).append("ms] ").append(player.getNameForScoreboard()).append("\n");
         playerString.append("```");
 
         event.replyEmbeds(

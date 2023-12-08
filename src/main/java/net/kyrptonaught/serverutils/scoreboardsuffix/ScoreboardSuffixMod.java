@@ -14,6 +14,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
 
 import java.util.Collection;
@@ -31,7 +32,8 @@ public class ScoreboardSuffixMod extends Module {
 
     public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            playerSuffixStorage = server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(PlayerSuffixStorage::fromNbt, PlayerSuffixStorage::new, MOD_ID);
+            PersistentStateManager persistentStateManager = server.getWorld(World.OVERWORLD).getPersistentStateManager();
+            playerSuffixStorage = persistentStateManager.getOrCreate(PlayerSuffixStorage.getPersistentStateType(), MOD_ID);
         });
     }
 
@@ -65,7 +67,7 @@ public class ScoreboardSuffixMod extends Module {
         String placeholder = new Identifier(StringArgumentType.getString(context, "fontPlaceholder")).toString();
         String font = new Identifier(StringArgumentType.getString(context, "font")).toString();
         players.forEach(serverPlayerEntity -> {
-            String playerName = serverPlayerEntity.getEntityName();
+            String playerName = serverPlayerEntity.getNameForScoreboard();
             playerSuffixStorage.setFont(playerName, placeholder, font);
             triggerForceUpdate(context.getSource().getServer());
         });

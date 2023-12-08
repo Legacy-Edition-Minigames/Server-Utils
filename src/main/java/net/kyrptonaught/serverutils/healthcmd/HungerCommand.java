@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -48,7 +49,7 @@ public class HungerCommand {
     private static int getScoreboard(CommandContext<ServerCommandSource> commandContext, HealthCMDMod.ModType modType) throws CommandSyntaxException {
         ScoreboardObjective obj = ScoreboardObjectiveArgumentType.getObjective(commandContext, "obj");
         EntityArgumentType.getPlayers(commandContext, "player").forEach(serverPlayerEntity -> {
-            int amount = commandContext.getSource().getServer().getScoreboard().getPlayerScore(serverPlayerEntity.getEntityName(), obj).getScore();
+            int amount = commandContext.getSource().getServer().getScoreboard().getOrCreateScore(ScoreHolder.fromName(serverPlayerEntity.getNameForScoreboard()), obj).getScore();
             execute(serverPlayerEntity, amount, modType);
         });
         return 1;
