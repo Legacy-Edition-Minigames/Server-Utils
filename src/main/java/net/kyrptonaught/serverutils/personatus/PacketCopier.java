@@ -3,11 +3,13 @@ package net.kyrptonaught.serverutils.personatus;
 import io.netty.buffer.Unpooled;
 import net.kyrptonaught.serverutils.mixin.personatus.PlayerListS2CPacketAccessor;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 
 public class PacketCopier {
 
@@ -22,5 +24,9 @@ public class PacketCopier {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         oldTeamPacket.write(buf);
         return new TeamS2CPacket(buf);
+    }
+
+    public static ChatMessageS2CPacket copyChatPacket(ChatMessageS2CPacket oldChatPacket, UUID newUUID) {
+        return new ChatMessageS2CPacket(newUUID, oldChatPacket.index(), oldChatPacket.signature(), oldChatPacket.body(), oldChatPacket.unsignedContent(), oldChatPacket.filterMask(), oldChatPacket.serializedParameters());
     }
 }

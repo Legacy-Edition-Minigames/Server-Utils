@@ -15,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -92,7 +93,7 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
             }
 
             //todo UUIDs
-            ResourcePackSendS2CPacket resourcePackSendS2CPacket = new ResourcePackSendS2CPacket(UUID.randomUUID(), rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null);
+            ResourcePackSendS2CPacket resourcePackSendS2CPacket = new ResourcePackSendS2CPacket(UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8)), rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null);
             player.networkHandler.sendPacket(resourcePackSendS2CPacket);
         });
         return true;

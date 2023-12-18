@@ -35,9 +35,9 @@ dependencies {
 	modImplementation include('xyz.nucleoid:fantasy:0.5.0-lem-v1-1.20.4') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Luck Perms
-	//modImplementation('maven.modrinth:luckperms:v5.4.111-fabric') { exclude group: "net.fabricmc.fabric-api" }
-	//modImplementation('me.lucko:fabric-permissions-api:0.3-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
-	//compileOnly 'net.luckperms:api:5.4'
+	modImplementation('maven.modrinth:luckperms:v5.4.113-fabric') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('me.lucko:fabric-permissions-api:0.3-SNAPSHOT') { exclude group: "net.fabricmc.fabric-api" }
+	compileOnly 'net.luckperms:api:5.4'
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 
 	//Fabric Proxy Lite
@@ -52,10 +52,10 @@ dependencies {
 	//modImplementation("org.geysermc.floodgate:floodgate-fabric:2.2.2-SNAPSHOT")
 
 	//carpet
-	//modImplementation('carpet:fabric-carpet:1.20.3-1.4.128+v231205') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('carpet:fabric-carpet:1.20.3-1.4.128+v231205') { exclude group: "net.fabricmc.fabric-api" }
 
 	//NoChatReports
-	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.20.3-v2.4.0') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.20.4-v2.5.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//NOTA
 	//modImplementation include("ru.pinkgoosik:nota:0.2.0-lem-v1-1.20.1")
