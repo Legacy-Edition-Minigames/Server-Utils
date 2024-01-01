@@ -24,6 +24,7 @@
     "dropevent.ServerPlayNetworkHandlerMixin",
     "editablePlayerNBT.EntityDataObjectMixin",
     "floodgate.ServerHandshakeNetworkHandlerMixin",
+    "healthSpoofer.ServerPlayerEntityMixin",
     "knockback.LivingEntityMixin",
     "personatus.FixLuckPermsMixin",
     "personatus.GameProfileMixin",
