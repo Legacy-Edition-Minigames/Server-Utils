@@ -4,17 +4,18 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
-import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
+import net.minecraft.entity.player.PlayerAbilities;
+import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 public class PlayerLockdownMod extends Module {
@@ -72,27 +73,33 @@ public class PlayerLockdownMod extends Module {
     private static int executeFreeze(Collection<ServerPlayerEntity> players, boolean enabled) {
         for (ServerPlayerEntity player : players) {
             if (enabled) {
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0);
-                player.getAbilities().setFlySpeed(0);
-                player.getAbilities().setWalkSpeed(0);
-                player.getAbilities().flying = false;
-                player.sendAbilitiesUpdate();
-                player.startFallFlying();
-                player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), new StatusEffectInstance(StatusEffects.JUMP_BOOST, -1, 250, false, false)));
-                player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), 1, player.getHungerManager().getSaturationLevel()));
 
+                PlayerAbilities abilities = new PlayerAbilities();
+                abilities.setWalkSpeed(0);
+                abilities.setFlySpeed(0);
+                abilities.invulnerable = true;
+                abilities.allowModifyWorld = false;
+                player.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(abilities));
+
+                EntityAttributeInstance walk_speed = new EntityAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED, entityAttributeInstance -> {
+                });
+                walk_speed.setBaseValue(0);
+                player.networkHandler.sendPacket(new EntityAttributesS2CPacket(player.getId(), Collections.singleton(walk_speed)));
+
+                player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), new StatusEffectInstance(StatusEffects.JUMP_BOOST, -1, 250, false, false)));
+
+                player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), 1, player.getHungerManager().getSaturationLevel()));
             } else {
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(.1f);
-                player.getAbilities().setFlySpeed(.05f);
-                player.getAbilities().setWalkSpeed(.1f);
                 player.sendAbilitiesUpdate();
+
+                player.networkHandler.sendPacket(new EntityAttributesS2CPacket(player.getId(), Collections.singleton(player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED))));
 
                 StatusEffectInstance effect = player.getStatusEffect(StatusEffects.JUMP_BOOST);
-                if (effect != null) {
+                if (effect != null)
                     player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), effect));
-                } else {
+                else
                     player.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(player.getId(), StatusEffects.JUMP_BOOST));
-                }
+
                 player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), player.getHungerManager().getFoodLevel(), player.getHungerManager().getSaturationLevel()));
             }
         }
