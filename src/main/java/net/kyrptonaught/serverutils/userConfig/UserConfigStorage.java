@@ -47,7 +47,8 @@ public class UserConfigStorage {
     }
 
     public static void unloadPlayer(ServerPlayerEntity player) {
-        playerCache.remove(player.getUuid());
+        //todo fix later
+        //playerCache.remove(player.getUuid());
     }
 
     public static void loadPlayer(ServerPlayerEntity player) {
