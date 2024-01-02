@@ -74,24 +74,22 @@ public class PlayerLockdownMod extends Module {
         for (ServerPlayerEntity player : players) {
             if (enabled) {
 
-                PlayerAbilities abilities = new PlayerAbilities();
-                abilities.setWalkSpeed(0);
-                abilities.setFlySpeed(0);
-                abilities.invulnerable = true;
-                abilities.allowModifyWorld = false;
-                player.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(abilities));
+                player.getAbilities().setWalkSpeed(0);
+                player.getAbilities().setFlySpeed(0);
+                player.sendAbilitiesUpdate();
 
-                EntityAttributeInstance walk_speed = new EntityAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED, entityAttributeInstance -> {
-                });
-                walk_speed.setBaseValue(0);
-                player.networkHandler.sendPacket(new EntityAttributesS2CPacket(player.getId(), Collections.singleton(walk_speed)));
+                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0);
+                player.networkHandler.sendPacket(new EntityAttributesS2CPacket(player.getId(), Collections.singleton(player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED))));
 
                 player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), new StatusEffectInstance(StatusEffects.JUMP_BOOST, -1, 250, false, false)));
 
                 player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), 1, player.getHungerManager().getSaturationLevel()));
             } else {
+                player.getAbilities().setWalkSpeed(0.1f);
+                player.getAbilities().setFlySpeed(0.05f);
                 player.sendAbilitiesUpdate();
 
+                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1f);
                 player.networkHandler.sendPacket(new EntityAttributesS2CPacket(player.getId(), Collections.singleton(player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED))));
 
                 StatusEffectInstance effect = player.getStatusEffect(StatusEffects.JUMP_BOOST);
