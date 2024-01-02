@@ -6,10 +6,10 @@ import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerCommonNetworkHandler;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,20 +21,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(ServerPlayNetworkHandler.class)
+@Mixin(ServerCommonNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow
-    public ServerPlayerEntity player;
-
+    protected abstract GameProfile getProfile();
 
     @Shadow
     @Final
-    private ClientConnection connection;
+    protected ClientConnection connection;
 
-    @Inject(method = "sendPacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "send", at = @At("HEAD"), cancellable = true)
     public void spoofPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
-        GameProfile profile = this.player.getGameProfile();
+        GameProfile profile = this.getProfile();
         PersonatusProfile spoofProfile = (PersonatusProfile) profile;
         if (spoofProfile.isSpoofed()) {
             if (packet instanceof TeamS2CPacket) {
@@ -49,7 +48,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
                 connection.send(teamPacket);
                 ci.cancel();
-
             } else if (packet instanceof PlayerListS2CPacket) {
                 PlayerListS2CPacket listPacket = PacketCopier.copyPlayerList((PlayerListS2CPacket) packet);
                 List<PlayerListS2CPacket.Entry> entries = listPacket.getEntries();
@@ -63,7 +61,13 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
                 connection.send(listPacket);
                 ci.cancel();
+            } else if (packet instanceof ChatMessageS2CPacket chatPacket) {
+                if (chatPacket.sender().equals(spoofProfile.getSpoofProfile().getId())) {
+                    connection.send(PacketCopier.copyChatPacket(chatPacket, spoofProfile.getRealProfile().getId()));
+                    ci.cancel();
+                }
             }
+
         }
     }
 }

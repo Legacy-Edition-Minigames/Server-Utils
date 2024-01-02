@@ -1,17 +1,17 @@
 package net.kyrptonaught.serverutils.advancementSync;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 
 import java.nio.file.Files;
@@ -19,10 +19,6 @@ import java.nio.file.Path;
 
 public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
     public static String MOD_ID = "advancementsync";
-    public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(AdvancementProgress.class, new AdvancementProgress.Serializer())
-            .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
-            .create();
 
     @Override
     public void onInitialize() {
@@ -52,23 +48,25 @@ public class AdvancementSyncMod extends ModuleWConfig<AdvancementSyncConfig> {
         return new AdvancementSyncConfig();
     }
 
-    public static void syncGrantedAdvancement(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterionName) {
+    public static void syncGrantedAdvancement(ServerPlayerEntity serverPlayerEntity, AdvancementEntry advancement, String criterionName) {
         if (!BackendServerModule.backendRunning()) {
+            JsonObject advancementJson = Util.getResult(Advancement.CODEC.encodeStart(JsonOps.INSTANCE, advancement.value()), IllegalStateException::new).getAsJsonObject();
             JsonObject json = new JsonObject();
-            json.addProperty("advancementID", advancement.getId().toString());
-            json.add("advancement", advancement.createTask().toJson());
+            json.addProperty("advancementID", advancement.id().toString());
+            json.add("advancement", advancementJson);
             json.addProperty("criterionName", criterionName);
-            BackendServerModule.asyncPost(getUrl("addAdvancements", serverPlayerEntity), GSON.toJson(json));
+            BackendServerModule.asyncPost(getUrl("addAdvancements", serverPlayerEntity), ServerUtilsMod.getGson().toJson(json));
         }
     }
 
-    public static void syncRevokedAdvancement(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterionName) {
+    public static void syncRevokedAdvancement(ServerPlayerEntity serverPlayerEntity, AdvancementEntry advancement, String criterionName) {
         if (!BackendServerModule.backendRunning()) {
+            JsonObject advancementJson = Util.getResult(Advancement.CODEC.encodeStart(JsonOps.INSTANCE, advancement.value()), IllegalStateException::new).getAsJsonObject();
             JsonObject json = new JsonObject();
-            json.addProperty("advancementID", advancement.getId().toString());
-            json.add("advancement", advancement.createTask().toJson());
+            json.addProperty("advancementID", advancement.id().toString());
+            json.add("advancement", advancementJson);
             json.addProperty("criterionName", criterionName);
-            BackendServerModule.asyncPost(getUrl("removeAdvancements", serverPlayerEntity), GSON.toJson(json));
+            BackendServerModule.asyncPost(getUrl("removeAdvancements", serverPlayerEntity), ServerUtilsMod.getGson().toJson(json));
         }
     }
 

@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.scoreboardsuffix;
 
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
@@ -14,6 +15,10 @@ public class PlayerSuffixStorage extends PersistentState {
 
     public PlayerSuffixStorage() {
         super();
+    }
+
+    public static PersistentState.Type<PlayerSuffixStorage> getPersistentStateType() {
+        return new PersistentState.Type<>(PlayerSuffixStorage::new, PlayerSuffixStorage::fromNbt, DataFixTypes.LEVEL);
     }
 
     public static PlayerSuffixStorage fromNbt(NbtCompound tag) {

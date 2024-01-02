@@ -19,7 +19,6 @@ public abstract class LocalServerHandshakeNetworkHandlerMixin {
     @Final
     private MinecraftServer server;
 
-
     @Shadow
     @Final
     private ClientConnection connection;
@@ -27,8 +26,8 @@ public abstract class LocalServerHandshakeNetworkHandlerMixin {
     @Inject(method = "onHandshake", at = @At("HEAD"))
     public void getProtocolVersion(HandshakeC2SPacket packet, CallbackInfo ci) {
         server.execute(() -> {
-            if (packet.getIntendedState() == NetworkState.LOGIN) {
-                int protocol = packet.getProtocolVersion();
+            if (packet.getNewNetworkState() == NetworkState.LOGIN) {
+                int protocol = packet.protocolVersion();
                 ScoreboardPlayerInfo.addClientConnectionProtocol(connection, protocol);
             }
         });

@@ -9,7 +9,7 @@ public class MessageSender {
 
     public static void sendChatMessage(ServerPlayerEntity player, String message) {
         if (DiscordBridgeMod.config().webhookURL != null)
-            WebhookSender.sendMessage(player.getEntityName(), DiscordBridgeMod.getUserHeadURL(player), FormatToDiscord.toDiscord(player.getServer(), message));
+            WebhookSender.sendMessage(player.getNameForScoreboard(), DiscordBridgeMod.getUserHeadURL(player), FormatToDiscord.toDiscord(player.getServer(), message));
     }
 
     public static void sendGameMessageWMentions(Text message) {

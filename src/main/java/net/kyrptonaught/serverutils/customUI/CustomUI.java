@@ -19,6 +19,7 @@ import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.screen.ScreenHandlerType;
@@ -78,11 +79,11 @@ public class CustomUI extends Module {
                 try {
                     ScreenConfig.SlotDefinition.DynamicModel model = slotDefinition.dynamicModel;
                     ServerScoreboard scoreboard = player.getServer().getScoreboard();
-                    ScoreboardObjective objective = scoreboard.getObjective(model.score);
+                    ScoreboardObjective objective = scoreboard.getNullableObjective(model.score);
                     String playerName = model.player;
                     if (playerName.equals("@s"))
-                        playerName = player.getEntityName();
-                    int score = scoreboard.getPlayerScore(playerName, objective).getScore();
+                        playerName = player.getNameForScoreboard();
+                    int score = scoreboard.getOrCreateScore(ScoreHolder.fromName(playerName), objective).getScore();
 
                     String value = ServerTranslator.translate(player, model.models.get(score));
                     int intValue = Integer.parseInt(value);
@@ -189,7 +190,7 @@ public class CustomUI extends Module {
 
     private static Text getAsText(String text) {
         try {
-            return Objects.requireNonNullElseGet(Text.Serializer.fromJson(text), () -> Text.literal(text));
+            return Objects.requireNonNullElseGet(Text.Serialization.fromJson(text), () -> Text.literal(text));
         } catch (JsonParseException var4) {
             return Text.literal(text);
         }

@@ -45,7 +45,7 @@ public class DimensionLoaderMod extends Module {
         DimensionLoaderCommand.registerCommands(dispatcher);
     }
 
-    public static Text loadDimension(MinecraftServer server, Identifier id, Identifier dimID, Collection<CommandFunction> functions) {
+    public static Text loadDimension(MinecraftServer server, Identifier id, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {
         if (loadedWorlds.containsKey(id)) {
             return Text.literal("Dim already registered");
         }
@@ -63,7 +63,7 @@ public class DimensionLoaderMod extends Module {
         return Text.literal("Preparing Dimension");
     }
 
-    public static Text unLoadDimension(MinecraftServer server, Identifier id, Collection<CommandFunction> functions) {
+    public static Text unLoadDimension(MinecraftServer server, Identifier id, Collection<CommandFunction<ServerCommandSource>> functions) {
         CustomDimHolder holder = loadedWorlds.get(id);
         if (holder == null)
             return Text.literal("Dimension not found");

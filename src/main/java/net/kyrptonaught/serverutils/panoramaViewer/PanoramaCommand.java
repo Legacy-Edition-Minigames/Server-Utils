@@ -10,6 +10,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.CommandBossBar;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -98,7 +99,7 @@ public class PanoramaCommand {
         boolean isNight = BoolArgumentType.getBool(commandContext, "isNight");
 
         for (ServerPlayerEntity player : players) {
-            int amount = commandContext.getSource().getServer().getScoreboard().getPlayerScore(player.getEntityName(), obj).getScore();
+            int amount = commandContext.getSource().getServer().getScoreboard().getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), obj).getScore();
             Panorama panorama = PanoramaViewer.panoramaEntries.get(panoramaName + "_ui" + amount + (isNight ? "_night" : ""));
             execute(commandContext, panorama, Collections.singleton(player));
         }

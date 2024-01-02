@@ -48,13 +48,13 @@ public class DimensionLoaderCommand {
         dispatcher.register(literalArgumentBuilder);
     }
 
-    private static int executePrepare(CommandContext<ServerCommandSource> context, Identifier id, Identifier dimType, Collection<CommandFunction> functions) {
+    private static int executePrepare(CommandContext<ServerCommandSource> context, Identifier id, Identifier dimType, Collection<CommandFunction<ServerCommandSource>> functions) {
         Text output = DimensionLoaderMod.loadDimension(context.getSource().getServer(), id, dimType, functions);
         context.getSource().sendFeedback(() -> output, false);
         return 1;
     }
 
-    private static int executeUnload(CommandContext<ServerCommandSource> context, Identifier id, Collection<CommandFunction> functions) {
+    private static int executeUnload(CommandContext<ServerCommandSource> context, Identifier id, Collection<CommandFunction<ServerCommandSource>> functions) {
         Text output = DimensionLoaderMod.unLoadDimension(context.getSource().getServer(), id, functions);
         context.getSource().sendFeedback(() -> output, false);
         return 1;

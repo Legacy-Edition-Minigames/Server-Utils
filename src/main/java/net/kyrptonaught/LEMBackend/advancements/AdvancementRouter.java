@@ -2,8 +2,8 @@ package net.kyrptonaught.LEMBackend.advancements;
 
 import com.google.gson.JsonObject;
 import io.javalin.http.Context;
+import net.kyrptonaught.LEMBackend.LEMBackend;
 import net.kyrptonaught.LEMBackend.ModuleRouter;
-import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
 import net.minecraft.util.Identifier;
 
 public class AdvancementRouter extends ModuleRouter<AdvancementModule> {
@@ -31,7 +31,7 @@ public class AdvancementRouter extends ModuleRouter<AdvancementModule> {
     public void addAdvancement(Context ctx) {
         String uuid = ctx.pathParam("uuid");
 
-        JsonObject object = AdvancementSyncMod.GSON.fromJson(ctx.body(), JsonObject.class);
+        JsonObject object = LEMBackend.gson.fromJson(ctx.body(), JsonObject.class);
         if (object != null) {
             module.grantAdvancement(uuid, new Identifier(object.get("advancementID").getAsString()), object.getAsJsonObject("advancement"), object.get("criterionName").getAsString());
             ctx.result("success");
@@ -44,7 +44,7 @@ public class AdvancementRouter extends ModuleRouter<AdvancementModule> {
     public void removeAdvancement(Context ctx) {
         String uuid = ctx.pathParam("uuid");
 
-        JsonObject object = AdvancementSyncMod.GSON.fromJson(ctx.body(), JsonObject.class);
+        JsonObject object = LEMBackend.gson.fromJson(ctx.body(), JsonObject.class);
         if (object != null) {
             module.revokeAdvancement(uuid, new Identifier(object.get("advancementID").getAsString()), object.getAsJsonObject("advancement"), object.get("criterionName").getAsString());
             ctx.result("success");

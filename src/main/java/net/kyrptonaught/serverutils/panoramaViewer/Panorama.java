@@ -33,7 +33,7 @@ public class Panorama {
 
     private MutableText parseToText(String text) {
         try {
-            return Objects.requireNonNullElseGet(Text.Serializer.fromJson(text), () -> Text.literal(text));
+            return Objects.requireNonNullElseGet(Text.Serialization.fromJson(text), () -> Text.literal(text));
         } catch (JsonParseException var4) {
             return Text.literal(text);
         }
