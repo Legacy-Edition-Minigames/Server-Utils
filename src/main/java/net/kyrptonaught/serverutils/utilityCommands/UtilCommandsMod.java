@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.utilityCommands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.kyrptonaught.serverutils.Module;
+import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.MinecraftServer;
@@ -10,6 +11,7 @@ import net.minecraft.server.command.FunctionCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,9 +20,6 @@ public class UtilCommandsMod extends Module {
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        var baseNode = CommandManager.argument("player", EntityArgumentType.players());
-
-
         dispatcher.register(CommandManager.literal("ifop")
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(CommandManager.argument("player", EntityArgumentType.player())
@@ -50,5 +49,21 @@ public class UtilCommandsMod extends Module {
                                     return list;
                                 }))
                         )));
+
+        dispatcher.register(CommandManager.literal("forcetp")
+                .requires((source) -> source.hasPermissionLevel(2))
+                .then(CommandManager.argument("player", EntityArgumentType.players())
+                        .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+                                .executes(context -> {
+                                    Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "player");
+                                    BlockPos pos = BlockPosArgumentType.getBlockPos(context, "pos");
+
+                                    context.getSource().getServer().execute(() -> {
+                                        players.forEach(player -> player.teleport(pos.getX(), pos.getY(), pos.getZ()));
+                                    });
+
+                                    return 1;
+                                }))));
+
     }
 }

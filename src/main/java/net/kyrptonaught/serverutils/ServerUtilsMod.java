@@ -32,6 +32,7 @@ import net.kyrptonaught.serverutils.ride.RideMod;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.kyrptonaught.serverutils.scoreboardsuffix.ScoreboardSuffixMod;
 import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
+import net.kyrptonaught.serverutils.smallInv.SmallInvMod;
 import net.kyrptonaught.serverutils.snowballKnockback.SnowballKnockbackMod;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.kyrptonaught.serverutils.syncedKeybinds.SyncedKeybinds;
@@ -98,7 +99,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module knockbackModule = registerModule("knockback", new KnockbackMod());
     //public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
     public static Module utilModule = registerModule("util", new UtilCommandsMod());
-
+    public static Module smallInvModule = registerModule("smallinv", new SmallInvMod());
 
     @Override
     public void onInitialize() {
