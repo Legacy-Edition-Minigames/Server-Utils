@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.mixin.smallinv;
 
 import net.kyrptonaught.serverutils.smallInv.SmallInvMod;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -21,11 +22,17 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "onClickSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandler;onSlotClick(IILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)V"))
     public void clientClicked(ClickSlotC2SPacket packet, CallbackInfo ci) {
-        if (SmallInvMod.ENABLED && packet.getActionType() == SlotActionType.PICKUP && !(player.currentScreenHandler instanceof PlayerScreenHandler)) {
-            Slot slot = this.player.currentScreenHandler.getSlot(packet.getSlot());
-            if (SmallInvMod.isSmallSlot(slot.getStack())) {
+        if (SmallInvMod.ENABLED &&
+                !(player.currentScreenHandler instanceof PlayerScreenHandler) &&
+                packet.getSlot() > -1 &&
+                SmallInvMod.isSmallSlot(this.player.currentScreenHandler.getSlot(packet.getSlot()).getStack())) {
+            if (packet.getActionType() == SlotActionType.PICKUP) { // clicked
                 SmallInvMod.executeClicked(player);
+            } else if (packet.getActionType() == SlotActionType.SWAP && packet.getButton() == 40) { //offhand pressed
+                int slot = PlayerScreenHandler.OFFHAND_ID;
+                this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(player.playerScreenHandler.syncId, player.playerScreenHandler.nextRevision(), slot, player.playerScreenHandler.getSlot(slot).getStack()));
             }
         }
+
     }
 }
