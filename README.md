@@ -1,7 +1,7 @@
 
 # Server Utils
 
-For Fabric 1.19.4
+For Fabric 1.20.1
 
 A group of utilities for fabric servers.
 
