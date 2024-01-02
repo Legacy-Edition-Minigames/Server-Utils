@@ -22,7 +22,6 @@ public class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onClickSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandler;onSlotClick(IILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)V"))
     public void clientClicked(ClickSlotC2SPacket packet, CallbackInfo ci) {
         if (SmallInvMod.ENABLED && packet.getActionType() == SlotActionType.PICKUP && !(player.currentScreenHandler instanceof PlayerScreenHandler)) {
-            System.out.println(packet.getSlot() + " " + packet.getButton() + " " + packet.getActionType() + " " + packet.getStack());
             Slot slot = this.player.currentScreenHandler.getSlot(packet.getSlot());
             if (SmallInvMod.isSmallSlot(slot.getStack())) {
                 SmallInvMod.executeClicked(player);
