@@ -8,6 +8,7 @@ import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -16,10 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig> {
 
@@ -87,14 +85,14 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         }
         players.forEach(player -> {
             if (getConfig().autoRevoke) {
-                grantAdvancement(player, STARTED);
-                grantAdvancement(player, FINISHED);
-                grantAdvancement(player, FAILED);
+                revokeAdvancement(player, STARTED);
+                revokeAdvancement(player, FINISHED);
+                revokeAdvancement(player, FAILED);
             }
 
             //todo UUIDs
-            ResourcePackSendS2CPacket resourcePackSendS2CPacket = new ResourcePackSendS2CPacket(UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8)), rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null);
-            player.networkHandler.sendPacket(resourcePackSendS2CPacket);
+            player.networkHandler.sendPacket(new ResourcePackRemoveS2CPacket(Optional.empty()));
+            player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8)), rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
         });
         return true;
     }
