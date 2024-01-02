@@ -42,6 +42,8 @@
     "scoreboardsuffix.ServerScoreboardMixin",
     "serverMetadataSpoofer.ServerMetadataMixin",
     "serverTranslator.ServerPlayerEntityLanguageAccessor",
+    "smallinv.ServerPlayNetworkHandlerMixin",
+    "smallinv.SlotMixin",
     "snowballKnockback.EggEntityMixin",
     "snowballKnockback.FishingBobberMixin",
     "snowballKnockback.SnowballEntityMixin",
