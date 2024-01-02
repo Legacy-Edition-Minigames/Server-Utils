@@ -25,13 +25,12 @@ public class ServerPlayNetworkHandlerMixin {
                 !(player.currentScreenHandler instanceof PlayerScreenHandler) &&
                 packet.getSlot() > -1 &&
                 SmallInvMod.isSmallSlot(this.player.currentScreenHandler.getSlot(packet.getSlot()).getStack())) {
-            if (packet.getActionType() == SlotActionType.PICKUP) { // clicked
+            if (packet.getActionType() == SlotActionType.PICKUP || packet.getActionType() == SlotActionType.QUICK_MOVE) { // clicked
                 SmallInvMod.executeClicked(player);
             } else if (packet.getActionType() == SlotActionType.SWAP && packet.getButton() == 40) { //offhand pressed
                 int slot = PlayerScreenHandler.OFFHAND_ID;
                 this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(player.playerScreenHandler.syncId, player.playerScreenHandler.nextRevision(), slot, player.playerScreenHandler.getSlot(slot).getStack()));
             }
         }
-
     }
 }
