@@ -2,7 +2,10 @@ package net.kyrptonaught.serverutils.playerlockdown;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.userConfig.UserConfigStorage;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -23,6 +26,19 @@ public class PlayerLockdownMod extends Module {
     public static boolean GLOBAL_LOCKDOWN = false;
 
     public static final HashSet<String> LOCKEDDOWNPLAYERS = new HashSet<>();
+    public static final HashSet<String> FROZENPLAYERS = new HashSet<>();
+
+    @Override
+    public void onInitialize() {
+        super.onInitialize();
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            ServerPlayerEntity player = handler.getPlayer();
+            player.getAbilities().setWalkSpeed(0.1f);
+            player.getAbilities().setFlySpeed(0.05f);
+            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1f);
+            FROZENPLAYERS.remove(player.getUuidAsString());
+        });
+    }
 
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("lockdown")
@@ -51,6 +67,7 @@ public class PlayerLockdownMod extends Module {
                 .then(CommandManager.literal("clear")
                         .executes(context -> {
                             executeFreeze(context.getSource().getServer().getPlayerManager().getPlayerList(), false);
+                            FROZENPLAYERS.clear();
                             return 1;
                         })));
     }
@@ -84,6 +101,8 @@ public class PlayerLockdownMod extends Module {
                 player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), new StatusEffectInstance(StatusEffects.JUMP_BOOST, -1, 250, false, false)));
 
                 player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), 1, player.getHungerManager().getSaturationLevel()));
+
+                FROZENPLAYERS.add(player.getUuidAsString());
             } else {
                 player.getAbilities().setWalkSpeed(0.1f);
                 player.getAbilities().setFlySpeed(0.05f);
@@ -99,6 +118,7 @@ public class PlayerLockdownMod extends Module {
                     player.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(player.getId(), StatusEffects.JUMP_BOOST));
 
                 player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), player.getHungerManager().getFoodLevel(), player.getHungerManager().getSaturationLevel()));
+                FROZENPLAYERS.remove(player.getUuidAsString());
             }
         }
 
