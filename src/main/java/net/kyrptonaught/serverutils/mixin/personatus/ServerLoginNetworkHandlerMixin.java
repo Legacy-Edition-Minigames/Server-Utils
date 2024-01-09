@@ -28,7 +28,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
     public GameProfile requestSpoof(ProfileResult instance) {
         if (PersonatusModule.isEnabled()) {
             GameProfile oldProfile = instance.profile();
-            if (((ServerLoginNetworkHandlerAccessor)field_14176).getServer().getSessionService() instanceof YggdrasilMinecraftSessionService sessionService) {
+            if (((ServerLoginNetworkHandlerAccessor) field_14176).getServer().getSessionService() instanceof YggdrasilMinecraftSessionService sessionService) {
                 String responseName = PersonatusModule.URLGetValue(false, "kvs/get/personatus/" + oldProfile.getName(), "value");
                 if (responseName != null) {
                     String responseUUID = PersonatusModule.URLGetValue(true, "https://api.mojang.com/users/profiles/minecraft/" + responseName, "id");
