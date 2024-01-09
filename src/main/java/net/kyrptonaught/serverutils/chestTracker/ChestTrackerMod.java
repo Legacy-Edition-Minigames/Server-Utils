@@ -6,11 +6,9 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.kyrptonaught.serverutils.Module;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,13 +32,14 @@ import java.util.HashSet;
 public class ChestTrackerMod extends Module {
     public static HashMap<String, HashSet<BlockPos>> playerUsedChests = new HashMap<>();
     public static HashMap<BlockPos, Long> chestsWParticle = new HashMap<>();
+    public static HashSet<BlockPos> trackedChests = new HashSet<>();
     public static boolean enabled = true;
     public static String scoreboardObjective;
 
     @Override
     public void onInitialize() {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (enabled && world.getBlockState(hitResult.getBlockPos()).getBlock() instanceof BlockEntityProvider) {
+            if (enabled && trackedChests.contains(hitResult.getBlockPos())) {
                 if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).interactionManager.getGameMode() != GameMode.SPECTATOR)
                     addChestForPlayer(player, hitResult.getBlockPos());
             }
@@ -58,6 +57,13 @@ public class ChestTrackerMod extends Module {
                             reset(context.getSource().getServer());
                             return 1;
                         })))
+                .then(CommandManager.literal("track")
+                        .then(CommandManager.argument("chestpos", BlockPosArgumentType.blockPos())
+                                .executes(context -> {
+                                    BlockPos chestpos = BlockPosArgumentType.getBlockPos(context, "chestpos");
+                                    trackedChests.add(chestpos);
+                                    return 1;
+                                })))
                 .then(CommandManager.literal("reset")
                         .executes(context -> {
                             reset(context.getSource().getServer());
@@ -69,7 +75,13 @@ public class ChestTrackerMod extends Module {
                                     BlockPos chestpos = BlockPosArgumentType.getBlockPos(context, "chestpos");
                                     long end = System.currentTimeMillis() + 40000;//40 seconds
                                     chestsWParticle.put(chestpos, end);
-                                    chestsWParticle.put(getSecondHalf(context.getSource().getWorld(), chestpos), end);
+                                    wrapTicker(context.getSource().getWorld(), chestpos);
+
+                                    BlockPos secondHalf = getSecondHalf(context.getSource().getWorld(), chestpos);
+                                    if (chestpos != secondHalf) {
+                                        chestsWParticle.put(getSecondHalf(context.getSource().getWorld(), chestpos), end);
+                                        wrapTicker(context.getSource().getWorld(), getSecondHalf(context.getSource().getWorld(), chestpos));
+                                    }
                                     return 1;
                                 })))
                 .then(CommandManager.literal("scoreboardObjective").then(CommandManager.argument("scoreboardObjective", StringArgumentType.word())
@@ -82,10 +94,14 @@ public class ChestTrackerMod extends Module {
     public static void reset(MinecraftServer server) {
         playerUsedChests.clear();
         chestsWParticle.clear();
-        ServerScoreboard scoreboard = server.getScoreboard();
-        server.getPlayerManager().getPlayerList().forEach(player -> {
-            scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), scoreboard.getNullableObjective(scoreboardObjective)).setScore(0);
-        });
+        trackedChests.clear();
+
+        if (scoreboardObjective != null) {
+            ServerScoreboard scoreboard = server.getScoreboard();
+            server.getPlayerManager().getPlayerList().forEach(player -> {
+                scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), scoreboard.getNullableObjective(scoreboardObjective)).setScore(0);
+            });
+        }
     }
 
     public static void addChestForPlayer(PlayerEntity player, BlockPos pos) {
@@ -98,15 +114,19 @@ public class ChestTrackerMod extends Module {
         playerUsedChests.computeIfAbsent(uuid, k -> new HashSet<>()).add(pos);
         playerUsedChests.computeIfAbsent(uuid, k -> new HashSet<>()).add(secondHalf);
 
-        ServerScoreboard scoreboard = (ServerScoreboard) player.getScoreboard();
-        scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), scoreboard.getNullableObjective(scoreboardObjective)).setScore(playerUsedChests.get(uuid).size());
+        if (scoreboardObjective != null) {
+            ServerScoreboard scoreboard = (ServerScoreboard) player.getScoreboard();
+            scoreboard.getOrCreateScore(ScoreHolder.fromName(player.getNameForScoreboard()), scoreboard.getNullableObjective(scoreboardObjective)).setScore(playerUsedChests.get(uuid).size());
+        }
     }
 
     public static void spawnParticleTick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         if (isChestPosValid(pos)) {
             Random random = world.getRandom();
-            if (random.nextInt(4) == 0)
-                ((ServerWorld) world).spawnParticles(ParticleTypes.WAX_OFF, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, 4, 0.0, 1);
+            ((ServerWorld) world).spawnParticles(ParticleTypes.WAX_OFF, (double) pos.getX() + random.nextDouble(), pos.getY() + 1 + (random.nextDouble() / 2), (double) pos.getZ() + random.nextDouble(), 0, 0, 4, 0.0, 1);
+            world.scheduleBlockTick(pos, state.getBlock(), random.nextInt(15));
+        } else {
+            unWrapTicker(world, pos);
         }
     }
 
@@ -130,11 +150,17 @@ public class ChestTrackerMod extends Module {
         return false;
     }
 
-    public static BlockEntityTicker<BlockEntity> wrapTicker(BlockEntityTicker<BlockEntity> ticker) {
-        return (world, pos, state, blockEntity) -> {
-            if (ticker != null)
-                ticker.tick(world, pos, state, blockEntity);
-            spawnParticleTick(world, pos, state, blockEntity);
-        };
+    public static void wrapTicker(World world, BlockPos pos) {
+        if (world.getBlockState(pos) instanceof BlockEntityTickerWrapper wrapper) {
+            wrapper.server_Utils$wrap(ChestTrackerMod::spawnParticleTick);
+
+            world.scheduleBlockTick(pos, world.getBlockState(pos).getBlock(), 1);
+        }
+    }
+
+    public static void unWrapTicker(World world, BlockPos pos) {
+        if (world.getBlockState(pos) instanceof BlockEntityTickerWrapper wrapper) {
+            wrapper.server_Utils$unWrap();
+        }
     }
 }
