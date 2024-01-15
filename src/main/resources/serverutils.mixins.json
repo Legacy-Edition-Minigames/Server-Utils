@@ -55,6 +55,7 @@
     "tntlighter.ExplosionMixin",
     "tntlighter.TNTBlockMixin",
     "tntlighter.TntEntityMixin",
+    "util.StatusEffectInstanceMixin",
     "waterFreezer.FlowableFluidMixin",
     "waterFreezer.FluidBlockMixin",
     "welcomeMessage.ServerPlayNetworkHandlerMixin",
