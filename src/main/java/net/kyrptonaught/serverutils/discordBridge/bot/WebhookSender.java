@@ -56,7 +56,7 @@ public class WebhookSender {
         if (webhookUrl != null) {
 
             JsonObject payload = new JsonObject();
-            payload.addProperty("content", "**" + logSource + "** <@&" + DiscordBridgeMod.config().moderatorRoleID + ">\\n" + message);
+            payload.addProperty("content", "**" + logSource + "** <@&" + DiscordBridgeMod.config().moderatorRoleID + ">\n" + message);
 
             JsonObject mentions = new JsonObject();
             if (allowMentions) {
