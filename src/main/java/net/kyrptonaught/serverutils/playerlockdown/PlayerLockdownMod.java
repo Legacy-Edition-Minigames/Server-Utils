@@ -2,10 +2,9 @@ package net.kyrptonaught.serverutils.playerlockdown;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.Module;
-import net.kyrptonaught.serverutils.userConfig.UserConfigStorage;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -17,16 +16,15 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 
 public class PlayerLockdownMod extends Module {
     public static boolean GLOBAL_LOCKDOWN = false;
 
     public static final HashSet<String> LOCKEDDOWNPLAYERS = new HashSet<>();
-    public static final HashSet<String> FROZENPLAYERS = new HashSet<>();
+    public static final HashMap<String, Vec3d> FROZENPLAYERS = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -37,6 +35,17 @@ public class PlayerLockdownMod extends Module {
             player.getAbilities().setFlySpeed(0.05f);
             player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1f);
             FROZENPLAYERS.remove(player.getUuidAsString());
+        });
+
+        ServerTickEvents.START_SERVER_TICK.register(server -> {
+            if (!FROZENPLAYERS.isEmpty()) {
+                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                    Vec3d pos = FROZENPLAYERS.get(player.getUuidAsString());
+                    if (pos != null && !pos.equals(player.getPos())) {
+                        player.teleport(pos.getX(), pos.getY(), pos.getZ());
+                    }
+                }
+            }
         });
     }
 
@@ -102,7 +111,7 @@ public class PlayerLockdownMod extends Module {
 
                 player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), 1, player.getHungerManager().getSaturationLevel()));
 
-                FROZENPLAYERS.add(player.getUuidAsString());
+                FROZENPLAYERS.put(player.getUuidAsString(), player.getPos());
             } else {
                 player.getAbilities().setWalkSpeed(0.1f);
                 player.getAbilities().setFlySpeed(0.05f);

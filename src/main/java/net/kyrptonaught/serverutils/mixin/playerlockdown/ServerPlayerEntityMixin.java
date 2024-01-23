@@ -21,6 +21,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @WrapWithCondition(method = "playerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V", ordinal = 1))
     private boolean noSendFoodUpdate(ServerPlayNetworkHandler instance, Packet packet) {
-        return !PlayerLockdownMod.FROZENPLAYERS.contains(getUuidAsString());
+        return !PlayerLockdownMod.FROZENPLAYERS.containsKey(getUuidAsString());
     }
 }
