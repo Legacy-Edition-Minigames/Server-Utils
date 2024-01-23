@@ -61,12 +61,14 @@ dependencies {
 	modImplementation include("ru.pinkgoosik:nota:0.2.0-lem-v1-1.20.1")
 
 	//Discord Bridge
-	shadow implementation("net.dv8tion:JDA:5.0.0-beta.19") { exclude module: 'opus-java' }
+	shadow implementation("net.dv8tion:JDA:5.0.0-beta.20") { exclude module: 'opus-java' }
 
 	shadow implementation("io.javalin:javalin:5.6.3")
 
 	//Apache Compress
 	//shadow implementation("org.apache.commons:commons-compress:1.24.0")
+
+
 }
 
 loom {
