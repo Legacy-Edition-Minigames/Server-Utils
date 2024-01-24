@@ -5,7 +5,10 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.Module;
+import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.PosArgument;
+import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -16,6 +19,7 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.*;
@@ -70,12 +74,21 @@ public class PlayerLockdownMod extends Module {
                 .requires((source) -> source.hasPermissionLevel(2))
 
                 .then(CommandManager.argument("players", EntityArgumentType.players())
-                        .then(CommandManager.argument("enabled", BoolArgumentType.bool())
-                                .executes(context -> executeFreeze(EntityArgumentType.getPlayers(context, "players"), BoolArgumentType.getBool(context, "enabled")))))
-
+                        .then(CommandManager.literal("true")
+                                .executes(context -> {
+                                    return executeFreeze(EntityArgumentType.getPlayers(context, "players"), null, true);
+                                })
+                                .then(CommandManager.argument("pos", Vec3ArgumentType.vec3())
+                                        .executes(context -> {
+                                            return executeFreeze(EntityArgumentType.getPlayers(context, "players"), Vec3ArgumentType.getVec3(context, "pos"), true);
+                                        })))
+                        .then(CommandManager.literal("false")
+                                .executes(context -> {
+                                    return executeFreeze(EntityArgumentType.getPlayers(context, "players"), null, false);
+                                })))
                 .then(CommandManager.literal("clear")
                         .executes(context -> {
-                            executeFreeze(context.getSource().getServer().getPlayerManager().getPlayerList(), false);
+                            executeFreeze(context.getSource().getServer().getPlayerManager().getPlayerList(), null, false);
                             FROZENPLAYERS.clear();
                             return 1;
                         })));
@@ -97,7 +110,7 @@ public class PlayerLockdownMod extends Module {
         return 1;
     }
 
-    private static int executeFreeze(Collection<ServerPlayerEntity> players, boolean enabled) {
+    private static int executeFreeze(Collection<ServerPlayerEntity> players, Vec3d pos, boolean enabled) {
         for (ServerPlayerEntity player : players) {
             if (enabled) {
                 player.getAbilities().setWalkSpeed(0);
@@ -111,7 +124,8 @@ public class PlayerLockdownMod extends Module {
 
                 player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), 1, player.getHungerManager().getSaturationLevel()));
 
-                FROZENPLAYERS.put(player.getUuidAsString(), player.getPos());
+                if (pos == null) pos = player.getPos();
+                FROZENPLAYERS.put(player.getUuidAsString(), pos);
             } else {
                 player.getAbilities().setWalkSpeed(0.1f);
                 player.getAbilities().setFlySpeed(0.05f);
