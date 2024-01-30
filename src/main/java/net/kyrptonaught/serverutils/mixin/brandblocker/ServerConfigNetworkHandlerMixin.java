@@ -29,7 +29,6 @@ public abstract class ServerConfigNetworkHandlerMixin extends  ServerCommonNetwo
 
     @Override
     public void onCustomPayload(CustomPayloadC2SPacket packet) {
-        System.out.println(packet);
         if (packet.payload() instanceof BrandCustomPayload brandPacket) {
             String brand = brandPacket.brand();
             ScoreboardPlayerInfo.getQueuedPlayerData(connection, true).brand = brand;
