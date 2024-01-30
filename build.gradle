@@ -52,7 +52,8 @@ dependencies {
 	//modImplementation("org.geysermc.floodgate:floodgate-fabric:2.2.2-SNAPSHOT")
 
 	//carpet
-	modImplementation('carpet:fabric-carpet:1.20.3-1.4.128+v231205') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:carpet:1.4.128') { exclude group: "net.fabricmc.fabric-api" }
+	//modImplementation('carpet:fabric-carpet:1.20.3-1.4.128+v231205') { exclude group: "net.fabricmc.fabric-api" }
 
 	//NoChatReports
 	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.20.4-v2.5.0') { exclude group: "net.fabricmc.fabric-api" }
