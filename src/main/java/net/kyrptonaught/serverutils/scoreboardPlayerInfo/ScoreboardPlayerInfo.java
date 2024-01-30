@@ -99,6 +99,7 @@ public class ScoreboardPlayerInfo extends Module {
             setBedrockClient(handler.player, playerData.isBedrock);
             setGUIScale(handler.player, playerData.guiScale);
             setPanScale(handler.player, playerData.panScale);
+            checkBrand(handler.player, playerData.brand);
         }
 
         if (ServerPlayNetworking.canSend(handler, new Identifier("fabric:registry/sync")))

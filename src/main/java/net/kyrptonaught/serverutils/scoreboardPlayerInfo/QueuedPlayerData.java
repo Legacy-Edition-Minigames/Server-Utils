@@ -10,4 +10,6 @@ public class QueuedPlayerData {
     public Boolean isBedrock;
     public Integer guiScale;
     public Integer panScale;
+
+    public String brand;
 }

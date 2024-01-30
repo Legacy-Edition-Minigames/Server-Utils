@@ -9,7 +9,7 @@
     "bigstructures.StructureMixin",
     "bigstructures.UpdateStructureBlockPacketMixin",
     "brandblocker.PlayerManagerMixin",
-    "brandblocker.ServerPlayNetworkHandlerMixin",
+    "brandblocker.ServerConfigNetworkHandlerMixin",
     "chatDisabler.ServerPlayNetworkHandlerMixin",
     "chesttracker.AbstractBlockStateMixin",
     "cpslimiter.ServerPlayNetworkHandlerMixin",

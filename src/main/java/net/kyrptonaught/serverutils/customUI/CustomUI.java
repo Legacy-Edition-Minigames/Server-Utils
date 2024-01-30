@@ -180,7 +180,7 @@ public class CustomUI extends Module {
         } else if (action.startsWith("back/")) {
             showLastScreen(player);
         } else if (action.startsWith("kick/")) {
-            VelocityProxyHelper.kickPlayer(player, cmd);
+            VelocityProxyHelper.kickPlayer(player.networkHandler, player.getGameProfile(), Text.literal(cmd));
         }
 
         if (slot.refreshOnInteract()) {
