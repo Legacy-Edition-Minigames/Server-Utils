@@ -21,24 +21,24 @@ public abstract class ServerLoginNetworkHandlerMixin {
 
     @Redirect(method = "lambda$handleVelocityPacket$0", at = @At(value = "INVOKE", target = "Lone/oktw/mixin/core/ServerLoginNetworkHandlerAccessor;setProfile(Lcom/mojang/authlib/GameProfile;)V"))
     public void requestSpoof(ServerLoginNetworkHandlerAccessor login, GameProfile profile, PacketByteBuf buf, ServerLoginNetworkHandler handler) {
-        if (!PersonatusModule.isEnabled()) {
-            login.setProfile(profile);
-            return;
-        }
+        if (PersonatusModule.isEnabled()) {
+            MinecraftServer server = ((net.fabricmc.fabric.mixin.networking.accessor.ServerLoginNetworkHandlerAccessor) handler).getServer();
+            if (server.getSessionService() instanceof YggdrasilMinecraftSessionService sessionService) {
+                String responseName = PersonatusModule.URLGetValue(false, "kvs/get/personatus/" + profile.getName(), "value");
+                if (responseName != null) {
+                    String responseUUID = PersonatusModule.URLGetValue(true, "https://api.mojang.com/users/profiles/minecraft/" + responseName, "id");
+                    if (responseUUID != null) {
+                        UUID uuid = UndashedUuid.fromString(responseUUID);
+                        GameProfile spoofed = sessionService.fetchProfile(uuid, true).profile();
 
-        MinecraftServer server = ((net.fabricmc.fabric.mixin.networking.accessor.ServerLoginNetworkHandlerAccessor) handler).getServer();
-        if (server.getSessionService() instanceof YggdrasilMinecraftSessionService sessionService) {
-            String responseName = PersonatusModule.URLGetValue(false, "kvs/get/personatus/" + profile.getName(), "value");
-            if (responseName != null) {
-                String responseUUID = PersonatusModule.URLGetValue(true, "https://api.mojang.com/users/profiles/minecraft/" + responseName, "id");
-                if (responseUUID != null) {
-                    UUID uuid = UndashedUuid.fromString(responseUUID);
-                    GameProfile spoofed = sessionService.fetchProfile(uuid, true).profile();
-
-                    ((PersonatusProfile) spoofed).setRealProfile(profile);
-                    login.setProfile(spoofed);
+                        ((PersonatusProfile) spoofed).setRealProfile(profile);
+                        login.setProfile(spoofed);
+                        return;
+                    }
                 }
             }
         }
+
+        login.setProfile(profile);
     }
 }
