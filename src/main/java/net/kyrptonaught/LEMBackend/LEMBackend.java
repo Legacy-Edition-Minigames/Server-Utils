@@ -56,7 +56,7 @@ public class LEMBackend {
     public static void shutdown() {
         System.out.println("LEMBackend saving all...");
 
-        app.close();
+        app.stop();
 
         for (Mod module : modules)
             module.module.save(gson);
