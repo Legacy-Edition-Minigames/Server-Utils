@@ -3,12 +3,14 @@ package net.kyrptonaught.serverutils.customMapLoader;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import java.util.Collection;
 import java.util.List;
 
 public class CustomMapLoaderCommands {
@@ -19,18 +21,18 @@ public class CustomMapLoaderCommands {
         cmd.then(CommandManager.literal("voting")
                 .then(CommandManager.literal("openBook")
                         .executes(context -> {
-                            Votebook.generateBookLibrary(CustomMapLoaderMod.loadedMaps.values().stream().toList());
+                            Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
                             Votebook.openbook(context.getSource().getPlayer(), "title");
                             return 1;
                         }))
                 .then(CommandManager.literal("giveBook")
                         .executes(context -> {
-                            Votebook.generateBookLibrary(CustomMapLoaderMod.loadedMaps.values().stream().toList());
+                            Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
                             Votebook.giveBook(context.getSource().getPlayer(), "title");
                             return 1;
                         }))
                 .then(CommandManager.literal("showBookPage")
-                        .then(CommandManager.argument("page", StringArgumentType.word())
+                        .then(CommandManager.argument("page", StringArgumentType.greedyString())
                                 .executes(context -> {
                                     String page = StringArgumentType.getString(context, "page");
 
@@ -41,19 +43,19 @@ public class CustomMapLoaderCommands {
                                         .fork(dispatcher.getRoot(), (context -> {
                                             context.getChild().getCommand().run(context);
 
-                                            Votebook.generateBookLibrary(CustomMapLoaderMod.loadedMaps.values().stream().toList());
+                                            Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
                                             String page = StringArgumentType.getString(context, "page");
                                             Votebook.openbook(context.getSource().getPlayer(), page);
 
                                             return List.of();
                                         })))))
                 .then(CommandManager.literal("vote")
-                        .then(CommandManager.argument("map", StringArgumentType.word())
+                        .then(CommandManager.argument("map", IdentifierArgumentType.identifier())
                                 .executes(context -> {
                                     ServerPlayerEntity player = context.getSource().getPlayer();
-                                    String map = StringArgumentType.getString(context, "map");
+                                    Identifier map = IdentifierArgumentType.getIdentifier(context, "map");
 
-                                    Voter.voteFor(context.getSource().getServer(), player, map, CustomMapLoaderMod.loadedMaps.get(map).getName());
+                                    Voter.voteFor(context.getSource().getServer(), player, map, CustomMapLoaderMod.BATTLE_MAPS.get(map).getNameText());
                                     return 1;
                                 })))
                 .then(CommandManager.literal("removeVote")
@@ -63,14 +65,15 @@ public class CustomMapLoaderCommands {
                         }))
                 .then(CommandManager.literal("start")
                         .executes(context -> {
-                            Voter.prepVote(context.getSource().getServer(), CustomMapLoaderMod.loadedMaps.values().stream().toList());
+                            Voter.prepVote(context.getSource().getServer(), CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
                             return 1;
                         }))
                 .then(CommandManager.literal("end")
                         .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
                                 .executes(context -> {
                                     Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
-                                    CustomMapLoaderMod.prepareLemmod(context.getSource().getServer(), id);
+                                    Identifier winner = Voter.endVote(context.getSource().getServer());
+                                    CustomMapLoaderMod.prepareBattleMap(context.getSource().getServer(), winner, id);
                                     return 1;
                                 }))));
 
@@ -84,7 +87,43 @@ public class CustomMapLoaderCommands {
                                                 return 1;
                                             })))));
         }
+        cmd.then(CommandManager.literal("unload")
+                .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
+                        .executes(context -> {
+                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                            CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id);
+                            return 1;
+                        })));
 
+        cmd.then(CommandManager.literal("lobby")
+                .then(CommandManager.literal("load")
+                        .then(CommandManager.argument("lobby", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
+                                        .executes(context -> {
+                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                            Identifier lobbyID = IdentifierArgumentType.getIdentifier(context, "lobby");
+                                            CustomMapLoaderMod.prepareLobby(context.getSource().getServer(), lobbyID, id);
+                                            return 1;
+                                        }))))
+                .then(CommandManager.literal("tp")
+                        .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("players", EntityArgumentType.players())
+                                        .then(CommandManager.argument("winner", EntityArgumentType.player())
+                                                .executes(context -> {
+                                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                                    Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                                                    ServerPlayerEntity winner = EntityArgumentType.getPlayer(context, "winner");
+
+                                                    CustomMapLoaderMod.teleportToLobby(id, players, winner);
+                                                    return 1;
+                                                }))
+                                        .executes(context -> {
+                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+
+                                            CustomMapLoaderMod.teleportToLobby(id, players, null);
+                                            return 1;
+                                        })))));
         dispatcher.register(cmd);
     }
 }

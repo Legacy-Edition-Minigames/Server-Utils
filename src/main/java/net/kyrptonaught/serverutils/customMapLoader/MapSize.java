@@ -7,8 +7,8 @@ public enum MapSize {
     LARGE_PLUS("largeplus", "Large+"),
     REMASTERED("remastered", "Remastered");
 
-    String fileName;
-    String id;
+    public final String fileName;
+    public final String id;
 
     MapSize(String fileName, String id) {
         this.fileName = fileName;

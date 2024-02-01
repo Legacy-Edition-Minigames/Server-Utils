@@ -1,22 +1,24 @@
 package net.kyrptonaught.serverutils.customMapLoader;
 
+import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.minecraft.scoreboard.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class Voter {
 
-    private static final HashMap<String, Set<UUID>> mapVotes = new HashMap<>();
-    private static String objName = "lem.voting.mapvotes";
+    private static final HashMap<Identifier, Set<UUID>> mapVotes = new HashMap<>();
+    private static final String objName = "lem.voting.mapvotes";
 
-    public static void prepVote(MinecraftServer server, List<LemModConfig> loadedMods) {
+    public static void prepVote(MinecraftServer server, List<BattleMapAddon> loadedMods) {
         mapVotes.clear();
-        for (LemModConfig mod : loadedMods) {
-            mapVotes.put(mod.id, new HashSet<>());
+        for (BattleMapAddon config : loadedMods) {
+            mapVotes.put(config.addon_id, new HashSet<>());
         }
 
         ServerScoreboard scoreboard = server.getScoreboard();
@@ -29,18 +31,18 @@ public class Voter {
         scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, obj);
     }
 
-    public static String endVote(MinecraftServer server){
+    public static Identifier endVote(MinecraftServer server){
         ServerScoreboard scoreboard = server.getScoreboard();
         scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
 
         return calculateWinner();
     }
 
-    private static String calculateWinner() {
+    private static Identifier calculateWinner() {
         int maxVotes = 0;
-        List<String> winningMaps = new ArrayList<>();
+        List<Identifier> winningMaps = new ArrayList<>();
 
-        for (String map : mapVotes.keySet()) {
+        for (Identifier map : mapVotes.keySet()) {
             int votes = mapVotes.get(map).size();
 
             if (votes > maxVotes) {
@@ -58,7 +60,7 @@ public class Voter {
     }
 
 
-    public static void voteFor(MinecraftServer server, ServerPlayerEntity player, String map, Text mapName) {
+    public static void voteFor(MinecraftServer server, ServerPlayerEntity player, Identifier map, Text mapName) {
         if (!mapVotes.containsKey(map)) mapVotes.put(map, new HashSet<>());
 
         removeVote(server, player);
@@ -67,19 +69,19 @@ public class Voter {
     }
 
     public static void removeVote(MinecraftServer server, ServerPlayerEntity player) {
-        for (String id : mapVotes.keySet()) {
+        for (Identifier id : mapVotes.keySet()) {
             if (mapVotes.get(id).remove(player.getUuid())) {
-                updateScore(server, id, CustomMapLoaderMod.loadedMaps.get(id).getName());
+                updateScore(server, id, CustomMapLoaderMod.BATTLE_MAPS.get(id).getNameText());
             }
         }
     }
 
 
-    private static void updateScore(MinecraftServer server, String map, Text mapName) {
+    private static void updateScore(MinecraftServer server, Identifier map, Text mapName) {
         ScoreHolder holder = new ScoreHolder() {
             @Override
             public String getNameForScoreboard() {
-                return map;
+                return map.toString();
             }
 
             @Nullable
