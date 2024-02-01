@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.util.Identifier;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +16,7 @@ public class ConfigManager {
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .setLenient()
+            .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
             .create();
 
     public ConfigManager(String MOD_ID) {

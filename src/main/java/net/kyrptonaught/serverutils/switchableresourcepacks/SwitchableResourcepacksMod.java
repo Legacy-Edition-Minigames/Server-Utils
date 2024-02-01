@@ -26,11 +26,9 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
 
     public void onConfigLoad(ResourcePackConfig config) {
         rpOptionHashMap.clear();
-        config.packs.forEach(rpOption -> {
-            rpOptionHashMap.put(rpOption.packname, rpOption);
-        });
+        config.packs.forEach(rpOption -> rpOptionHashMap.put(rpOption.packname, rpOption));
 
-        if (config.packs.size() == 0) {
+        if (config.packs.isEmpty()) {
             ResourcePackConfig.RPOption option = new ResourcePackConfig.RPOption();
             option.packname = "example_pack";
             option.url = "https://example.com/resourcepack.zip";

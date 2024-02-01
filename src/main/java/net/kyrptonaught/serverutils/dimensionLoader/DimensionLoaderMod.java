@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class DimensionLoaderMod extends Module {
     public static final HashMap<Identifier, CustomDimHolder> loadedWorlds = new HashMap<>();
@@ -43,6 +44,10 @@ public class DimensionLoaderMod extends Module {
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         DimensionLoaderCommand.registerCommands(dispatcher);
+    }
+
+    public static void loadDimension(Identifier id, Identifier dimID, Consumer<MinecraftServer> onComplete ) {
+        loadedWorlds.put(id, new CustomDimHolder(id, dimID, onComplete));
     }
 
     public static Text loadDimension(MinecraftServer server, Identifier id, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {

@@ -1,5 +1,7 @@
 package net.kyrptonaught.serverutils;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -55,4 +57,32 @@ public class FileHelper {
         }
         return false;
     }
+
+    public static String readFileFromZip(Path zipFile, String fileName) {
+        try (ZipFile zip = new ZipFile(zipFile)) {
+            ZipArchiveEntry entry = zip.getEntry(fileName);
+
+            return new String(zip.getInputStream(entry).readAllBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String cleanFileName(String badFileName) {
+        StringBuilder cleanName = new StringBuilder();
+        int len = badFileName.codePointCount(0, badFileName.length());
+        for (int i = 0; i < len; i++) {
+            if (isCharValid(badFileName.charAt(i))) {
+                cleanName.append(badFileName.charAt(i));
+            }
+        }
+        return cleanName.toString();
+    }
+
+    public static boolean isCharValid(char c) {
+        return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-';
+    }
+
 }
