@@ -124,11 +124,11 @@ public class Votebook {
                 }
 
                 if (i == packPages.size() - 1) {
-                    packPages.get(i).add(nextButton("Back", i));
+                    packPages.get(i).add(nextButton("gui.back", i));
                 } else if (i == 0) {
-                    packPages.get(i).add(backButton(isBase ? "baseMaps" : "customMaps").append(" ").append(nextButton("Next", i + 2)));
+                    packPages.get(i).add(backButton(isBase ? "baseMaps" : "customMaps").append(" ").append(nextButton("createWorld.customize.custom.next", i + 2)));
                 } else {
-                    packPages.get(i).add(nextButton("Back", i).append(" ").append(nextButton("Next", i + 2)));
+                    packPages.get(i).add(nextButton("gui.back", i).append(" ").append(nextButton("createWorld.customize.custom.next", i + 2)));
                 }
 
                 builder.addPage(packPages.get(i).toArray(Text[]::new));
@@ -164,17 +164,17 @@ public class Votebook {
             for (; lastUsed < packMods.size() && lastUsed - (pages.size() * maxPerPage) < maxPerPage; lastUsed++) {
                 LemModConfig config = packMods.get(lastUsed);
 
-                String availableSizes = "Available sizes: " +
-                        (config.hassmall ? "Small, " : "") +
-                        (config.haslarge ? "Large, " : "") +
-                        (config.haslargeplus ? "Large+, " : "") +
-                        (config.hasremastered ? "Remastered, " : "");
+                Text availableSizes = Text.literal("Available sizes: ")
+                        .append(Text.translatable(config.hassmall ? "lem.battle.menu.host.config.maps.option.small" : ""))
+                        .append(Text.translatable(config.haslarge ? "lem.battle.menu.host.config.maps.option.large" : ""))
+                        .append(Text.translatable(config.haslargeplus ? "lem.battle.menu.host.config.maps.option.largeplus" : ""))
+                        .append(Text.translatable(config.hasremastered ? "lem.battle.menu.host.config.maps.option.remastered" : ""));
 
                 Text tooltip = config.getName().append("\n")
-                        .append("By: " + config.authors).append("\n")
-                        .append("Version: " + config.version).append("\n")
+                        .append(Text.translatable("mco.template.select.narrate.authors", config.authors)).append("\n")
+                        .append(Text.translatable("mco.version", config.version)).append("\n")
                         .append("Resource Pack: " + config.pack).append("\n")
-                        .append(availableSizes.substring(0, availableSizes.length() - 2));
+                        .append(availableSizes);
                 pageText.add(withHover(withOpenCmd(bracket(trimName(config.getName(), 20)), "map_" + config.id), tooltip));
             }
             pages.add(pageText);
@@ -186,17 +186,18 @@ public class Votebook {
     public static void generateMaps(List<LemModConfig> lemmods) {
         for (LemModConfig config : lemmods) {
             List<Text> mapText = new ArrayList<>();
-            String availableSizes = "Available sizes: " +
-                    (config.hassmall ? "Small, " : "") +
-                    (config.haslarge ? "Large, " : "") +
-                    (config.haslargeplus ? "Large+, " : "") +
-                    (config.hasremastered ? "Remastered, " : "");
+
+            Text availableSizes = Text.literal("Available sizes: ")
+                    .append(Text.translatable(config.hassmall ? "lem.battle.menu.host.config.maps.option.small" : ""))
+                    .append(Text.translatable(config.haslarge ? "lem.battle.menu.host.config.maps.option.large" : ""))
+                    .append(Text.translatable(config.haslargeplus ? "lem.battle.menu.host.config.maps.option.largeplus" : ""))
+                    .append(Text.translatable(config.hasremastered ? "lem.battle.menu.host.config.maps.option.remastered" : ""));
 
             Text tooltip = config.getName().append("\n")
-                    .append("By: " + config.authors).append("\n")
-                    .append("Version: " + config.version).append("\n")
+                    .append(Text.translatable("mco.template.select.narrate.authors", config.authors)).append("\n")
+                    .append(Text.translatable("mco.version", config.version)).append("\n")
                     .append("Resource Pack: " + config.pack).append("\n")
-                    .append(availableSizes.substring(0, availableSizes.length() - 2));
+                    .append(availableSizes);
 
             mapText.add(withHover(config.getName().formatted(Formatting.BLUE), tooltip));
             mapText.add(config.getDescription().formatted(Formatting.DARK_AQUA));
@@ -278,15 +279,15 @@ public class Votebook {
     }
 
     public static MutableText voteButton(String map) {
-        return bracketLit("Vote").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/custommaploader voting vote " + map)));
+        return bracketTrans("lem.mapdecider.menu.vote").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/custommaploader voting vote " + map)));
     }
 
     public static MutableText backButton(String page) {
-        return colored(withOpenCmd(bracketLit("Back"), page), Formatting.GRAY);
+        return colored(withOpenCmd(bracketTrans("gui.back"), page), Formatting.GRAY);
     }
 
-    public static MutableText nextButton(String text, int page) {
-        return colored(withClickEvent(bracketLit(text), ClickEvent.Action.CHANGE_PAGE, "" + page), Formatting.GRAY);
+    public static MutableText nextButton(String transKey, int page) {
+        return colored(withClickEvent(bracketTrans(transKey), ClickEvent.Action.CHANGE_PAGE, "" + page), Formatting.GRAY);
     }
 
     public static MutableText withHover(MutableText text, Text hover) {
