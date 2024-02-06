@@ -1,11 +1,14 @@
 package net.kyrptonaught.serverutils.customMapLoader;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.FunctionCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -70,12 +73,19 @@ public class CustomMapLoaderCommands {
                         }))
                 .then(CommandManager.literal("end")
                         .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
-                                .executes(context -> {
-                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
-                                    Identifier winner = Voter.endVote(context.getSource().getServer());
-                                    CustomMapLoaderMod.prepareBattleMap(context.getSource().getServer(), winner, id);
-                                    return 1;
-                                }))));
+                                .then(CommandManager.argument("centralSpawnEnabled", BoolArgumentType.bool())
+                                        .then(CommandManager.argument("players", EntityArgumentType.players())
+                                                .then(CommandManager.argument("callbackFunction", CommandFunctionArgumentType.commandFunction())
+                                                        .suggests(FunctionCommand.SUGGESTION_PROVIDER)
+                                                        .executes(context -> {
+                                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                                            boolean centralSpawnEnabled = BoolArgumentType.getBool(context, "centralSpawnEnabled");
+                                                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+
+                                                            Identifier winner = Voter.endVote(context.getSource().getServer());
+                                                            CustomMapLoaderMod.prepareBattleMap(context.getSource().getServer(), winner, id, centralSpawnEnabled, players, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
+                                                            return 1;
+                                                        })))))));
 
         for (MapSize mapSize : MapSize.values()) {
             cmd.then(CommandManager.literal("hostOptions")
@@ -89,22 +99,28 @@ public class CustomMapLoaderCommands {
         }
         cmd.then(CommandManager.literal("unload")
                 .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
-                        .executes(context -> {
-                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
-                            CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id);
-                            return 1;
-                        })));
+                        .then(CommandManager.argument("callbackFunction", CommandFunctionArgumentType.commandFunction())
+                                .suggests(FunctionCommand.SUGGESTION_PROVIDER)
+                                .executes(context -> {
+                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                    CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
+                                    return 1;
+                                }))));
 
         cmd.then(CommandManager.literal("lobby")
                 .then(CommandManager.literal("load")
                         .then(CommandManager.argument("lobby", IdentifierArgumentType.identifier())
                                 .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
-                                        .executes(context -> {
-                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
-                                            Identifier lobbyID = IdentifierArgumentType.getIdentifier(context, "lobby");
-                                            CustomMapLoaderMod.prepareLobby(context.getSource().getServer(), lobbyID, id);
-                                            return 1;
-                                        }))))
+                                        .then(CommandManager.argument("players", EntityArgumentType.players())
+                                                .then(CommandManager.argument("callbackFunction", CommandFunctionArgumentType.commandFunction())
+                                                        .suggests(FunctionCommand.SUGGESTION_PROVIDER)
+                                                        .executes(context -> {
+                                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                                            Identifier lobbyID = IdentifierArgumentType.getIdentifier(context, "lobby");
+                                                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                                                            CustomMapLoaderMod.prepareLobby(context.getSource().getServer(), lobbyID, id, players, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
+                                                            return 1;
+                                                        }))))))
                 .then(CommandManager.literal("tp")
                         .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
                                 .then(CommandManager.argument("players", EntityArgumentType.players())

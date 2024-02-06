@@ -94,7 +94,7 @@ public class PlayerLockdownMod extends Module {
                         })));
     }
 
-    private static int executeLockdown(Collection<ServerPlayerEntity> players, boolean enabled) {
+    public static int executeLockdown(Collection<ServerPlayerEntity> players, boolean enabled) {
         if (players == null) {
             GLOBAL_LOCKDOWN = enabled;
             return 1;
@@ -110,7 +110,7 @@ public class PlayerLockdownMod extends Module {
         return 1;
     }
 
-    private static int executeFreeze(Collection<ServerPlayerEntity> players, Vec3d pos, boolean enabled) {
+    public static int executeFreeze(Collection<ServerPlayerEntity> players, Vec3d pos, boolean enabled) {
         for (ServerPlayerEntity player : players) {
             if (enabled) {
                 player.getAbilities().setWalkSpeed(0);

@@ -62,7 +62,7 @@ public class CustomDimHolder {
     public void setFunctions(Collection<CommandFunction<ServerCommandSource>> functions) {
         setFunctions(server -> {
             if (functions != null) {
-                for (CommandFunction commandFunction : functions) {
+                for (CommandFunction<ServerCommandSource> commandFunction : functions) {
                     server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
                 }
             }

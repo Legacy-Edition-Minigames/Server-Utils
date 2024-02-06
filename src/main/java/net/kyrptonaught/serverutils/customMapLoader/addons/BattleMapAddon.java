@@ -26,13 +26,14 @@ public class BattleMapAddon extends BaseAddon {
         });
     }
 
-    public boolean hasSize(MapSize size){
+    public boolean hasSize(MapSize size) {
         return getMapDataForSize(size) != null;
     }
 
     public static class MapSizeConfig {
         public String center_coords;
-        public String spawn_coords;
+        public String[] center_spawn_coords;
+        public String[] random_spawn_coords;
         public String world_border_coords_1;
         public String world_border_coords_2;
 
