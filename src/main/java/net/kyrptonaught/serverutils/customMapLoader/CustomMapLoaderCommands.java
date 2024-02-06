@@ -85,7 +85,16 @@ public class CustomMapLoaderCommands {
                                                             Identifier winner = Voter.endVote(context.getSource().getServer());
                                                             CustomMapLoaderMod.prepareBattleMap(context.getSource().getServer(), winner, id, centralSpawnEnabled, players, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
                                                             return 1;
-                                                        })))))));
+                                                        }))
+                                                .executes(context -> {
+                                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                                    boolean centralSpawnEnabled = BoolArgumentType.getBool(context, "centralSpawnEnabled");
+                                                    Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+
+                                                    Identifier winner = Voter.endVote(context.getSource().getServer());
+                                                    CustomMapLoaderMod.prepareBattleMap(context.getSource().getServer(), winner, id, centralSpawnEnabled, players, null);
+                                                    return 1;
+                                                }))))));
 
         for (MapSize mapSize : MapSize.values()) {
             cmd.then(CommandManager.literal("hostOptions")
@@ -105,7 +114,12 @@ public class CustomMapLoaderCommands {
                                     Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
                                     CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
                                     return 1;
-                                }))));
+                                }))
+                        .executes(context -> {
+                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                            CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id, null);
+                            return 1;
+                        })));
 
         cmd.then(CommandManager.literal("lobby")
                 .then(CommandManager.literal("load")

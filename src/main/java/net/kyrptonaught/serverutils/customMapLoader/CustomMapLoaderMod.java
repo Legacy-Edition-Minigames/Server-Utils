@@ -18,18 +18,17 @@ import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.dimensionLoader.CustomDimHolder;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
-import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.command.TeleportCommand;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -84,12 +83,12 @@ public class CustomMapLoaderMod extends Module {
                 Collection<ServerPlayerEntity> single = Collections.singleton(player);
                 ParsedPlayerCoords playerPos = centerPos.fillPlayer(player);
 
-                ServerUtilsMod.SwitchableResourcepacksModule.execute(config.resource_pack, single);
+                //ServerUtilsMod.SwitchableResourcepacksModule.execute(config.resource_pack, single);
 
                 player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 0, 0);
-                player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 90, 0);
-                player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 180, 0);
-                player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 270, 0);
+                //player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 90, 0);
+                //player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 180, 0);
+                //player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 270, 0);
 
                 PlayerLockdownMod.executeLockdown(single, true);
                 PlayerLockdownMod.executeFreeze(single, playerPos.pos, true);
@@ -124,10 +123,9 @@ public class CustomMapLoaderMod extends Module {
                 raw = randomSpawns.remove(random.nextInt(randomSpawns.size()));
             }
             ParsedPlayerCoords playerPos = parseVec3D(raw);
-
-            player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 0, 0);
+            float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
+            player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
             PlayerLockdownMod.executeFreeze(Collections.singleton(player), playerPos.pos, true);
-            player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, centerPos.pos);
         }
     }
 
