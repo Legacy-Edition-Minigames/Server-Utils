@@ -8,7 +8,9 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Votebook {
 
@@ -140,7 +142,7 @@ public class Votebook {
             bookLibrary.put("mapPack_" + pack, builder);
         }
 
-        if(isBase && packs.containsKey("base_base")) {
+        if (isBase && packs.containsKey("base_base")) {
             List<List<Text>> base_pages = generateMapPackPages(packs.get("base_base"), false);
             packsText.addAll(base_pages.get(0));
         }
@@ -158,7 +160,7 @@ public class Votebook {
 
         while (lastUsed < packMods.size()) {
             List<Text> pageText = new ArrayList<>();
-            if(includeHeader) {
+            if (includeHeader) {
                 pageText.add(dash(packMods.get(0).getAddonPackText()));
                 pageText.add(Text.empty());
             }

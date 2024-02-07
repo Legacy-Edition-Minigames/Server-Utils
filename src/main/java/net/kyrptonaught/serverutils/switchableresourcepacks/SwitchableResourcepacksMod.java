@@ -3,11 +3,13 @@ package net.kyrptonaught.serverutils.switchableresourcepacks;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.server.command.CommandManager;
@@ -21,8 +23,10 @@ import java.util.*;
 
 public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig> {
 
-    public static HashMap<String, ResourcePackConfig.RPOption> rpOptionHashMap = new HashMap<>();
+    public static final HashMap<String, ResourcePackConfig.RPOption> rpOptionHashMap = new HashMap<>();
     public static CustomCriterion STARTED, FINISHED, FAILED;
+
+    public static final HashMap<UUID,String> playerLoaded = new HashMap<>();
 
     public void onConfigLoad(ResourcePackConfig config) {
         rpOptionHashMap.clear();
@@ -44,6 +48,10 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         STARTED = registerCriterion(new Identifier(ServerUtilsMod.SwitchableResourcepacksModule.getMOD_ID(), "started"));
         FINISHED = registerCriterion(new Identifier(ServerUtilsMod.SwitchableResourcepacksModule.getMOD_ID(), "finished"));
         FAILED = registerCriterion(new Identifier(ServerUtilsMod.SwitchableResourcepacksModule.getMOD_ID(), "failed"));
+
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            playerLoaded.remove(handler.getPlayer().getUuid());
+        });
     }
 
     private CustomCriterion registerCriterion(Identifier id) {
@@ -88,9 +96,13 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
                 revokeAdvancement(player, FAILED);
             }
 
-            //todo UUIDs
-            player.networkHandler.sendPacket(new ResourcePackRemoveS2CPacket(Optional.empty()));
-            player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8)), rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
+            if (!packname.equals(playerLoaded.get(player.getUuid()))) {
+                //todo UUIDs
+                player.networkHandler.sendPacket(new ResourcePackRemoveS2CPacket(Optional.empty()));
+                player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8)), rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
+
+                playerLoaded.put(player.getUuid(), packname);
+            }
         });
         return true;
     }

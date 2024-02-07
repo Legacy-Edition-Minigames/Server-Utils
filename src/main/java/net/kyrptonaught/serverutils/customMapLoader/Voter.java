@@ -31,7 +31,7 @@ public class Voter {
         scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, obj);
     }
 
-    public static Identifier endVote(MinecraftServer server){
+    public static Identifier endVote(MinecraftServer server) {
         ServerScoreboard scoreboard = server.getScoreboard();
         scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
 

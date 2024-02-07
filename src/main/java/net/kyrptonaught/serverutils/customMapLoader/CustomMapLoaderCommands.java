@@ -83,7 +83,7 @@ public class CustomMapLoaderCommands {
                                                             Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
 
                                                             Identifier winner = Voter.endVote(context.getSource().getServer());
-                                                            CustomMapLoaderMod.prepareBattleMap(context.getSource().getServer(), winner, id, centralSpawnEnabled, players, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
+                                                            CustomMapLoaderMod.battleLoad(context.getSource().getServer(), winner, id, centralSpawnEnabled, players, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
                                                             return 1;
                                                         }))
                                                 .executes(context -> {
@@ -92,7 +92,7 @@ public class CustomMapLoaderCommands {
                                                     Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
 
                                                     Identifier winner = Voter.endVote(context.getSource().getServer());
-                                                    CustomMapLoaderMod.prepareBattleMap(context.getSource().getServer(), winner, id, centralSpawnEnabled, players, null);
+                                                    CustomMapLoaderMod.battleLoad(context.getSource().getServer(), winner, id, centralSpawnEnabled, players, null);
                                                     return 1;
                                                 }))))));
 
@@ -120,6 +120,17 @@ public class CustomMapLoaderCommands {
                             CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id, null);
                             return 1;
                         })));
+
+        cmd.then(CommandManager.literal("battle")
+                .then(CommandManager.literal("tp")
+                        .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("players", EntityArgumentType.players())
+                                        .executes(context -> {
+                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                                            CustomMapLoaderMod.battleTp(id, players);
+                                            return 1;
+                                        })))));
 
         cmd.then(CommandManager.literal("lobby")
                 .then(CommandManager.literal("load")
