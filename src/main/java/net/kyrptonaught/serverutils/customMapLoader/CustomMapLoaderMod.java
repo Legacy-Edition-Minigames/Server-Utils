@@ -10,12 +10,14 @@ import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyAddon;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.dimensionLoader.CustomDimHolder;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
+import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
@@ -60,8 +62,11 @@ public class CustomMapLoaderMod extends Module {
                     server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
                 }
             }
-            LOADED_BATTLE_MAPS.put(dimID, new LoadedBattleMapInstance(centralSpawnEnabled, mapSize, config, dimID));
+            LOADED_BATTLE_MAPS.put(dimID, instance);
         });
+
+        server.getPlayerManager().broadcast(Text.literal("Loading map: ").append(config.getNameText()), false);
+        MessageSender.sendGameMessageWMentions(Text.literal("Loading map: ").append(config.getNameText()));
     }
 
     private static void battlePrepare(LoadedBattleMapInstance instance, Collection<ServerPlayerEntity> players) {
@@ -92,46 +97,50 @@ public class CustomMapLoaderMod extends Module {
     }
 
     private static void battleSpawn(LoadedBattleMapInstance instance, Collection<ServerPlayerEntity> players) {
-        List<String> centerSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().center_spawn_coords));
-        List<String> randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
-
-
         ParsedPlayerCoords centerPos = parseVec3D(instance.getSizedAddon().center_coords);
 
-        for (ServerPlayerEntity player : players) {
-            String raw;
-            if (!centerSpawns.isEmpty() && instance.isCentralSpawnEnabled()) {
-                raw = centerSpawns.remove(instance.getWorld().random.nextInt(centerSpawns.size()));
-            } else {
-                if (randomSpawns.isEmpty())
-                    randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
+        instance.setInitialSpawns(instance.isCentralSpawnEnabled());
 
-                raw = randomSpawns.remove(instance.getWorld().random.nextInt(randomSpawns.size()));
-            }
+        for (ServerPlayerEntity player : players) {
+            String raw = instance.getNextInitialSpawn();
             ParsedPlayerCoords playerPos = parseVec3D(raw);
+
             float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
             player.teleport(instance.getWorld(), playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
             PlayerLockdownMod.executeFreeze(Collections.singleton(player), playerPos.pos, true);
         }
     }
 
-    public static void battleTp(Identifier dimID, Collection<ServerPlayerEntity> players) {
+    public static void battleTp(Identifier dimID, boolean initialSpawn,  Collection<ServerPlayerEntity> players) {
         LoadedBattleMapInstance instance = LOADED_BATTLE_MAPS.get(dimID);
 
         ParsedPlayerCoords centerPos = parseVec3D(instance.getSizedAddon().center_coords);
 
-        List<String> randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
-        for (ServerPlayerEntity player : players) {
-            ServerUtilsMod.SwitchableResourcepacksModule.execute(instance.getAddon().resource_pack, Collections.singleton(player));
+        if (initialSpawn) {
+            for (ServerPlayerEntity player : players) {
+                ServerUtilsMod.SwitchableResourcepacksModule.execute(instance.getAddon().resource_pack, Collections.singleton(player));
 
-            if (randomSpawns.isEmpty())
-                randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
+                String raw = instance.getNextInitialSpawn();
+                ParsedPlayerCoords playerPos = parseVec3D(raw);
 
-            String raw = randomSpawns.remove(instance.getWorld().random.nextInt(randomSpawns.size()));
+                float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
+                player.teleport(instance.getWorld(), playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
+                PlayerLockdownMod.executeFreeze(Collections.singleton(player), playerPos.pos, true);
+            }
+        } else {
+            List<String> randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
+            for (ServerPlayerEntity player : players) {
+                ServerUtilsMod.SwitchableResourcepacksModule.execute(instance.getAddon().resource_pack, Collections.singleton(player));
 
-            ParsedPlayerCoords playerPos = parseVec3D(raw);
-            float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
-            player.teleport(instance.getWorld(), playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
+                if (randomSpawns.isEmpty())
+                    randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
+
+                String raw = randomSpawns.remove(instance.getWorld().random.nextInt(randomSpawns.size()));
+
+                ParsedPlayerCoords playerPos = parseVec3D(raw);
+                float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
+                player.teleport(instance.getWorld(), playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
+            }
         }
     }
 

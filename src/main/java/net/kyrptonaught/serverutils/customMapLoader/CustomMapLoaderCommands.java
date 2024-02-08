@@ -124,13 +124,15 @@ public class CustomMapLoaderCommands {
         cmd.then(CommandManager.literal("battle")
                 .then(CommandManager.literal("tp")
                         .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
-                                .then(CommandManager.argument("players", EntityArgumentType.players())
-                                        .executes(context -> {
-                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
-                                            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
-                                            CustomMapLoaderMod.battleTp(id, players);
-                                            return 1;
-                                        })))));
+                                .then(CommandManager.argument("initialSpawn", BoolArgumentType.bool())
+                                        .then(CommandManager.argument("players", EntityArgumentType.players())
+                                                .executes(context -> {
+                                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                                    boolean initial = BoolArgumentType.getBool(context, "initialSpawn");
+                                                    Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                                                    CustomMapLoaderMod.battleTp(id, initial, players);
+                                                    return 1;
+                                                }))))));
 
         cmd.then(CommandManager.literal("lobby")
                 .then(CommandManager.literal("load")

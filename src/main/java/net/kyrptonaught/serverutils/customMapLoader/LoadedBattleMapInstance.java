@@ -5,6 +5,10 @@ import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class LoadedBattleMapInstance {
 
     private final boolean centralSpawnEnabled;
@@ -14,6 +18,8 @@ public class LoadedBattleMapInstance {
     private final BattleMapAddon battleMapAddon;
 
     private final Identifier dimID;
+
+    public List<String> unusedInitialSpawns;
 
     public LoadedBattleMapInstance(boolean centralSpawnEnabled, MapSize selectedMapSize, BattleMapAddon battleMapAddon, Identifier dimID) {
         this.centralSpawnEnabled = centralSpawnEnabled;
@@ -41,4 +47,17 @@ public class LoadedBattleMapInstance {
     public ServerWorld getWorld() {
         return DimensionLoaderMod.loadedWorlds.get(dimID).world.asWorld();
     }
+
+    public void setInitialSpawns(boolean central) {
+        if (central) {
+            unusedInitialSpawns = new ArrayList<>(Arrays.asList(getSizedAddon().center_spawn_coords));
+        } else {
+            unusedInitialSpawns = new ArrayList<>(Arrays.asList(getSizedAddon().random_spawn_coords));
+        }
+    }
+
+    public String getNextInitialSpawn(){
+        return unusedInitialSpawns.remove(getWorld().random.nextInt(unusedInitialSpawns.size()));
+    }
+
 }
