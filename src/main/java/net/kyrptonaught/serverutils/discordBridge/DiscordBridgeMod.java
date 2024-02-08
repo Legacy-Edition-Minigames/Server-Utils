@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.discordBridge.bot.BridgeBot;
@@ -17,6 +18,8 @@ import net.kyrptonaught.serverutils.discordBridge.linking.LinkingManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
     public static BridgeBot bot;
@@ -34,6 +37,10 @@ public class DiscordBridgeMod extends ModuleWConfig<DiscordBridgeConfig> {
             if (bot != null) bot.close();
         });
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> MessageSender.sendChatMessage(sender, message.getSignedContent()));
+
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            Integrations.sendLeaveMessage(Text.translatable("multiplayer.player.left", handler.player.getDisplayName()).formatted(Formatting.YELLOW));
+        });
     }
 
     @Override
