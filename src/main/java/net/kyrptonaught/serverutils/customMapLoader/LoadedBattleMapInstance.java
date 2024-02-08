@@ -55,6 +55,7 @@ public class LoadedBattleMapInstance {
             unusedInitialSpawns = new ArrayList<>(Arrays.asList(getSizedAddon().center_spawn_coords));
         } else {
             unusedInitialSpawns = new ArrayList<>(Arrays.asList(getSizedAddon().random_spawn_coords));
+            unusedRandomSpawns = unusedInitialSpawns;
         }
     }
 
@@ -68,5 +69,4 @@ public class LoadedBattleMapInstance {
 
         return unusedRandomSpawns.remove(getWorld().random.nextInt(unusedRandomSpawns.size()));
     }
-
 }
