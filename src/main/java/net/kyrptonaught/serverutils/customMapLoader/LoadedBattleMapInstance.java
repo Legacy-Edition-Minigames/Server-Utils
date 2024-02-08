@@ -21,6 +21,8 @@ public class LoadedBattleMapInstance {
 
     public List<String> unusedInitialSpawns;
 
+    public List<String> unusedRandomSpawns;
+
     public LoadedBattleMapInstance(boolean centralSpawnEnabled, MapSize selectedMapSize, BattleMapAddon battleMapAddon, Identifier dimID) {
         this.centralSpawnEnabled = centralSpawnEnabled;
         this.selectedMapSize = selectedMapSize;
@@ -56,8 +58,15 @@ public class LoadedBattleMapInstance {
         }
     }
 
-    public String getNextInitialSpawn(){
+    public String getNextInitialSpawn() {
         return unusedInitialSpawns.remove(getWorld().random.nextInt(unusedInitialSpawns.size()));
+    }
+
+    public String getUnusedRandomSpawn() {
+        if (unusedRandomSpawns.isEmpty())
+            unusedRandomSpawns = new ArrayList<>(Arrays.asList(getSizedAddon().random_spawn_coords));
+
+        return unusedRandomSpawns.remove(getWorld().random.nextInt(unusedRandomSpawns.size()));
     }
 
 }

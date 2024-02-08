@@ -102,46 +102,37 @@ public class CustomMapLoaderMod extends Module {
         instance.setInitialSpawns(instance.isCentralSpawnEnabled());
 
         for (ServerPlayerEntity player : players) {
-            String raw = instance.getNextInitialSpawn();
-            ParsedPlayerCoords playerPos = parseVec3D(raw);
-
-            float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
-            player.teleport(instance.getWorld(), playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
-            PlayerLockdownMod.executeFreeze(Collections.singleton(player), playerPos.pos, true);
+            battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), null, true);
         }
     }
 
-    public static void battleTp(Identifier dimID, boolean initialSpawn,  Collection<ServerPlayerEntity> players) {
+    public static void battleTp(Identifier dimID, boolean initialSpawn, Collection<ServerPlayerEntity> players) {
         LoadedBattleMapInstance instance = LOADED_BATTLE_MAPS.get(dimID);
 
         ParsedPlayerCoords centerPos = parseVec3D(instance.getSizedAddon().center_coords);
 
         if (initialSpawn) {
             for (ServerPlayerEntity player : players) {
-                ServerUtilsMod.SwitchableResourcepacksModule.execute(instance.getAddon().resource_pack, Collections.singleton(player));
-
-                String raw = instance.getNextInitialSpawn();
-                ParsedPlayerCoords playerPos = parseVec3D(raw);
-
-                float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
-                player.teleport(instance.getWorld(), playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
-                PlayerLockdownMod.executeFreeze(Collections.singleton(player), playerPos.pos, true);
+                battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), instance.getAddon().resource_pack, true);
             }
         } else {
-            List<String> randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
             for (ServerPlayerEntity player : players) {
-                ServerUtilsMod.SwitchableResourcepacksModule.execute(instance.getAddon().resource_pack, Collections.singleton(player));
-
-                if (randomSpawns.isEmpty())
-                    randomSpawns = new ArrayList<>(Arrays.asList(instance.getSizedAddon().random_spawn_coords));
-
-                String raw = randomSpawns.remove(instance.getWorld().random.nextInt(randomSpawns.size()));
-
-                ParsedPlayerCoords playerPos = parseVec3D(raw);
-                float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
-                player.teleport(instance.getWorld(), playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
+                battleTP(player, instance.getWorld(), centerPos, instance.getUnusedRandomSpawn(), instance.getAddon().resource_pack, false);
             }
         }
+    }
+
+    private static void battleTP(ServerPlayerEntity player, ServerWorld world, ParsedPlayerCoords centerPos, String rawCoords, String rp, boolean freezePlayer) {
+        if (rp != null)
+            ServerUtilsMod.SwitchableResourcepacksModule.execute(rp, Collections.singleton(player));
+
+        ParsedPlayerCoords playerPos = parseVec3D(rawCoords);
+
+        float yaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(centerPos.z() - playerPos.z(), centerPos.x() - playerPos.x()) * 57.2957763671875) - 90.0f);
+        player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), yaw, 0);
+
+        if (freezePlayer)
+            PlayerLockdownMod.executeFreeze(Collections.singleton(player), playerPos.pos, true);
     }
 
     public static void prepareLobby(MinecraftServer server, Identifier addon, Identifier dimID, Collection<ServerPlayerEntity> players, Collection<CommandFunction<ServerCommandSource>> functions) {
