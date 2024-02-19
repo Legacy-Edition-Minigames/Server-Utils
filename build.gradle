@@ -67,7 +67,7 @@ dependencies {
 	shadow implementation("io.javalin:javalin:6.0.1")
 
 	//Apache Compress
-	shadow implementation("org.apache.commons:commons-compress:1.25.0")
+	shadow implementation("org.apache.commons:commons-compress:1.26.0")
 }
 
 loom {
