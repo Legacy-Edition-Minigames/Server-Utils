@@ -6,6 +6,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.serverutils.SpectateSqueaker.SpectateSqueakerMod;
+import net.kyrptonaught.serverutils.advancementMenu.AdvancementMenuMod;
 import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
 import net.kyrptonaught.serverutils.armorHudToggle.ArmorHudMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
@@ -101,7 +102,7 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module customMapLoaderModule = registerModule("custommaploader", new CustomMapLoaderMod());
     public static Module utilModule = registerModule("util", new UtilCommandsMod());
     public static Module smallInvModule = registerModule("smallinv", new SmallInvMod());
-
+    public static Module advancementMenu = registerModule("advancementmenu", new AdvancementMenuMod());
 
     @Override
     public void onInitialize() {
