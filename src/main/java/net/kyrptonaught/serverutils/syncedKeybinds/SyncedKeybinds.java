@@ -5,6 +5,7 @@ import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
 public class SyncedKeybinds extends ModuleWConfig<SyncedKeybindsConfig> {
 
@@ -21,7 +22,7 @@ public class SyncedKeybinds extends ModuleWConfig<SyncedKeybindsConfig> {
         return new SyncedKeybindsConfig();
     }
 
-    public static void keybindPressed(ServerPlayerEntity player, String keyPressed) {
+    public static void keybindPressed(ServerPlayerEntity player, Identifier keyPressed) {
         SyncedKeybindsConfig.KeybindConfigItem keybind = ServerUtilsMod.SyncedKeybindsModule.getConfig().keybinds.get(keyPressed);
         if (keybind != null)
             CMDHelper.executeAs(player, keybind.triggerCMD);

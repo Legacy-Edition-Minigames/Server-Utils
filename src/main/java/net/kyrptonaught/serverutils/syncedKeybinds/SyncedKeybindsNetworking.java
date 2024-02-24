@@ -16,7 +16,7 @@ public class SyncedKeybindsNetworking {
 
     public static void registerReceivePacket() {
         ServerPlayNetworking.registerGlobalReceiver(KEYBIND_PRESSED_PACKET, (server, player, serverPlayNetworkHandler, packetByteBuf, packetSender) -> {
-            String keybindId = packetByteBuf.readIdentifier().toString();
+            Identifier keybindId = packetByteBuf.readIdentifier();
 
             server.execute(() -> {
                 SyncedKeybinds.keybindPressed(player, keybindId);
@@ -24,7 +24,7 @@ public class SyncedKeybindsNetworking {
         });
     }
 
-    public static void syncKeybindsToClient(HashMap<String, SyncedKeybindsConfig.KeybindConfigItem> keybinds, PacketSender packetSender) {
+    public static void syncKeybindsToClient(HashMap<Identifier, SyncedKeybindsConfig.KeybindConfigItem> keybinds, PacketSender packetSender) {
         PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
         packetByteBuf.writeInt(keybinds.size());
         keybinds.forEach((s, keybindConfigItem) -> keybindConfigItem.writeToPacket(s, packetByteBuf));
