@@ -64,10 +64,10 @@ dependencies {
 	//Discord Bridge
 	shadow implementation("net.dv8tion:JDA:5.0.0-beta.20") { exclude module: 'opus-java' }
 
-	shadow implementation("io.javalin:javalin:6.0.1")
+	shadow implementation("io.javalin:javalin:6.1.2")
 
 	//Apache Compress
-	shadow implementation("org.apache.commons:commons-compress:1.25.0")
+	shadow implementation("org.apache.commons:commons-compress:1.26.0")
 }
 
 loom {

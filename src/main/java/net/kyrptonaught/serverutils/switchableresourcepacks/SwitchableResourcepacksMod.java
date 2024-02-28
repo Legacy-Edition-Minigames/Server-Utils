@@ -9,7 +9,6 @@ import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.server.command.CommandManager;
@@ -26,7 +25,7 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
     public static final HashMap<String, ResourcePackConfig.RPOption> rpOptionHashMap = new HashMap<>();
     public static CustomCriterion STARTED, FINISHED, FAILED;
 
-    public static final HashMap<UUID,String> playerLoaded = new HashMap<>();
+    public static final HashMap<UUID, String> playerLoaded = new HashMap<>();
 
     public void onConfigLoad(ResourcePackConfig config) {
         rpOptionHashMap.clear();

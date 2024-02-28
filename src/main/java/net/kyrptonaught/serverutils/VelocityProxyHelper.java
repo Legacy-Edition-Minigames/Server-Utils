@@ -7,7 +7,6 @@ import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerCommonNetworkHandler;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
