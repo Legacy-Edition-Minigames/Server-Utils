@@ -1,5 +1,6 @@
-package net.kyrptonaught.serverutils.customMapLoader;
+package net.kyrptonaught.serverutils.customMapLoader.voting;
 
+import net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.minecraft.scoreboard.*;
 import net.minecraft.server.MinecraftServer;
@@ -59,25 +60,23 @@ public class Voter {
         return winningMaps.get(random.nextInt(winningMaps.size()));
     }
 
-
-    public static void voteFor(MinecraftServer server, ServerPlayerEntity player, Identifier map, Text mapName) {
+    public static void voteFor(MinecraftServer server, ServerPlayerEntity player, Identifier map) {
         if (!mapVotes.containsKey(map)) mapVotes.put(map, new HashSet<>());
 
         removeVote(server, player);
         mapVotes.get(map).add(player.getUuid());
-        updateScore(server, map, mapName);
+        updateScore(server, map);
     }
 
     public static void removeVote(MinecraftServer server, ServerPlayerEntity player) {
         for (Identifier id : mapVotes.keySet()) {
             if (mapVotes.get(id).remove(player.getUuid())) {
-                updateScore(server, id, CustomMapLoaderMod.BATTLE_MAPS.get(id).getNameText());
+                updateScore(server, id);
             }
         }
     }
 
-
-    private static void updateScore(MinecraftServer server, Identifier map, Text mapName) {
+    public static void updateScore(MinecraftServer server, Identifier map) {
         ScoreHolder holder = new ScoreHolder() {
             @Override
             public String getNameForScoreboard() {
@@ -87,16 +86,19 @@ public class Voter {
             @Nullable
             @Override
             public Text getDisplayName() {
-                return mapName;
+                return CustomMapLoaderMod.BATTLE_MAPS.get(map).getNameText();
             }
         };
+
+        if (!CustomMapLoaderMod.BATTLE_MAPS.get(map).isAddonEnabled)
+            mapVotes.remove(map);
 
         ServerScoreboard scoreboard = server.getScoreboard();
         ScoreboardObjective objective = scoreboard.getNullableObjective(objName);
 
-        int votes = mapVotes.get(map).size();
-        if (votes > 0) {
-            scoreboard.getOrCreateScore(holder, objective).setScore(votes);
+        Set<UUID> votes = mapVotes.get(map);
+        if (votes != null && !votes.isEmpty()) {
+            scoreboard.getOrCreateScore(holder, objective).setScore(votes.size());
         } else {
             scoreboard.removeScore(holder, objective);
         }

@@ -7,6 +7,7 @@ import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyAddon;
+import net.kyrptonaught.serverutils.customMapLoader.voting.HostOptions;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.dimensionLoader.CustomDimHolder;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;

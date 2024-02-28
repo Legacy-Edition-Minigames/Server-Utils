@@ -1,8 +1,10 @@
-package net.kyrptonaught.serverutils.customMapLoader;
+package net.kyrptonaught.serverutils.customMapLoader.voting;
 
-import eu.pb4.sgui.api.elements.BookElementBuilder;
-import eu.pb4.sgui.api.gui.BookGui;
+import net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod;
+import net.kyrptonaught.serverutils.customMapLoader.MapSize;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
+import net.kyrptonaught.serverutils.customMapLoader.voting.pages.BookPage;
+import net.kyrptonaught.serverutils.customMapLoader.voting.pages.DynamicBookPage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -14,18 +16,12 @@ import java.util.List;
 
 public class Votebook {
 
-    public static HashMap<String, BookElementBuilder> bookLibrary = new HashMap<>();
+    public static HashMap<String, BookPage> bookLibrary = new HashMap<>();
 
     public static void generateBookLibrary(List<BattleMapAddon> addons) {
         bookLibrary.clear();
-        bookLibrary.put("404", createBasicBook().addPage(
-                Text.literal("404"),
-                Text.literal("Page not found"),
-                Text.empty(),
-                backButton("title")
-        ));
 
-        bookLibrary.put("title", createBasicBook().addPage(
+        bookLibrary.put("title", createBasicPage().addPage(
                 Text.literal("Legacy Edition Battle").formatted(Formatting.BLUE),
                 Text.translatable("lem.mapdecider.menu.header").formatted(Formatting.DARK_AQUA),
                 Text.translatable("lem.mapdecider.menu.credit", withLink(Text.literal("DBTDerpbox & Kyrptonaught").styled(style -> style.withColor(0x99C1F1).withUnderline(true)), "https://www.legacyminigames.net/credits")).styled(style -> style.withColor(0x62A0EA)),
@@ -36,7 +32,7 @@ public class Votebook {
                 withOpenCmd(bracketTrans("lem.mapdecider.menu.hosts"), "hostConfig")
         ));
 
-        bookLibrary.put("mapVoting", createBasicBook().addPage(
+        bookLibrary.put("mapVoting", createBasicPage().addPage(
                 dashTrans("lem.mapdecider.menu.mapvoting"),
                 Text.empty(),
                 withOpenCmd(bracketTrans("lem.mapdecider.menu.basegame"), "baseMaps"),
@@ -47,42 +43,59 @@ public class Votebook {
                 backButton("title")
         ));
 
-        bookLibrary.put("hostConfig", createBasicBook().addPage(
+        bookLibrary.put("hostConfig", createBasicPage().addPage(
                 dashTrans("lem.mapdecider.menu.hosts"),
                 Text.empty(),
                 withCmd(bracketTrans("lem.mapdecider.menu.gameoptions"), "/trigger lem.gamecfg"),
                 withCmd(bracketTrans("lem.mapdecider.menu.transferhost"), "/trigger lem.gamecfg set 103"),
-                withOpenCmd(bracketLit("Map Settings"), "host_map_settings"),
+                withOpenCmd(bracketTrans("lem.mapdecider.menu.mapsettings"), "host_map_settings"),
                 Text.empty(),
                 backButton("title")
         ));
 
-        generateHostSettings();
+        bookLibrary.put("host_map_settings", createDynamicPage().setRunner(Votebook::generateHostSettings));
+        bookLibrary.put("host_map_enable_disable", createDynamicPage().setRunner(Votebook::generateMapEnableDisable));
+
         generateMapPacks(false, addons.stream().filter(config -> !config.isBaseAddon).toList());
         generateMapPacks(true, addons.stream().filter(config -> config.isBaseAddon).toList());
         generateMapPages(addons);
     }
 
-    private static BookElementBuilder createBasicBook() {
-        return new BookElementBuilder()
-                .setTitle("Voting Book")
-                .setAuthor("LEM");
+    private static BookPage createBasicPage() {
+        return new BookPage("Voting Book", "LEM");
     }
 
-    public static void openbook(ServerPlayerEntity player, String book) {
-        BookElementBuilder bookElement = bookLibrary.get(book);
-
-        if (bookElement == null) bookElement = bookLibrary.get("404");
-
-        new BookGui(player, bookElement).open();
+    private static DynamicBookPage createDynamicPage() {
+        return new DynamicBookPage("Voting Book", "LEM");
     }
 
-    public static void giveBook(ServerPlayerEntity player, String book) {
-        BookElementBuilder bookElement = bookLibrary.get(book);
+    public static void openPage(ServerPlayerEntity player, String page) {
+        BookPage book = bookLibrary.get(page);
 
-        if (bookElement == null) bookElement = bookLibrary.get("404");
+        if (book == null) book = createBasicPage().addPage(
+                Text.translatable("lem.mapdecider.menu.missing"),
+                Text.literal(page),
+                Text.empty(),
+                backButton("title")
+        );
 
-        player.giveItemStack(new BookGui(player, bookElement).getBook());
+        if (book instanceof DynamicBookPage dynamic)
+            dynamic.update(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
+
+        book.build(player).open();
+    }
+
+    public static void giveBook(ServerPlayerEntity player, String page) {
+        BookPage book = bookLibrary.get(page);
+
+        if (book == null) book = createBasicPage().addPage(
+                Text.translatable("lem.mapdecider.menu.missing"),
+                Text.literal(page),
+                Text.empty(),
+                backButton("title")
+        );
+
+        player.giveItemStack(book.build(player).getBook());
     }
 
     public static void generateMapPacks(boolean isBase, List<BattleMapAddon> addons) {
@@ -105,7 +118,7 @@ public class Votebook {
         for (String pack : packs.keySet()) {
             if (pack.equals("base_base")) continue;
 
-            BookElementBuilder builder = createBasicBook();
+            BookPage builder = createBasicPage();
 
             List<BattleMapAddon> packAddons = packs.get(pack);
             List<List<Text>> packPages = generateMapPackPages(packAddons, true);
@@ -149,7 +162,7 @@ public class Votebook {
 
         packsText.add(Text.empty());
         packsText.add(backButton("mapVoting"));
-        bookLibrary.put(isBase ? "baseMaps" : "customMaps", createBasicBook().addPage(packsText.toArray(Text[]::new)));
+        bookLibrary.put(isBase ? "baseMaps" : "customMaps", createBasicPage().addPage(packsText.toArray(Text[]::new)));
     }
 
     public static List<List<Text>> generateMapPackPages(List<BattleMapAddon> packMods, boolean includeHeader) {
@@ -168,18 +181,7 @@ public class Votebook {
             for (; lastUsed < packMods.size() && lastUsed - (pages.size() * maxPerPage) < maxPerPage; lastUsed++) {
                 BattleMapAddon config = packMods.get(lastUsed);
 
-                Text availableSizes = Text.literal("Available sizes: ")
-                        .append(Text.translatable(config.hasSize(MapSize.SMALL) ? "lem.battle.menu.host.config.maps.option.small" : ""))
-                        .append(Text.translatable(config.hasSize(MapSize.LARGE) ? "lem.battle.menu.host.config.maps.option.large" : ""))
-                        .append(Text.translatable(config.hasSize(MapSize.LARGE_PLUS) ? "lem.battle.menu.host.config.maps.option.largeplus" : ""))
-                        .append(Text.translatable(config.hasSize(MapSize.REMASTERED) ? "lem.battle.menu.host.config.maps.option.remastered" : ""));
-
-                Text tooltip = config.getNameText().append("\n")
-                        .append(Text.translatable("mco.template.select.narrate.authors", config.authors)).append("\n")
-                        .append(Text.translatable("mco.version", config.version)).append("\n")
-                        .append("Resource Pack: " + config.resource_pack).append("\n")
-                        .append(availableSizes);
-                pageText.add(withHover(withOpenCmd(bracket(trimName(config.getNameText(), 20)), "map_" + config.addon_id), tooltip));
+                pageText.add(withHover(withOpenCmd(bracket(trimName(config.getNameText(), 20)), "map_" + config.addon_id), generateMapTooltip(config)));
             }
             pages.add(pageText);
         }
@@ -191,49 +193,83 @@ public class Votebook {
         for (BattleMapAddon config : lemmods) {
             List<Text> mapText = new ArrayList<>();
 
-            Text availableSizes = Text.literal("Available sizes: ")
-                    .append(Text.translatable(config.hasSize(MapSize.SMALL) ? "lem.battle.menu.host.config.maps.option.small" : ""))
-                    .append(Text.translatable(config.hasSize(MapSize.LARGE) ? "lem.battle.menu.host.config.maps.option.large" : ""))
-                    .append(Text.translatable(config.hasSize(MapSize.LARGE_PLUS) ? "lem.battle.menu.host.config.maps.option.largeplus" : ""))
-                    .append(Text.translatable(config.hasSize(MapSize.REMASTERED) ? "lem.battle.menu.host.config.maps.option.remastered" : ""));
-
-            Text tooltip = config.getNameText().append("\n")
-                    .append(Text.translatable("mco.template.select.narrate.authors", config.authors)).append("\n")
-                    .append(Text.translatable("mco.version", config.version)).append("\n")
-                    .append("Resource Pack: " + config.resource_pack).append("\n")
-                    .append(availableSizes);
-
-            mapText.add(withHover(config.getNameText().formatted(Formatting.BLUE), tooltip));
+            mapText.add(withHover(config.getNameText().formatted(Formatting.BLUE), generateMapTooltip(config)));
             mapText.add(config.getDescriptionText().formatted(Formatting.DARK_AQUA));
             mapText.add(Text.empty());
 
             mapText.add(voteButton(config.addon_id).append(" ").append(backButton("mapPack_" + config.addon_pack)));
 
-            bookLibrary.put("map_" + config.addon_id, createBasicBook().addPage(mapText.toArray(Text[]::new)));
+            bookLibrary.put("map_" + config.addon_id, createBasicPage().addPage(mapText.toArray(Text[]::new)));
         }
     }
 
-    public static void generateHostSettings() {
-        Text tooltip = Text.literal("Choose between Small and Large maps or let the system decide automatically.").append("\n\n")
-                .append("Large+ maps are like Large maps but come with an extra helping of chests!").append("\n\n")
-                .append("Note: Playing on a Small or Large map with more than 8 players will automatically disable the Central Spawn option!");
+    public static Text generateMapTooltip(BattleMapAddon config) {
+        MutableText availableTypes = Text.empty();
+        if (config.hasSize(MapSize.SMALL))
+            availableTypes.append(Text.translatable("lem.battle.menu.host.config.maps.option.small")).append(", ");
+        if (config.hasSize(MapSize.LARGE))
+            availableTypes.append(Text.translatable("lem.battle.menu.host.config.maps.option.large")).append(", ");
+        if (config.hasSize(MapSize.LARGE_PLUS))
+            availableTypes.append(Text.translatable("lem.battle.menu.host.config.maps.option.largeplus")).append(", ");
+        if (config.hasSize(MapSize.REMASTERED))
+            availableTypes.append(Text.translatable("lem.battle.menu.host.config.maps.option.remastered")).append(", ");
+        availableTypes.getSiblings().remove(availableTypes.getSiblings().size() - 1);
 
+        return config.getNameText().append("\n")
+                .append(Text.translatable("mco.template.select.narrate.authors", config.authors)).append("\n")
+                .append(Text.translatable("mco.version", config.version)).append("\n")
+                .append(Text.translatable("lem.mapdecider.menu.voting.pack", Text.translatable("lem.resource." + config.resource_pack + ".name"))).append("\n")
+                .append(Text.translatable("lem.mapdecider.menu.voting.typelist", availableTypes));
+    }
+
+    public static void generateHostSettings(List<BattleMapAddon> packMods, DynamicBookPage dynamicBookPage) {
         MapSize selected = HostOptions.selectedMapSize;
 
-        bookLibrary.put("host_map_settings", createBasicBook().addPage(
-                dashLit("Map Settings"),
+        dynamicBookPage.addPage(
+                dashTrans("lem.mapdecider.menu.mapsettings"),
                 Text.empty(),
-                withOpenCmd(bracketTrans("lem.menu.host.config.maps.enabled.header"), "host_map_enabled"),
+                withOpenCmd(withHover(bracketTrans("lem.menu.host.config.maps.enabled.header"), Text.translatable("lem.menu.host.config.maps.enabled.tooltip")), "host_map_enable_disable"),
                 Text.empty(),
-                withHover(colored("Selected Map Size:", Formatting.GOLD), tooltip),
+                withHover(coloredTrans("lem.battle.menu.host.config.maps.option.selectedsize", Formatting.GOLD), Text.translatable("lem.battle.menu.host.config.maps.option.selectedsize.tooltip")),
                 withOpenAfterCmd(colored(bracketTrans("lem.battle.menu.host.config.maps.option.auto"), selected == MapSize.AUTO ? Formatting.GREEN : Formatting.BLUE), "host_map_settings", "custommaploader hostOptions mapSize set Auto"),
                 withOpenAfterCmd(colored(bracketTrans("lem.battle.menu.host.config.maps.option.small"), selected == MapSize.SMALL ? Formatting.GREEN : Formatting.BLUE), "host_map_settings", "custommaploader hostOptions mapSize set Small"),
                 withOpenAfterCmd(colored(bracketTrans("lem.battle.menu.host.config.maps.option.large"), selected == MapSize.LARGE ? Formatting.GREEN : Formatting.BLUE), "host_map_settings", "custommaploader hostOptions mapSize set Large"),
                 withOpenAfterCmd(colored(bracketTrans("lem.battle.menu.host.config.maps.option.largeplus"), selected == MapSize.LARGE_PLUS ? Formatting.GREEN : Formatting.BLUE), "host_map_settings", "custommaploader hostOptions mapSize set Large+"),
                 withOpenAfterCmd(colored(bracketTrans("lem.battle.menu.host.config.maps.option.remastered"), selected == MapSize.REMASTERED ? Formatting.GREEN : Formatting.BLUE), "host_map_settings", "custommaploader hostOptions mapSize set Remastered"),
                 Text.empty(),
-                backButton("hostConfig")
-        ));
+                backButton("hostConfig"));
+    }
+
+    public static void generateMapEnableDisable(List<BattleMapAddon> packMods, DynamicBookPage dynamicBookPage) {
+        int maxPerPage = 10;
+        int lastUsed = 0;
+        int pages = 0;
+
+        while (lastUsed < packMods.size()) {
+            List<Text> pageText = new ArrayList<>();
+
+            pageText.add(dashTrans("lem.menu.host.config.maps.enabled.header"));
+            pageText.add(Text.empty());
+
+            for (; lastUsed < packMods.size() && lastUsed - (pages * maxPerPage) < maxPerPage; lastUsed++) {
+
+                BattleMapAddon config = packMods.get(lastUsed);
+                boolean enabled = config.isAddonEnabled;
+
+                String cmd = "custommaploader hostOptions enableMap " + config.addon_id + " " + (!enabled);
+                pageText.add(withHover(withOpenAfterCmd(colored(bracket(trimName(config.getNameText(), 20)), enabled ? Formatting.GREEN : Formatting.RED), "host_map_enable_disable", cmd), Text.translatable("lem.menu.host.config.maps.enabled.toggle")));
+            }
+
+            pageText.add(Text.empty());
+            if (pages == 0) pageText.add(backButton("host_map_settings"));
+            else pageText.add(nextButton("gui.back", pages));
+
+            if (lastUsed < packMods.size())
+                ((MutableText) pageText.get(pageText.size() - 1)).append(" ").append(nextButton("createWorld.customize.custom.next", pages + 2));
+
+            dynamicBookPage.addPage(pageText.toArray(Text[]::new));
+            pages++;
+        }
     }
 
     public static MutableText trimName(MutableText text, int maxLength) {
@@ -256,6 +292,10 @@ public class Votebook {
 
     public static MutableText colored(String text, Formatting... formatting) {
         return colored(Text.literal(text), formatting);
+    }
+
+    public static MutableText coloredTrans(String transKey, Formatting... formatting) {
+        return colored(Text.translatable(transKey), formatting);
     }
 
     public static MutableText bracketTrans(String transKey) {
@@ -299,7 +339,7 @@ public class Votebook {
     }
 
     public static MutableText withOpenCmd(MutableText text, String page) {
-        return withCmd(text, "/custommaploader voting showBookPage " + page);
+        return withCmd(text, "/custommaploader voting showBookPage \"" + page + "\"");
     }
 
     public static MutableText withOpenCmd(MutableText text, String page, Text hover) {
@@ -307,7 +347,7 @@ public class Votebook {
     }
 
     public static MutableText withOpenAfterCmd(MutableText text, String page, String afterCmd) {
-        return withCmd(text, "/custommaploader voting showBookPage " + page + " after " + afterCmd);
+        return withCmd(text, "/custommaploader voting showBookPage \"" + page + "\" after " + afterCmd);
     }
 
     public static MutableText withCmd(MutableText text, String cmd) {

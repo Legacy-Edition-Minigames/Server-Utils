@@ -4,6 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.kyrptonaught.serverutils.customMapLoader.voting.HostOptions;
+import net.kyrptonaught.serverutils.customMapLoader.voting.Votebook;
+import net.kyrptonaught.serverutils.customMapLoader.voting.Voter;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -25,7 +28,7 @@ public class CustomMapLoaderCommands {
                 .then(CommandManager.literal("openBook")
                         .executes(context -> {
                             Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
-                            Votebook.openbook(context.getSource().getPlayer(), "title");
+                            Votebook.openPage(context.getSource().getPlayer(), "title");
                             return 1;
                         }))
                 .then(CommandManager.literal("giveBook")
@@ -35,20 +38,19 @@ public class CustomMapLoaderCommands {
                             return 1;
                         }))
                 .then(CommandManager.literal("showBookPage")
-                        .then(CommandManager.argument("page", StringArgumentType.greedyString())
+                        .then(CommandManager.argument("page", StringArgumentType.string())
                                 .executes(context -> {
                                     String page = StringArgumentType.getString(context, "page");
 
-                                    Votebook.openbook(context.getSource().getPlayer(), page);
+                                    Votebook.openPage(context.getSource().getPlayer(), page);
                                     return 1;
                                 })
                                 .then(CommandManager.literal("after")
                                         .fork(dispatcher.getRoot(), (context -> {
-                                            context.getChild().getCommand().run(context);
+                                            context.getChild().getCommand().run(context.getChild());
 
-                                            Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
                                             String page = StringArgumentType.getString(context, "page");
-                                            Votebook.openbook(context.getSource().getPlayer(), page);
+                                            Votebook.openPage(context.getSource().getPlayer(), page);
 
                                             return List.of();
                                         })))))
@@ -58,7 +60,7 @@ public class CustomMapLoaderCommands {
                                     ServerPlayerEntity player = context.getSource().getPlayer();
                                     Identifier map = IdentifierArgumentType.getIdentifier(context, "map");
 
-                                    Voter.voteFor(context.getSource().getServer(), player, map, CustomMapLoaderMod.BATTLE_MAPS.get(map).getNameText());
+                                    Voter.voteFor(context.getSource().getServer(), player, map);
                                     return 1;
                                 })))
                 .then(CommandManager.literal("removeVote")
@@ -106,6 +108,19 @@ public class CustomMapLoaderCommands {
                                                 return 1;
                                             })))));
         }
+
+        cmd.then(CommandManager.literal("hostOptions")
+                .then(CommandManager.literal("enableMap")
+                        .then(CommandManager.argument("mapID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("enabled", BoolArgumentType.bool())
+                                        .executes(context -> {
+                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "mapID");
+                                            boolean enabled = BoolArgumentType.getBool(context, "enabled");
+
+                                            HostOptions.enableDisableMap(context.getSource().getServer(), id, enabled);
+                                            return 1;
+                                        })))));
+
         cmd.then(CommandManager.literal("unload")
                 .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
                         .then(CommandManager.argument("callbackFunction", CommandFunctionArgumentType.commandFunction())
