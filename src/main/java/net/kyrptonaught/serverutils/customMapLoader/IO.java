@@ -15,13 +15,13 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod.BATTLE_MAPS;
 import static net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod.LOBBY_MAPS;
@@ -84,11 +84,12 @@ public class IO {
     }
 
     public static void unZipMap(Path outputPath, BaseAddon config, MapSize mapSize) {
-        try (ZipFile zip = new ZipFile(config.filePath)) {
-            Enumeration<ZipArchiveEntry> entries = zip.getEntries();
+        try (ZipFile zip = new ZipFile(config.filePath.toFile())) {
+
+            Enumeration<? extends ZipEntry> entries = zip.entries();
 
             while (entries.hasMoreElements()) {
-                ZipArchiveEntry entry = entries.nextElement();
+                ZipEntry entry = entries.nextElement();
                 if (entry.getName().startsWith(config.getDirectoryInZip(mapSize))) {
                     Path newOut = outputPath.resolve(entry.getName().replace(config.getDirectoryInZip(mapSize), ""));
                     if (entry.isDirectory()) {

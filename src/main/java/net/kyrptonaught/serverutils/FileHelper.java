@@ -1,12 +1,12 @@
 package net.kyrptonaught.serverutils;
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class FileHelper {
 
@@ -59,8 +59,8 @@ public class FileHelper {
     }
 
     public static String readFileFromZip(Path zipFile, String fileName) {
-        try (ZipFile zip = new ZipFile(zipFile)) {
-            ZipArchiveEntry entry = zip.getEntry(fileName);
+        try(ZipFile zip = new ZipFile(zipFile.toFile())){
+            ZipEntry entry = zip.getEntry(fileName);
 
             return new String(zip.getInputStream(entry).readAllBytes());
         } catch (Exception e) {
@@ -84,5 +84,4 @@ public class FileHelper {
     public static boolean isCharValid(char c) {
         return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-';
     }
-
 }
