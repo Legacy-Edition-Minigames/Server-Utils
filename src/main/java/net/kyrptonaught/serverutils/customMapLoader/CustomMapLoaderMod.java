@@ -83,8 +83,8 @@ public class CustomMapLoaderMod extends Module {
             ChestTrackerMod.trackedChests.add(parseBlockPos(pos));
         }
 
-        DatapackInteractables.addToBlockList(instance.getWorld().getRegistryKey(),instance.getAddon().interactable_blocklist);
-        DatapackInteractables.addToBlockList(instance.getWorld().getRegistryKey(),sizedConfig.interactable_blocklist);
+        DatapackInteractables.addToBlockList(instance.getWorld().getRegistryKey(), instance.getAddon().interactable_blocklist);
+        DatapackInteractables.addToBlockList(instance.getWorld().getRegistryKey(), sizedConfig.interactable_blocklist);
 
         for (ServerPlayerEntity player : players) {
             Collection<ServerPlayerEntity> single = Collections.singleton(player);

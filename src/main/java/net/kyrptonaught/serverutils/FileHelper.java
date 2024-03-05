@@ -59,7 +59,7 @@ public class FileHelper {
     }
 
     public static String readFileFromZip(Path zipFile, String fileName) {
-        try(ZipFile zip = new ZipFile(zipFile.toFile())){
+        try (ZipFile zip = new ZipFile(zipFile.toFile())) {
             ZipEntry entry = zip.getEntry(fileName);
 
             return new String(zip.getInputStream(entry).readAllBytes());

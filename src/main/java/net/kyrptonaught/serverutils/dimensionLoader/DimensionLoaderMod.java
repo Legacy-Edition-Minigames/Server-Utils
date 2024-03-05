@@ -47,7 +47,7 @@ public class DimensionLoaderMod extends Module {
         DimensionLoaderCommand.registerCommands(dispatcher);
     }
 
-    public static void loadDimension(Identifier id, Identifier dimID, BiConsumer<MinecraftServer,CustomDimHolder> onComplete) {
+    public static void loadDimension(Identifier id, Identifier dimID, BiConsumer<MinecraftServer, CustomDimHolder> onComplete) {
         loadedWorlds.put(id, new CustomDimHolder(id, dimID, onComplete));
     }
 

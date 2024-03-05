@@ -8,8 +8,8 @@
     "kyrptonaught"
   ],
   "contact": {
-    "homepage": "https://github.com/kyrptonaught/Server-Utils",
-    "sources": "https://github.com/kyrptonaught/Server-Utils"
+    "homepage": "https://github.com/Legacy-Edition-Minigames/Server-Utils",
+    "sources": "https://github.com/Legacy-Edition-Minigames/Server-Utils"
   },
   "license": "MIT",
   "icon": "assets/serverutils/icon.png",
@@ -29,6 +29,6 @@
   "depends": {
     "fabricloader": ">=0.14.5",
     "fabric": "*",
-    "java": ">=16"
+    "java": ">=17"
   }
 }
