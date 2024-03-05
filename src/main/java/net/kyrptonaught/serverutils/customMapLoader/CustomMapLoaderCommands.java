@@ -121,21 +121,6 @@ public class CustomMapLoaderCommands {
                                             return 1;
                                         })))));
 
-        cmd.then(CommandManager.literal("unload")
-                .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
-                        .then(CommandManager.argument("callbackFunction", CommandFunctionArgumentType.commandFunction())
-                                .suggests(FunctionCommand.SUGGESTION_PROVIDER)
-                                .executes(context -> {
-                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
-                                    CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
-                                    return 1;
-                                }))
-                        .executes(context -> {
-                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
-                            CustomMapLoaderMod.unloadMap(context.getSource().getServer(), id, null);
-                            return 1;
-                        })));
-
         cmd.then(CommandManager.literal("battle")
                 .then(CommandManager.literal("tp")
                         .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
@@ -147,7 +132,21 @@ public class CustomMapLoaderCommands {
                                                     Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
                                                     CustomMapLoaderMod.battleTp(id, initial, players);
                                                     return 1;
-                                                }))))));
+                                                })))))
+                .then(CommandManager.literal("unload")
+                        .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("callbackFunction", CommandFunctionArgumentType.commandFunction())
+                                        .suggests(FunctionCommand.SUGGESTION_PROVIDER)
+                                        .executes(context -> {
+                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                            CustomMapLoaderMod.unloadBattleMap(context.getSource().getServer(), id, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
+                                            return 1;
+                                        }))
+                                .executes(context -> {
+                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                    CustomMapLoaderMod.unloadBattleMap(context.getSource().getServer(), id, null);
+                                    return 1;
+                                }))));
 
         cmd.then(CommandManager.literal("lobby")
                 .then(CommandManager.literal("load")
@@ -163,6 +162,20 @@ public class CustomMapLoaderCommands {
                                                             CustomMapLoaderMod.prepareLobby(context.getSource().getServer(), lobbyID, id, players, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
                                                             return 1;
                                                         }))))))
+                .then(CommandManager.literal("unload")
+                        .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("callbackFunction", CommandFunctionArgumentType.commandFunction())
+                                        .suggests(FunctionCommand.SUGGESTION_PROVIDER)
+                                        .executes(context -> {
+                                            Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                            CustomMapLoaderMod.unloadLobbyMap(context.getSource().getServer(), id, CommandFunctionArgumentType.getFunctions(context, "callbackFunction"));
+                                            return 1;
+                                        }))
+                                .executes(context -> {
+                                    Identifier id = IdentifierArgumentType.getIdentifier(context, "dimID");
+                                    CustomMapLoaderMod.unloadLobbyMap(context.getSource().getServer(), id, null);
+                                    return 1;
+                                })))
                 .then(CommandManager.literal("tp")
                         .then(CommandManager.argument("dimID", IdentifierArgumentType.identifier())
                                 .then(CommandManager.argument("players", EntityArgumentType.players())

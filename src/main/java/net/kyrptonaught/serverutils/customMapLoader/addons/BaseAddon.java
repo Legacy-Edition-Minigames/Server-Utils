@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.customMapLoader.addons;
 
 import net.kyrptonaught.serverutils.customMapLoader.MapSize;
+import net.kyrptonaught.serverutils.datapackInteractables.BlockList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -23,6 +24,8 @@ public class BaseAddon {
     public String addon_type;
     public String addon_pack;
     public String addon_pack_key;
+
+    public BlockList interactable_blocklist;
 
     public transient Path filePath;
     public transient boolean isBaseAddon = false;
