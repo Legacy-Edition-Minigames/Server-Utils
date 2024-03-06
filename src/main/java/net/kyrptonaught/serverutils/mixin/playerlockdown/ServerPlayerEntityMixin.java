@@ -1,6 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.playerlockdown;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.mojang.authlib.GameProfile;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.minecraft.entity.player.PlayerEntity;

@@ -1,7 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.brandblocker;
 
 import com.mojang.authlib.GameProfile;
-import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.minecraft.network.ClientConnection;
@@ -37,7 +36,7 @@ public abstract class ServerConfigNetworkHandlerMixin extends ServerCommonNetwor
             Text msg = BrandBlocker.isBlockedBrand(brand);
 
             if (msg != null) {
-                VelocityProxyHelper.kickPlayer(this, this.profile, msg);
+                this.connection.disconnect(msg);
             }
         }
     }

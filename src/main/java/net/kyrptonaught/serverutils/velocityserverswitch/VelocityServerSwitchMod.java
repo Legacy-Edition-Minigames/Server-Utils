@@ -3,7 +3,6 @@ package net.kyrptonaught.serverutils.velocityserverswitch;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kyrptonaught.serverutils.Module;
-import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -16,7 +15,8 @@ public class VelocityServerSwitchMod extends Module {
                 .then(CommandManager.argument("servername", StringArgumentType.word())
                         .executes((commandContext) -> {
                             String servername = StringArgumentType.getString(commandContext, "servername");
-                            VelocityProxyHelper.switchServer(commandContext.getSource().getPlayer(), servername);
+                            //todo re-add with 1.20.5
+                            //VelocityProxyHelper.switchServer(commandContext.getSource().getPlayer(), servername);
                             return 1;
                         })));
     }
