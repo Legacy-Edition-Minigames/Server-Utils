@@ -1,6 +1,5 @@
 package net.kyrptonaught.serverutils.mixin.brandblocker;
 
-import com.mojang.authlib.GameProfile;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
 import net.kyrptonaught.serverutils.scoreboardPlayerInfo.ScoreboardPlayerInfo;
 import net.minecraft.network.ClientConnection;
@@ -11,18 +10,11 @@ import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerCommonNetworkHandler;
 import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
 
 @Mixin(ServerConfigurationNetworkHandler.class)
 public abstract class ServerConfigNetworkHandlerMixin extends ServerCommonNetworkHandler {
-
-
-    @Shadow
-    @Final
-    private GameProfile profile;
 
     public ServerConfigNetworkHandlerMixin(MinecraftServer server, ClientConnection connection, ConnectedClientData clientData) {
         super(server, connection, clientData);

@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyrptonaught.serverutils.customMapLoader.addons.ResourcePackList;
 import net.minecraft.util.Identifier;
 
 import java.io.*;
@@ -17,6 +18,7 @@ public class ConfigManager {
             .setPrettyPrinting()
             .setLenient()
             .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
+            .registerTypeAdapter(ResourcePackList.class, new ResourcePackList.Deserializer())
             .create();
 
     public ConfigManager(String MOD_ID) {

@@ -9,7 +9,7 @@ import net.kyrptonaught.serverutils.FileHelper;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BaseAddon;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
-import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyAddon;
+import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyMapAddon;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
@@ -41,8 +41,8 @@ public class IO {
                         String type = rawConfig.get("addon_type").getAsString();
                         if (BattleMapAddon.TYPE.equals(type))
                             config = ServerUtilsMod.getGson().fromJson(rawConfig, BattleMapAddon.class);
-                        if (LobbyAddon.TYPE.equals(type))
-                            config = ServerUtilsMod.getGson().fromJson(rawConfig, LobbyAddon.class);
+                        if (LobbyMapAddon.TYPE.equals(type))
+                            config = ServerUtilsMod.getGson().fromJson(rawConfig, LobbyMapAddon.class);
 
                         if (path.getParent().getFileName().toString().equals("base")) {
                             config.isBaseAddon = true;
@@ -65,7 +65,7 @@ public class IO {
                                 battleConfig.loadedDimensionType = addDimensionType(server, battleConfig.filePath, battleConfig.dimensionType_id);
                             }
                             BATTLE_MAPS.put(config.addon_id, battleConfig);
-                        } else if (config instanceof LobbyAddon lobbyConfig) {
+                        } else if (config instanceof LobbyMapAddon lobbyConfig) {
                             if (lobbyConfig.dimensionType_id == null) {
                                 lobbyConfig.dimensionType_id = config.addon_id;
                                 lobbyConfig.loadedDimensionType = addDimensionType(server, lobbyConfig.filePath, lobbyConfig.dimensionType_id);
@@ -83,15 +83,15 @@ public class IO {
         }
     }
 
-    public static void unZipMap(Path outputPath, BaseAddon config, MapSize mapSize) {
-        try (ZipFile zip = new ZipFile(config.filePath.toFile())) {
+    public static void unZipMap(Path outputPath, Path filepath, String baseDirectory) {
+        try (ZipFile zip = new ZipFile(filepath.toFile())) {
 
             Enumeration<? extends ZipEntry> entries = zip.entries();
 
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                if (entry.getName().startsWith(config.getDirectoryInZip(mapSize))) {
-                    Path newOut = outputPath.resolve(entry.getName().replace(config.getDirectoryInZip(mapSize), ""));
+                if (entry.getName().startsWith(baseDirectory)) {
+                    Path newOut = outputPath.resolve(entry.getName().replace(baseDirectory, ""));
                     if (entry.isDirectory()) {
                         Files.createDirectories(newOut);
                     } else {

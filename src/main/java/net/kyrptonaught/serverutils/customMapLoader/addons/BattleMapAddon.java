@@ -2,15 +2,9 @@ package net.kyrptonaught.serverutils.customMapLoader.addons;
 
 import net.kyrptonaught.serverutils.customMapLoader.MapSize;
 import net.kyrptonaught.serverutils.datapackInteractables.BlockList;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.dimension.DimensionType;
 
-public class BattleMapAddon extends BaseAddon {
+public class BattleMapAddon extends BaseMapAddon {
     public static final String TYPE = "battle_map";
-    public String resource_pack;
-
-    public Identifier dimensionType_id;
-    public transient DimensionType loadedDimensionType;
 
     public MapSizeConfig small_map;
     public MapSizeConfig large_map;
@@ -29,6 +23,10 @@ public class BattleMapAddon extends BaseAddon {
 
     public boolean hasSize(MapSize size) {
         return getMapDataForSize(size) != null;
+    }
+
+    public String getDirectoryInZip(MapSize mapSize) {
+        return "world/" + mapSize.fileName + "/";
     }
 
     public static class MapSizeConfig {

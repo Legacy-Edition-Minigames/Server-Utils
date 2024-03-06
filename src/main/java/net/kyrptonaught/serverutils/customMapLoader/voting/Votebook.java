@@ -218,7 +218,7 @@ public class Votebook {
         return config.getNameText().append("\n")
                 .append(Text.translatable("mco.template.select.narrate.authors", config.authors)).append("\n")
                 .append(Text.translatable("mco.version", config.version)).append("\n")
-                .append(Text.translatable("lem.mapdecider.menu.voting.pack", Text.translatable("lem.resource." + config.resource_pack + ".name"))).append("\n")
+                //.append(Text.translatable("lem.mapdecider.menu.voting.pack", Text.translatable("lem.resource." + config.resource_pack + ".name"))).append("\n")
                 .append(Text.translatable("lem.mapdecider.menu.voting.typelist", availableTypes));
     }
 

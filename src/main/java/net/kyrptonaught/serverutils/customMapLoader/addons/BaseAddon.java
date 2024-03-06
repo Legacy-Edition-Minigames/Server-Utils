@@ -1,7 +1,5 @@
 package net.kyrptonaught.serverutils.customMapLoader.addons;
 
-import net.kyrptonaught.serverutils.customMapLoader.MapSize;
-import net.kyrptonaught.serverutils.datapackInteractables.BlockList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -25,8 +23,6 @@ public class BaseAddon {
     public String addon_pack;
     public String addon_pack_key;
 
-    public BlockList interactable_blocklist;
-
     public transient Path filePath;
     public transient boolean isBaseAddon = false;
     public transient boolean isAddonEnabled = true;
@@ -47,9 +43,5 @@ public class BaseAddon {
         if (addon_pack_key != null)
             return Text.translatable(addon_pack_key);
         return Text.literal(addon_pack);
-    }
-
-    public String getDirectoryInZip(MapSize mapSize) {
-        return "world/" + mapSize.fileName + "/";
     }
 }

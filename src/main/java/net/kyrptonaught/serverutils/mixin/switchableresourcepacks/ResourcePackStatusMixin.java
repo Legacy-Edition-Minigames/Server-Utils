@@ -1,5 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.switchableresourcepacks;
 
+import net.kyrptonaught.serverutils.switchableresourcepacks.PackStatus;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
@@ -24,13 +25,16 @@ public abstract class ResourcePackStatusMixin extends ServerCommonNetworkHandler
     @Override
     public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
         super.onResourcePackStatus(packet);
+        System.out.println(this.player.getNameForScoreboard() + " " + packet.id() + " " + packet.status());
         switch (packet.status()) {
             case ACCEPTED ->
-                    SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.STARTED);
+                    SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.STARTED);
             case SUCCESSFULLY_LOADED ->
-                    SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.FINISHED);
-            case FAILED_DOWNLOAD ->
-                    SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.FAILED);
+                    SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.FINISHED);
+            case DECLINED, FAILED_DOWNLOAD, INVALID_URL, FAILED_RELOAD ->
+                    SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.FAILED);
+            case DISCARDED ->
+                    SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.REMOVED);
         }
     }
 }

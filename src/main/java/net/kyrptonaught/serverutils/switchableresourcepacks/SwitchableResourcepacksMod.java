@@ -6,8 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
-import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
@@ -15,17 +13,14 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig> {
-
     public static final HashMap<String, ResourcePackConfig.RPOption> rpOptionHashMap = new HashMap<>();
-    public static CustomCriterion STARTED, FINISHED, FAILED;
 
-    public static final HashMap<UUID, String> playerLoaded = new HashMap<>();
+    public static final HashMap<UUID, PackStatus> playerLoaded = new HashMap<>();
 
     public void onConfigLoad(ResourcePackConfig config) {
         rpOptionHashMap.clear();
@@ -44,22 +39,28 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
 
     @Override
     public void onInitialize() {
-        STARTED = registerCriterion(new Identifier(ServerUtilsMod.SwitchableResourcepacksModule.getMOD_ID(), "started"));
-        FINISHED = registerCriterion(new Identifier(ServerUtilsMod.SwitchableResourcepacksModule.getMOD_ID(), "finished"));
-        FAILED = registerCriterion(new Identifier(ServerUtilsMod.SwitchableResourcepacksModule.getMOD_ID(), "failed"));
-
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             playerLoaded.remove(handler.getPlayer().getUuid());
         });
     }
 
-    private CustomCriterion registerCriterion(Identifier id) {
-        return Criteria.register(id.toString(), new CustomCriterion(id));
-    }
-
     @Override
     public ResourcePackConfig createDefaultConfig() {
         return new ResourcePackConfig();
+    }
+
+    public static void packStatusUpdate(ServerPlayerEntity player, UUID packname, PackStatus.LoadingStatus status) {
+        if (!playerLoaded.containsKey(player.getUuid()))
+            playerLoaded.put(player.getUuid(), new PackStatus());
+
+        playerLoaded.get(player.getUuid()).setPackLoadStatus(packname, status);
+    }
+
+    public static void addPackStatus(ServerPlayerEntity player, UUID packname, boolean temp) {
+        if (!playerLoaded.containsKey(player.getUuid()))
+            playerLoaded.put(player.getUuid(), new PackStatus());
+
+        playerLoaded.get(player.getUuid()).addPack(packname, temp);
     }
 
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -83,44 +84,39 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         return 1;
     }
 
-    public boolean execute(String packname, Collection<ServerPlayerEntity> players) {
+    private static boolean execute(String packname, Collection<ServerPlayerEntity> players) {
         ResourcePackConfig.RPOption rpOption = rpOptionHashMap.get(packname);
         if (rpOption == null) {
             return false;
         }
-        players.forEach(player -> {
-            if (getConfig().autoRevoke) {
-                revokeAdvancement(player, STARTED);
-                revokeAdvancement(player, FINISHED);
-                revokeAdvancement(player, FAILED);
-            }
 
-            if (!packname.equals(playerLoaded.get(player.getUuid()))) {
-                //todo UUIDs
-                player.networkHandler.sendPacket(new ResourcePackRemoveS2CPacket(Optional.empty()));
-                player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8)), rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
+        UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8));
+        for (ServerPlayerEntity player : players) {
+            if (playerLoaded.containsKey(player.getUuid()) && playerLoaded.get(player.getUuid()).getPacks().containsKey(packUUID))
+                continue;
 
-                playerLoaded.put(player.getUuid(), packname);
-            }
-        });
+            addPackStatus(player, packUUID, false);
+            player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(packUUID, rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
+        }
         return true;
     }
 
-    public static void grantAdvancement(ServerPlayerEntity player, CustomCriterion customCriterion) {
-        player.getServer().getAdvancementLoader().getAdvancements().forEach(advancement -> {
-            advancement.value().criteria().forEach((s, advancementCriterion) -> {
-                if (advancementCriterion.trigger() instanceof CustomCriterion testCriterion && testCriterion.id.equals(customCriterion.id))
-                    player.getAdvancementTracker().grantCriterion(advancement, s);
-            });
-        });
+    public static void addPacks(List<ResourcePackConfig.RPOption> packList, ServerPlayerEntity player) {
+        for (ResourcePackConfig.RPOption rpOption : packList) {
+            UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8));
+            addPackStatus(player, packUUID, true);
+            player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(packUUID, rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
+        }
     }
 
-    public static void revokeAdvancement(ServerPlayerEntity player, CustomCriterion customCriterion) {
-        player.getServer().getAdvancementLoader().getAdvancements().forEach(advancement -> {
-            advancement.value().criteria().forEach((s, advancementCriterion) -> {
-                if (advancementCriterion.trigger() instanceof CustomCriterion testCriterion && testCriterion.id.equals(customCriterion.id))
-                    player.getAdvancementTracker().revokeCriterion(advancement, s);
+    public static void clearTempPacks(ServerPlayerEntity player) {
+        if (playerLoaded.containsKey(player.getUuid()))
+            playerLoaded.get(player.getUuid()).getPacks().entrySet().removeIf(uuidStatusEntry -> {
+                if (uuidStatusEntry.getValue().isTempPack()) {
+                    player.networkHandler.sendPacket(new ResourcePackRemoveS2CPacket(Optional.of(uuidStatusEntry.getKey())));
+                    return true;
+                }
+                return false;
             });
-        });
     }
 }
