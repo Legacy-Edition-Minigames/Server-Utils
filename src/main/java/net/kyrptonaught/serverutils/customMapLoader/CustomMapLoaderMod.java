@@ -2,6 +2,7 @@ package net.kyrptonaught.serverutils.customMapLoader;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
@@ -41,12 +42,33 @@ public class CustomMapLoaderMod extends Module {
     @Override
     public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTING.register(IO::discoverAddons);
+        ServerTickEvents.START_SERVER_TICK.register(CustomMapLoaderMod::serverTick);
     }
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         CustomMapLoaderCommands.registerCommands(dispatcher);
     }
+
+    public static void serverTick(MinecraftServer server) {
+        Iterator<Map.Entry<Identifier, LoadedBattleMapInstance>> it = LOADED_BATTLE_MAPS.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Identifier, LoadedBattleMapInstance> pair = it.next();
+            LoadedBattleMapInstance instance = pair.getValue();
+
+            if (instance.scheduleToRemove) {
+                it.remove();
+                continue;
+            }
+
+            if (instance.finishedLoading)
+                continue;
+
+            if (instance.runPreTriggerCondition(server))
+                instance.executeDatapack(server);
+        }
+    }
+
 
     public static void battleLoad(MinecraftServer server, Identifier addon, Identifier dimID, boolean centralSpawnEnabled, Collection<ServerPlayerEntity> players, Collection<CommandFunction<ServerCommandSource>> functions) {
         BattleMapAddon config = CustomMapLoaderMod.BATTLE_MAPS.get(addon);
@@ -55,18 +77,23 @@ public class CustomMapLoaderMod extends Module {
         Path path = server.getSavePath(WorldSavePath.ROOT).resolve("dimensions").resolve(dimID.getNamespace()).resolve(dimID.getPath());
         IO.unZipMap(path, config.filePath, config.getDirectoryInZip(mapSize));
 
-        DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id, (server1, customDimHolder) -> {
-            LoadedBattleMapInstance instance = new LoadedBattleMapInstance(centralSpawnEnabled, mapSize, config, dimID);
-            battlePrepare(instance, players);
-            battleSpawn(instance, players);
+        DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id,
+                (server1, customDimHolder) -> {
+                    LoadedBattleMapInstance instance = new LoadedBattleMapInstance(centralSpawnEnabled, mapSize, config, dimID);
+                    battlePrepare(instance, players);
+                    battleSpawn(instance, players);
 
-            if (functions != null) {
-                for (CommandFunction<ServerCommandSource> commandFunction : functions) {
-                    server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
-                }
-            }
-            LOADED_BATTLE_MAPS.put(dimID, instance);
-        });
+                    instance.setPreTriggerDatapackCondition(server2 -> {
+                        for (ServerPlayerEntity player : players) {
+                            if (!SwitchableResourcepacksMod.allPacksLoaded(player))
+                                return false;
+                        }
+                        return true;
+                    });
+                    instance.setDatapackFunctions(functions);
+
+                    LOADED_BATTLE_MAPS.put(dimID, instance);
+                });
 
         server.getPlayerManager().broadcast(Text.literal("Loading map: ").append(config.getNameText()), false);
         MessageSender.sendGameMessageWMentions(Text.literal("Loading map: ").append(config.getNameText()));
@@ -117,11 +144,11 @@ public class CustomMapLoaderMod extends Module {
 
         if (initialSpawn) {
             for (ServerPlayerEntity player : players) {
-                battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), instance.getAddon().required_packs,true, true);
+                battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), instance.getAddon().required_packs, true, true);
             }
         } else {
             for (ServerPlayerEntity player : players) {
-                battleTP(player, instance.getWorld(), centerPos, instance.getUnusedRandomSpawn(), instance.getAddon().required_packs, true,false);
+                battleTP(player, instance.getWorld(), centerPos, instance.getUnusedRandomSpawn(), instance.getAddon().required_packs, true, false);
             }
         }
     }
@@ -212,7 +239,8 @@ public class CustomMapLoaderMod extends Module {
     }
 
     public static void unloadBattleMap(MinecraftServer server, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {
-        LOADED_BATTLE_MAPS.remove(dimID);
+        if (LOADED_BATTLE_MAPS.containsKey(dimID))
+            LOADED_BATTLE_MAPS.get(dimID).scheduleToRemove = true;
 
         DimensionLoaderMod.unLoadDimension(server, dimID, functions);
     }

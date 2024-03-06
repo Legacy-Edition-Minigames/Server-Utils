@@ -2,12 +2,17 @@ package net.kyrptonaught.serverutils.customMapLoader;
 
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 public class LoadedBattleMapInstance {
 
@@ -22,6 +27,13 @@ public class LoadedBattleMapInstance {
     public List<String> unusedInitialSpawns;
 
     public List<String> unusedRandomSpawns;
+
+    private Function<MinecraftServer, Boolean> preTriggerDatapackCondition;
+    private Collection<CommandFunction<ServerCommandSource>> datapackFunctions;
+
+    public boolean finishedLoading = false;
+
+    public boolean scheduleToRemove = false;
 
     public LoadedBattleMapInstance(boolean centralSpawnEnabled, MapSize selectedMapSize, BattleMapAddon battleMapAddon, Identifier dimID) {
         this.centralSpawnEnabled = centralSpawnEnabled;
@@ -68,5 +80,34 @@ public class LoadedBattleMapInstance {
             unusedRandomSpawns = new ArrayList<>(Arrays.asList(getSizedAddon().random_spawn_coords));
 
         return unusedRandomSpawns.remove(getWorld().random.nextInt(unusedRandomSpawns.size()));
+    }
+
+    public void setPreTriggerDatapackCondition(Function<MinecraftServer, Boolean> execute) {
+        this.preTriggerDatapackCondition = execute;
+    }
+
+    public boolean runPreTriggerCondition(MinecraftServer server) {
+        if (preTriggerDatapackCondition == null)
+            return true;
+
+        if (preTriggerDatapackCondition.apply(server)) {
+            preTriggerDatapackCondition = null;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void setDatapackFunctions(Collection<CommandFunction<ServerCommandSource>> functions) {
+        this.datapackFunctions = functions;
+    }
+
+    public void executeDatapack(MinecraftServer server) {
+        if (datapackFunctions != null)
+            for (CommandFunction<ServerCommandSource> commandFunction : datapackFunctions) {
+                server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
+            }
+        datapackFunctions = null;
+        finishedLoading = true;
     }
 }

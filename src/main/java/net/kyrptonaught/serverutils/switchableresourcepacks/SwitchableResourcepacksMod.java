@@ -6,13 +6,17 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -49,14 +53,53 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         return new ResourcePackConfig();
     }
 
+    public static boolean allPacksLoaded(ServerPlayerEntity player) {
+        if (!playerLoaded.containsKey(player.getUuid())) return true;
+
+        PackStatus packs = playerLoaded.get(player.getUuid());
+        for (UUID pack : packs.getPacks().keySet()) {
+            if (!packs.isComplete(pack))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static boolean didPackFail(ServerPlayerEntity player) {
+        if (!playerLoaded.containsKey(player.getUuid())) return true;
+
+        PackStatus packs = playerLoaded.get(player.getUuid());
+        for (UUID pack : packs.getPacks().keySet()) {
+            if (packs.didFail(pack))
+                return true;
+        }
+
+        return false;
+    }
+
     public static void packStatusUpdate(ServerPlayerEntity player, UUID packname, PackStatus.LoadingStatus status) {
         if (!playerLoaded.containsKey(player.getUuid()))
             playerLoaded.put(player.getUuid(), new PackStatus());
 
         playerLoaded.get(player.getUuid()).setPackLoadStatus(packname, status);
+
+        if (allPacksLoaded(player)) {
+            if (didPackFail(player))
+                CMDHelper.executeAs(player, getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerFailedFunction));
+            else
+                CMDHelper.executeAs(player, getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerCompleteFunction));
+        }
     }
 
-    public static void addPackStatus(ServerPlayerEntity player, UUID packname, boolean temp) {
+    private static Collection<CommandFunction<ServerCommandSource>> getFunctions(MinecraftServer server, String id) {
+        if (id.startsWith("#")) {
+            return server.getCommandFunctionManager().getTag(new Identifier(id.replaceAll("#", "")));
+        }
+
+        return Collections.singleton(server.getCommandFunctionManager().getFunction(new Identifier(id)).get());
+    }
+
+    private static void addPackStatus(ServerPlayerEntity player, UUID packname, boolean temp) {
         if (!playerLoaded.containsKey(player.getUuid()))
             playerLoaded.put(player.getUuid(), new PackStatus());
 
@@ -75,7 +118,7 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         dispatcher.register(cmd);
     }
 
-    public int execute(CommandContext<ServerCommandSource> commandContext, String packname, Collection<ServerPlayerEntity> players) {
+    private int execute(CommandContext<ServerCommandSource> commandContext, String packname, Collection<ServerPlayerEntity> players) {
         if (execute(packname, players)) {
             commandContext.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Enabled pack: " + packname), false);
         } else {

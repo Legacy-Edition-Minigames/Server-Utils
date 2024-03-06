@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ResourcePackConfig extends AbstractConfigFile {
+    public String playerCompleteFunction;
+    public String playerFailedFunction;
+
     List<RPOption> packs = new ArrayList<>();
 
     public static class RPOption {

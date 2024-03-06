@@ -25,7 +25,6 @@ public abstract class ResourcePackStatusMixin extends ServerCommonNetworkHandler
     @Override
     public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
         super.onResourcePackStatus(packet);
-        System.out.println(this.player.getNameForScoreboard() + " " + packet.id() + " " + packet.status());
         switch (packet.status()) {
             case ACCEPTED ->
                     SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.STARTED);
@@ -33,8 +32,6 @@ public abstract class ResourcePackStatusMixin extends ServerCommonNetworkHandler
                     SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.FINISHED);
             case DECLINED, FAILED_DOWNLOAD, INVALID_URL, FAILED_RELOAD ->
                     SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.FAILED);
-            case DISCARDED ->
-                    SwitchableResourcepacksMod.packStatusUpdate(this.player, packet.id(), PackStatus.LoadingStatus.REMOVED);
         }
     }
 }
