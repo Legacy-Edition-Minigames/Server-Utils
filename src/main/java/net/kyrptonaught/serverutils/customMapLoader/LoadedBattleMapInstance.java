@@ -76,7 +76,7 @@ public class LoadedBattleMapInstance {
     }
 
     public String getUnusedRandomSpawn() {
-        if (unusedRandomSpawns.isEmpty())
+        if (unusedRandomSpawns == null || unusedRandomSpawns.isEmpty())
             unusedRandomSpawns = new ArrayList<>(Arrays.asList(getSizedAddon().random_spawn_coords));
 
         return unusedRandomSpawns.remove(getWorld().random.nextInt(unusedRandomSpawns.size()));
