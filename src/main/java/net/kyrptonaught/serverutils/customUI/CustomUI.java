@@ -147,11 +147,9 @@ public class CustomUI extends Module {
         return slotDefinition;
     }
 
-    private static ScreenConfig.SlotDefinition copyFromPreset(ScreenConfig.SlotDefinition slotDefinition){
+    private static void copyFromPreset(ScreenConfig.SlotDefinition slotDefinition) {
         if (slotDefinition.presetID != null)
             slotDefinition.copyFrom(slotPresets.get(slotDefinition.presetID));
-
-        return slotDefinition;
     }
 
     private static List<Integer> expandSlotString(String slot) {
