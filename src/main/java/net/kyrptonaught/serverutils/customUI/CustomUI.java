@@ -54,9 +54,10 @@ public class CustomUI extends Module {
         };
         gui.setTitle(getAsText(config.title));
         for (String slot : config.slots.keySet()) {
-            ScreenConfig.SlotDefinition slotDefinition = getSlotDefinition(config.slots.get(slot));
+            ScreenConfig.SlotDefinition slotDefinition = getSlotDefinition(config.slots.get(slot), player);
 
             ItemStack itemStack = Registries.ITEM.get(new Identifier(slotDefinition.itemID)).getDefaultStack();
+
             if (slotDefinition.itemNBT != null)
                 try {
                     NbtCompound compound = StringNbtReader.parse(slotDefinition.itemNBT);
@@ -74,27 +75,9 @@ public class CustomUI extends Module {
                     e.printStackTrace();
                 }
 
-            if (slotDefinition.isDynamic()) {
-                try {
-                    ScreenConfig.SlotDefinition.DynamicModel model = slotDefinition.dynamicModel;
-                    ServerScoreboard scoreboard = player.getServer().getScoreboard();
-                    ScoreboardObjective objective = scoreboard.getNullableObjective(model.score);
-                    String playerName = model.player;
-                    if (playerName.equals("@s"))
-                        playerName = player.getNameForScoreboard();
-                    int score = scoreboard.getOrCreateScore(ScoreHolder.fromName(playerName), objective).getScore();
-
-                    String value = ServerTranslator.translate(player, model.models.get(score));
-                    int intValue = Integer.parseInt(value);
-                    itemStack.getOrCreateNbt().putInt("CustomModelData", intValue);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
             if (slotDefinition.displayName != null)
                 itemStack.setCustomName(getAsText(slotDefinition.displayName));
-            for (Integer slotNum : expandSlotString(slot))
+            for (Integer slotNum : expandSlotString(slot)) {
                 gui.setSlot(slotNum, GuiElementBuilder.from(itemStack)
                         .setCallback((index, type, action) -> {
                             if (type.isLeft)
@@ -103,6 +86,7 @@ public class CustomUI extends Module {
                                 handleClick(player, slotDefinition.rightClickAction, slotDefinition.rightClickSound, slotDefinition);
                         })
                 );
+            }
         }
 
         if (!screenHistory.containsKey(player.getUuid()))
@@ -139,8 +123,34 @@ public class CustomUI extends Module {
     }
 
 
-    private static ScreenConfig.SlotDefinition getSlotDefinition(ScreenConfig.SlotDefinition slotDefinition) {
-        if (slotDefinition.presetID != null) return slotDefinition.copyFrom(slotPresets.get(slotDefinition.presetID));
+    private static ScreenConfig.SlotDefinition getSlotDefinition(ScreenConfig.SlotDefinition slotDefinition, ServerPlayerEntity player) {
+        copyFromPreset(slotDefinition);
+
+        if (slotDefinition.isDynamic()) {
+            ScreenConfig.SlotDefinition.DynamicItem model = slotDefinition.dynamicItem;
+            ServerScoreboard scoreboard = player.getServer().getScoreboard();
+            ScoreboardObjective objective = scoreboard.getNullableObjective(model.score);
+            String playerName = model.player;
+            if (playerName.equals("@s"))
+                playerName = player.getNameForScoreboard();
+            int score = scoreboard.getOrCreateScore(ScoreHolder.fromName(playerName), objective).getScore();
+
+            if (model.items != null && model.items.containsKey(score)) {
+                ScreenConfig.SlotDefinition value = model.items.get(score);
+                value.dynamicItem = ScreenConfig.SlotDefinition.EMPTY_ITEM;
+                copyFromPreset(value);
+                value.copyFrom(slotDefinition);
+                return value;
+            }
+        }
+
+        return slotDefinition;
+    }
+
+    private static ScreenConfig.SlotDefinition copyFromPreset(ScreenConfig.SlotDefinition slotDefinition){
+        if (slotDefinition.presetID != null)
+            slotDefinition.copyFrom(slotPresets.get(slotDefinition.presetID));
+
         return slotDefinition;
     }
 
