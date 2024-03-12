@@ -2,8 +2,6 @@ package net.kyrptonaught.LEMBackend;
 
 import com.google.gson.Gson;
 import io.javalin.Javalin;
-import net.kyrptonaught.LEMBackend.advancements.AdvancementModule;
-import net.kyrptonaught.LEMBackend.advancements.AdvancementRouter;
 import net.kyrptonaught.LEMBackend.keyValueStorage.KeyValueModule;
 import net.kyrptonaught.LEMBackend.keyValueStorage.KeyValueRouter;
 import net.kyrptonaught.LEMBackend.linking.LinkRouter;
@@ -35,8 +33,7 @@ public class LEMBackend {
                 new Mod(new WhitelistModule(), new WhitelistRouter()),
                 new Mod(new UserConfigModule(), new UserConfigRouter()),
                 new Mod(new LinkingModule(), new LinkRouter()),
-                new Mod(new KeyValueModule(), new KeyValueRouter()),
-                new Mod(new AdvancementModule(), new AdvancementRouter()),
+                new Mod(new KeyValueModule(), new KeyValueRouter())
         };
 
         app = Javalin.create((javalinConfig) -> {

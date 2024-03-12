@@ -2,7 +2,6 @@ package net.kyrptonaught.serverutils.userConfig;
 
 import com.google.gson.JsonObject;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -54,7 +53,7 @@ public class UserConfigStorage {
     public static void loadPlayer(ServerPlayerEntity player) {
         try {
             playerCache.put(player.getUuid(), new PlayerConfigs());
-            BackendServerModule.asyncGet(AdvancementSyncMod.getUrl("getUserConfig", player), (success, response) -> {
+            BackendServerModule.asyncGet(BackendServerModule.getUrl("getUserConfig", player), (success, response) -> {
                 if (success) {
                     playerCache.put(player.getUuid(), PlayerConfigs.load(ServerUtilsMod.getGson().fromJson(response.body(), JsonObject.class)));
                 } else {
@@ -70,7 +69,7 @@ public class UserConfigStorage {
 
     public static void syncPlayer(ServerPlayerEntity player) {
         String json = ServerUtilsMod.getGson().toJson(playerCache.get(player.getUuid()));
-        BackendServerModule.asyncPost(AdvancementSyncMod.getUrl("syncUserConfig", player), json, (success, response) -> {
+        BackendServerModule.asyncPost(BackendServerModule.getUrl("syncUserConfig", player), json, (success, response) -> {
             if (!success) {
                 System.out.println("Syncing user config for " + player.getDisplayName().getString() + " failed... saving local");
                 UserConfigLocalStorage.syncPlayer(player.getUuidAsString(), json);

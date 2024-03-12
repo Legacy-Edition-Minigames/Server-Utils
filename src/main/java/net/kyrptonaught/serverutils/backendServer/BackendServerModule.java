@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.LEMBackend.LEMBackend;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -138,5 +140,9 @@ public class BackendServerModule extends ModuleWConfig<BackendServerConfig> {
     @Override
     public BackendServerConfig createDefaultConfig() {
         return new BackendServerConfig();
+    }
+
+    public static String getUrl(String route, ServerPlayerEntity player) {
+        return route + "/" + ((PersonatusProfile) player.getGameProfile()).getRealProfile().getId().toString();
     }
 }

@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.serverutils.SpectateSqueaker.SpectateSqueakerMod;
 import net.kyrptonaught.serverutils.advancementMenu.AdvancementMenuMod;
-import net.kyrptonaught.serverutils.advancementSync.AdvancementSyncMod;
 import net.kyrptonaught.serverutils.armorHudToggle.ArmorHudMod;
 import net.kyrptonaught.serverutils.backendServer.BackendServerModule;
 import net.kyrptonaught.serverutils.brandBlocker.BrandBlocker;
@@ -83,7 +82,6 @@ public class ServerUtilsMod implements ModInitializer {
     public static Module ChestTrackerModule = registerModule("chesttracker", new ChestTrackerMod());
     public static ChatDisabler ChatDisabler = (ChatDisabler) registerModule("chatdisabler", new ChatDisabler());
     public static BrandBlocker BrandBlockerModule = (BrandBlocker) registerModule("brandblocker", new BrandBlocker());
-    public static AdvancementSyncMod AdvancementSyncModule = (AdvancementSyncMod) registerModule("advancementsync", new AdvancementSyncMod());
     public static WelcomeModule WelcomeMessageModule = (WelcomeModule) registerModule("welcomemessage", new WelcomeModule());
     public static PersonatusModule personatusModule = (PersonatusModule) registerModule("personatus", new PersonatusModule());
     public static Module critBlockerModule = registerModule("critblocker", new CritBlockerMod());
