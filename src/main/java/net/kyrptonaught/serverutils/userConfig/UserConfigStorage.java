@@ -27,6 +27,10 @@ public class UserConfigStorage {
         playerCache.get(player.getUuid()).removeValue(key);
     }
 
+    public static Identifier[] getAllKeys(ServerPlayerEntity player) {
+        return playerCache.get(player.getUuid()).configs.keySet().toArray(Identifier[]::new);
+    }
+
     public static void removeGroup(Identifier groupID) {
         groups.remove(groupID);
     }

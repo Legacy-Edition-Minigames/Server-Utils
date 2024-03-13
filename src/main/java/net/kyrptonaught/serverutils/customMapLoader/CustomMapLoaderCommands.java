@@ -160,39 +160,39 @@ public class CustomMapLoaderCommands {
 
                                                             //Votebook.generateOptionalPack(context.getSource().getPlayer(), CustomMapLoaderMod.BATTLE_MAPS.get(mapID)).open();
                                                             return 1;
-                                                        }))))
-                                .then(CommandManager.literal("showPrompt")
-                                        .executes(context -> {
-                                            Identifier mapID = IdentifierArgumentType.getIdentifier(context, "mapID");
-                                            //Votebook.generateOptionalPack(context.getSource().getPlayer(), CustomMapLoaderMod.BATTLE_MAPS.get(mapID)).open();
-                                            return 1;
-                                        })))
-                        .then(CommandManager.literal("policy")
-                                .then(CommandManager.argument("policy", StringArgumentType.string())
+                                                        })))))
+                        .then(CommandManager.literal("globalAccept")
+                                .then(CommandManager.argument("accept", BoolArgumentType.bool())
                                         .executes(context -> {
                                             ServerPlayerEntity player = context.getSource().getPlayer();
-                                            String policy = StringArgumentType.getString(context, "policy");
+                                            boolean accept = BoolArgumentType.getBool(context, "accept");
 
-                                            UserConfigStorage.setValue(player, HostOptions.getPromptKey(), policy);
+                                            UserConfigStorage.setValue(player, HostOptions.getGlobalAcceptKey(), String.valueOf(accept));
                                             UserConfigStorage.syncPlayer(player);
                                             return 1;
                                         }))
-                                .then(CommandManager.argument("mapID", IdentifierArgumentType.identifier())
-                                        .then(CommandManager.argument("dontAsk", BoolArgumentType.bool())
-                                                .executes(context -> {
-                                                    ServerPlayerEntity player = context.getSource().getPlayer();
-                                                    Identifier mapID = IdentifierArgumentType.getIdentifier(context, "mapID");
-                                                    boolean dontAsk = BoolArgumentType.getBool(context, "dontAsk");
+                                .then(CommandManager.literal("overwrite")
+                                        .then(CommandManager.argument("mapID", IdentifierArgumentType.identifier())
+                                                .then(CommandManager.argument("overwrite", BoolArgumentType.bool())
+                                                        .executes(context -> {
+                                                            ServerPlayerEntity player = context.getSource().getPlayer();
+                                                            Identifier mapID = IdentifierArgumentType.getIdentifier(context, "mapID");
+                                                            boolean overwrite = BoolArgumentType.getBool(context, "overwrite");
 
-                                                    UserConfigStorage.setValue(player, HostOptions.getPromptKey(mapID), String.valueOf(dontAsk));
-                                                    UserConfigStorage.syncPlayer(player);
-
-                                                    //Votebook.generateOptionalPack(context.getSource().getPlayer(), CustomMapLoaderMod.BATTLE_MAPS.get(mapID)).open();
-                                                    return 1;
-                                                }))))
+                                                            UserConfigStorage.setValue(player, HostOptions.getOverwriteKey(mapID), String.valueOf(overwrite));
+                                                            UserConfigStorage.syncPlayer(player);
+                                                            return 1;
+                                                        })))))
                         .then(CommandManager.literal("reset")
                                 .executes(context -> {
-                                    context.getSource().sendMessage(Text.literal("no worky yet"));
+                                    ServerPlayerEntity player = context.getSource().getPlayer();
+                                    Identifier[] keys = UserConfigStorage.getAllKeys(player);
+
+                                    for (Identifier key : keys) {
+                                        if (key.getNamespace().equals("acceptedpacks"))
+                                            UserConfigStorage.removeValue(player, key);
+                                    }
+                                    UserConfigStorage.syncPlayer(player);
                                     return 1;
                                 }))));
 

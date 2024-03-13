@@ -26,7 +26,7 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
 
     private static final HashMap<UUID, PackStatus> playerLoaded = new HashMap<>();
 
-    private static Collection<CommandFunction<ServerCommandSource>> RP_FAILED_FUNCTIONS, RP_LOADED_FUNCTIONS;
+    private static Collection<CommandFunction<ServerCommandSource>> RP_FAILED_FUNCTIONS, RP_LOADED_FUNCTIONS, RP_STARTED_FUNCTIONS;
     private static Identifier CUSTOMPACKID = new Identifier("custompack", "enabled");
     private static UUID CUSTOMPACKUUID = UUID.nameUUIDFromBytes(CUSTOMPACKID.toString().getBytes(StandardCharsets.UTF_8));
 
@@ -82,6 +82,8 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
                 RP_LOADED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerCompleteFunction);
             if (RP_FAILED_FUNCTIONS == null)
                 RP_FAILED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerFailedFunction);
+            if (RP_STARTED_FUNCTIONS == null)
+                RP_STARTED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerStartFunction);
 
             if (didPackFail(player))
                 CMDHelper.executeAs(player, RP_FAILED_FUNCTIONS);
@@ -132,6 +134,9 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
                             UserConfigStorage.setValue(player, CUSTOMPACKID, String.valueOf(enabled));
                             UserConfigStorage.syncPlayer(player);
 
+                            if (playerLoaded.containsKey(player.getUuid()))
+                                playerLoaded.get(player.getUuid()).getPacks().remove(CUSTOMPACKUUID);
+
                             player.sendMessage(Text.translatable(enabled ? "lem.config.custompack.enable" : "lem.config.custompack.disable"));
                             return 1;
                         })));
@@ -142,6 +147,11 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
     }
 
     private void execute(ResourcePackConfig.RPOption rpOption, ServerPlayerEntity player) {
+        if (RP_STARTED_FUNCTIONS == null)
+            RP_STARTED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerStartFunction);
+
+        CMDHelper.executeAs(player, RP_STARTED_FUNCTIONS);
+
         if (isCustomPackEnabled(player)) {
             addPackStatus(player, CUSTOMPACKUUID, false);
             packStatusUpdate(player, CUSTOMPACKUUID, PackStatus.LoadingStatus.FINISHED);
@@ -157,11 +167,20 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
     }
 
     public static void addPacks(List<ResourcePackConfig.RPOption> packList, ServerPlayerEntity player) {
+        if (!hasNewPacks(packList, player)) return;
+
+        if (RP_STARTED_FUNCTIONS == null)
+            RP_STARTED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerStartFunction);
+
+        CMDHelper.executeAs(player, RP_STARTED_FUNCTIONS);
+
         if (isCustomPackEnabled(player)) {
             addPackStatus(player, CUSTOMPACKUUID, false);
             packStatusUpdate(player, CUSTOMPACKUUID, PackStatus.LoadingStatus.FINISHED);
             return;
         }
+
+        clearTempPacks(player);
 
         for (ResourcePackConfig.RPOption rpOption : packList) {
             UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packID.toString().getBytes(StandardCharsets.UTF_8));
@@ -170,7 +189,7 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         }
     }
 
-    public static void clearTempPacks(ServerPlayerEntity player) {
+    private static void clearTempPacks(ServerPlayerEntity player) {
         if (playerLoaded.containsKey(player.getUuid()))
             playerLoaded.get(player.getUuid()).getPacks().entrySet().removeIf(uuidStatusEntry -> {
                 if (uuidStatusEntry.getValue().isTempPack()) {
@@ -179,5 +198,28 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
                 }
                 return false;
             });
+    }
+
+    private static boolean hasNewPacks(List<ResourcePackConfig.RPOption> packList, ServerPlayerEntity player) {
+
+        List<UUID> c = new ArrayList<>();
+        playerLoaded.get(player.getUuid()).getPacks().forEach((uuid, status) -> {
+            if(status.isTempPack())
+                c.add(uuid);
+        });
+
+        List<UUID> n = new ArrayList<>();
+        for (ResourcePackConfig.RPOption rpOption : packList) {
+            UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packID.toString().getBytes(StandardCharsets.UTF_8));
+            n.add(packUUID);
+        }
+
+        if (c.size() != n.size())
+            return true;
+
+        Collections.sort(c);
+        Collections.sort(n);
+
+        return !c.equals(n);
     }
 }

@@ -23,21 +23,19 @@ public class HostOptions {
         return Boolean.parseBoolean(UserConfigStorage.getValue(player, getMapResourcePackKey(mapID, packID)));
     }
 
-    public static Identifier getPromptKey() {
-        return new Identifier("acceptedpacks", "acceptance_policy");
+    public static Identifier getGlobalAcceptKey() {
+        return new Identifier("acceptedpacks", "global_accept");
     }
 
-    public static String getPromptValue(ServerPlayerEntity player) {
-        String value = UserConfigStorage.getValue(player, getPromptKey());
-        if (value == null) value = "ask";
-        return value;
+    public static boolean getGlobalAcceptValue(ServerPlayerEntity player) {
+        return Boolean.parseBoolean(UserConfigStorage.getValue(player, getGlobalAcceptKey()));
     }
 
-    public static Identifier getPromptKey(Identifier mapID) {
+    public static Identifier getOverwriteKey(Identifier mapID) {
         return new Identifier("acceptedpacks", "acceptance_policy." + mapID.toUnderscoreSeparatedString() + ".dontaskagain");
     }
 
-    public static boolean getPromptValue(ServerPlayerEntity player, Identifier mapID) {
-        return Boolean.parseBoolean(UserConfigStorage.getValue(player, getPromptKey(mapID)));
+    public static boolean getOverwriteValue(ServerPlayerEntity player, Identifier mapID) {
+        return Boolean.parseBoolean(UserConfigStorage.getValue(player, getOverwriteKey(mapID)));
     }
 }

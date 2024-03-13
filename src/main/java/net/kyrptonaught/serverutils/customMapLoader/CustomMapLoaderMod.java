@@ -78,7 +78,7 @@ public class CustomMapLoaderMod extends Module {
     }
 
     public static void checkOptionalPackStatus(ServerPlayerEntity player, Identifier mapID) {
-        if (!"ask".equals(HostOptions.getPromptValue(player)) || HostOptions.getPromptValue(player, mapID)) {
+        if (!"ask".equals(HostOptions.getGlobalAcceptValue(player)) || HostOptions.getOverwriteValue(player, mapID)) {
             return;
         }
 
@@ -244,8 +244,6 @@ public class CustomMapLoaderMod extends Module {
     }
 
     private static void loadResourcePacks(BaseMapAddon addon, ServerPlayerEntity player) {
-        SwitchableResourcepacksMod.clearTempPacks(player);
-
         ResourcePackList list = new ResourcePackList();
 
         if (addon.required_packs != null && addon.required_packs.packs != null) {
@@ -254,7 +252,10 @@ public class CustomMapLoaderMod extends Module {
 
         if (addon.optional_packs != null && addon.optional_packs.packs != null) {
             for (ResourcePackConfig.RPOption rpOption : addon.optional_packs.packs) {
-                if ("accept".equals(HostOptions.getPromptValue(player)) || HostOptions.getMapResourcePackValue(player, addon.addon_id, rpOption.packID))
+                if (HostOptions.getOverwriteValue(player, addon.addon_id)) {
+                    if (HostOptions.getMapResourcePackValue(player, addon.addon_id, rpOption.packID))
+                        list.packs.add(rpOption);
+                } else if (HostOptions.getGlobalAcceptValue(player))
                     list.packs.add(rpOption);
             }
         }

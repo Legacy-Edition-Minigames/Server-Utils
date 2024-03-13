@@ -34,7 +34,7 @@ public class Votebook {
                 Text.translatable("lem.mapdecider.menu.supportplease", withLink(Text.literal("Patreon").styled(style -> style.withUnderline(true).withColor(0xFF424D)), "https://www.legacyminigames.net/patreon")).formatted(Formatting.GOLD),
                 Text.empty(),
                 withOpenCmd(bracketTrans("lem.mapdecider.menu.mapvoting"), "mapVoting"),
-                withOpenCmd(bracketTrans("lem.mapdecider.menu.hosts"), "hostConfig")
+                withOpenCmd(bracketTrans("lem.generic.options"), "options")
         ));
 
         bookLibrary.put("mapVoting", createBasicPage().addPage(
@@ -48,6 +48,15 @@ public class Votebook {
                 backButton("title")
         ));
 
+        bookLibrary.put("options", createBasicPage().addPage(
+                dashTrans("lem.generic.options"),
+                Text.empty(),
+                withOpenCmd(bracketLit("Global Pack Policy"), "player_rp_settings"),
+                withOpenCmd(bracketTrans("lem.mapdecider.menu.hosts"), "hostConfig"),
+                Text.empty(),
+                backButton("title")
+        ));
+
         bookLibrary.put("hostConfig", createBasicPage().addPage(
                 dashTrans("lem.mapdecider.menu.hosts"),
                 Text.empty(),
@@ -55,7 +64,7 @@ public class Votebook {
                 withCmd(bracketTrans("lem.mapdecider.menu.transferhost"), "/trigger lem.gamecfg set 103"),
                 withOpenCmd(bracketTrans("lem.mapdecider.menu.mapsettings"), "host_map_settings"),
                 Text.empty(),
-                backButton("title")
+                backButton("options")
         ));
 
         dynamicLibrary.put("host_map_settings", Votebook::generateHostSettings);
@@ -280,10 +289,10 @@ public class Votebook {
             for (; lastUsed < addon.optional_packs.packs.size() && lastUsed - (pages * maxPerPage) < maxPerPage; lastUsed++) {
                 ResourcePackConfig.RPOption rpOption = addon.optional_packs.packs.get(lastUsed);
 
-                boolean overwrite = HostOptions.getPromptValue(data.player(), addon.addon_id);
+                boolean overwrite = HostOptions.getOverwriteValue(data.player(), addon.addon_id);
 
                 if (lastUsed == 0) {
-                    String cmd = "custommaploader playerOptions optionalPacks policy " + addon.addon_id;
+                    String cmd = "custommaploader playerOptions optionalPacks globalAccept overwrite " + addon.addon_id;
                     MutableText enabled = toggleCheckBox(overwrite, "map_player_rp_settings", addon.addon_id.toString(), cmd);
                     pageText.add(colored("Overwrite Global: ", Formatting.DARK_GRAY).append(enabled));
                     pageText.add(Text.empty());
@@ -313,19 +322,19 @@ public class Votebook {
     }
 
     public static void generatePlayerPackPolicy(DynamicData data, BookPage bookPage) {
-        String policy = HostOptions.getPromptValue(data.player());
+        boolean policy = HostOptions.getGlobalAcceptValue(data.player());
+
+        String cmd = "custommaploader playerOptions optionalPacks globalAccept";
+        MutableText enabled = toggleCheckBox(policy, "player_rp_settings", "player_rp_settings", cmd);
         bookPage.addPage(
-                dashTrans("Optional Packs"),
+                dashLit("Global Pack Policy"),
                 Text.empty(),
-                withHover(colored("Prompt Policy", Formatting.GOLD), Text.translatable("lem.battle.menu.host.config.maps.option.selectedsize.tooltip")),
-                withOpenAfterCmd(colored(bracketLit("Always Ask"), "ask".equals(policy) ? Formatting.GREEN : Formatting.BLUE), "player_rp_settings", "custommaploader playerOptions optionalPacks policy ask"),
-                withOpenAfterCmd(colored(bracketLit("Always Accept"), "accept".equals(policy) ? Formatting.GREEN : Formatting.BLUE), "player_rp_settings", "custommaploader playerOptions optionalPacks policy accept"),
-                withOpenAfterCmd(colored(bracketLit("Always Deny"), "deny".equals(policy) ? Formatting.GREEN : Formatting.BLUE), "player_rp_settings", "custommaploader playerOptions optionalPacks policy deny"),
-                Text.empty(),
+                colored("Prompt Policy", Formatting.GOLD),
+                colored("Use Optional Packs: ", Formatting.DARK_GRAY).append(enabled),
                 Text.empty(),
                 withOpenAfterCmd(colored(bracketLit("Reset All Packs"), Formatting.DARK_RED), "player_rp_settings", "custommaploader playerOptions optionalPacks reset"),
                 Text.empty(),
-                backButton("hostConfig"));
+                backButton("options"));
     }
 
     public static MutableText toggleCheckBox(boolean value, String page, String arg, String cmd) {

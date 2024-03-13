@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ResourcePackConfig extends AbstractConfigFile {
+    public String playerStartFunction;
     public String playerCompleteFunction;
     public String playerFailedFunction;
 
