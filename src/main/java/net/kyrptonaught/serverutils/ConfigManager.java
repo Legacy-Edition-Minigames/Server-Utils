@@ -40,7 +40,7 @@ public class ConfigManager {
     }
 
     public void save(String MOD_ID, AbstractConfigFile config) {
-        Path saveFile = dir.resolve(MOD_ID + ".json5");
+        Path saveFile = dir.resolve(MOD_ID + ".json");
         try (OutputStream os = Files.newOutputStream(saveFile); OutputStreamWriter out = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
             out.write(GSON.toJson(config));
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class ConfigManager {
     }
 
     public AbstractConfigFile load(String MOD_ID, AbstractConfigFile defaultConfig) {
-        Path saveFile = dir.resolve(MOD_ID + ".json5");
+        Path saveFile = dir.resolve(MOD_ID + ".json");
         if (!Files.exists(saveFile) || !Files.isReadable(saveFile)) {
             System.out.println(getConfigName(MOD_ID, "Unable to find config!"));
             return defaultConfig;
