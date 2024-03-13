@@ -3,6 +3,7 @@ package net.kyrptonaught.serverutils.customMapLoader.addons;
 import com.google.gson.*;
 import net.kyrptonaught.serverutils.switchableresourcepacks.ResourcePackConfig;
 import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
+import net.minecraft.util.Identifier;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class ResourcePackList {
                 if (array.get(i).isJsonObject()) {
                     packList.packs.add(context.deserialize(array.get(i), ResourcePackConfig.RPOption.class));
                 } else {
-                    packList.packs.add(SwitchableResourcepacksMod.rpOptionHashMap.get(array.get(i).getAsString()));
+                    packList.packs.add(SwitchableResourcepacksMod.rpOptionHashMap.get(new Identifier(array.get(i).getAsString())));
                 }
             }
 

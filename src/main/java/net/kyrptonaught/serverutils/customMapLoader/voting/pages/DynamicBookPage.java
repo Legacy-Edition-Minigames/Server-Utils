@@ -1,25 +1,28 @@
 package net.kyrptonaught.serverutils.customMapLoader.voting.pages;
 
-import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
+import eu.pb4.sgui.api.gui.BookGui;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 
 public class DynamicBookPage extends BookPage {
+    private final String title;
+    private final String author;
 
-    private BiConsumer<List<BattleMapAddon>, DynamicBookPage> runnable;
+    private BiConsumer<DynamicData, BookPage> runnable;
 
     public DynamicBookPage(String title, String author) {
-        super(title, author);
+        this.title = title;
+        this.author = author;
     }
 
-    public DynamicBookPage setRunner(BiConsumer<List<BattleMapAddon>, DynamicBookPage> consumer) {
+    public DynamicBookPage setRunner(BiConsumer<DynamicData, BookPage> consumer) {
         this.runnable = consumer;
         return this;
     }
 
-    public void update(List<BattleMapAddon> addonList) {
-        builder.getOrCreateNbt().remove("pages");
-        runnable.accept(addonList, this);
+    public BookGui build(DynamicData data) {
+        BookPage newPage = new BookPage(title, author);
+        runnable.accept(data, newPage);
+        return newPage.build(data.player());
     }
 }

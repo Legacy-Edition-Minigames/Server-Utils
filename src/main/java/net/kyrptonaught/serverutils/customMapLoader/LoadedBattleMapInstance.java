@@ -24,9 +24,9 @@ public class LoadedBattleMapInstance {
 
     private final Identifier dimID;
 
-    public List<String> unusedInitialSpawns;
+    private List<String> unusedInitialSpawns;
 
-    public List<String> unusedRandomSpawns;
+    private List<String> unusedRandomSpawns;
 
     private Function<MinecraftServer, Boolean> preTriggerDatapackCondition;
     private Collection<CommandFunction<ServerCommandSource>> datapackFunctions;

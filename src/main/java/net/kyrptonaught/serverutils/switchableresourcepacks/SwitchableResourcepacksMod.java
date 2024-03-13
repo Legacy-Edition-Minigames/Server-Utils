@@ -1,13 +1,13 @@
 package net.kyrptonaught.serverutils.switchableresourcepacks;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.ModuleWConfig;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
-import net.minecraft.command.argument.EntityArgumentType;
+import net.kyrptonaught.serverutils.userConfig.UserConfigStorage;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -22,34 +22,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig> {
-    public static final HashMap<String, ResourcePackConfig.RPOption> rpOptionHashMap = new HashMap<>();
+    public static final HashMap<Identifier, ResourcePackConfig.RPOption> rpOptionHashMap = new HashMap<>();
 
-    public static final HashMap<UUID, PackStatus> playerLoaded = new HashMap<>();
+    private static final HashMap<UUID, PackStatus> playerLoaded = new HashMap<>();
 
     private static Collection<CommandFunction<ServerCommandSource>> RP_FAILED_FUNCTIONS, RP_LOADED_FUNCTIONS;
+    private static Identifier CUSTOMPACKID = new Identifier("custompack", "enabled");
+    private static UUID CUSTOMPACKUUID = UUID.nameUUIDFromBytes(CUSTOMPACKID.toString().getBytes(StandardCharsets.UTF_8));
 
     public void onConfigLoad(ResourcePackConfig config) {
         RP_FAILED_FUNCTIONS = null;
         RP_LOADED_FUNCTIONS = null;
         rpOptionHashMap.clear();
-        config.packs.forEach(rpOption -> rpOptionHashMap.put(rpOption.packname, rpOption));
-
-        if (config.packs.isEmpty()) {
-            ResourcePackConfig.RPOption option = new ResourcePackConfig.RPOption();
-            option.packname = "example_pack";
-            option.url = "https://example.com/resourcepack.zip";
-            option.hash = "examplehash";
-            config.packs.add(option);
-            saveConfig();
-            System.out.println("[" + getMOD_ID() + "]: Generated example resourcepack config");
-        }
+        config.packs.forEach(rpOption -> rpOptionHashMap.put(rpOption.packID, rpOption));
     }
 
     @Override
     public void onInitialize() {
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            playerLoaded.remove(handler.getPlayer().getUuid());
-        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> playerLoaded.remove(handler.getPlayer().getUuid()));
     }
 
     @Override
@@ -70,7 +60,7 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
     }
 
     public static boolean didPackFail(ServerPlayerEntity player) {
-        if (!playerLoaded.containsKey(player.getUuid())) return true;
+        if (!playerLoaded.containsKey(player.getUuid())) return false;
 
         PackStatus packs = playerLoaded.get(player.getUuid());
         for (UUID pack : packs.getPacks().keySet()) {
@@ -88,9 +78,9 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         playerLoaded.get(player.getUuid()).setPackLoadStatus(packname, status);
 
         if (allPacksLoaded(player)) {
-            if(RP_LOADED_FUNCTIONS == null)
+            if (RP_LOADED_FUNCTIONS == null)
                 RP_LOADED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerCompleteFunction);
-            if(RP_FAILED_FUNCTIONS == null)
+            if (RP_FAILED_FUNCTIONS == null)
                 RP_FAILED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerFailedFunction);
 
             if (didPackFail(player))
@@ -116,48 +106,67 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
     }
 
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> cmd = CommandManager.literal("loadresource").requires((source) -> source.hasPermissionLevel(0));
-        for (String packname : rpOptionHashMap.keySet()) {
-            cmd.then(CommandManager.literal(packname)
-                    .then(CommandManager.argument("player", EntityArgumentType.players())
-                            .requires((source) -> source.hasPermissionLevel(2))
-                            .executes(commandContext -> execute(commandContext, packname, EntityArgumentType.getPlayers(commandContext, "player"))))
-                    .executes(commandContext -> execute(commandContext, packname, Collections.singleton(commandContext.getSource().getPlayer()))));
-        }
-        dispatcher.register(cmd);
+        dispatcher.register(CommandManager.literal("loadresource")
+                .requires((source) -> source.hasPermissionLevel(0))
+                .then(CommandManager.argument("packid", IdentifierArgumentType.identifier())
+                        .executes(context -> {
+                            ServerPlayerEntity player = context.getSource().getPlayer();
+                            Identifier packID = IdentifierArgumentType.getIdentifier(context, "packid");
+                            ResourcePackConfig.RPOption rpOption = rpOptionHashMap.get(packID);
+                            if (rpOption == null) {
+                                context.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Packname: " + packID + " was not found"), false);
+                            } else {
+                                execute(rpOption, player);
+                                context.getSource().sendFeedback(CMDHelper.getFeedback(Text.literal("Enabled pack: ").append(rpOption.getNameText())), false);
+                            }
+                            return 1;
+                        })));
+
+        dispatcher.register(CommandManager.literal("custompack")
+                .requires(source -> source.hasPermissionLevel(0))
+                .then(CommandManager.argument("enabled", BoolArgumentType.bool())
+                        .executes(context -> {
+                            boolean enabled = BoolArgumentType.getBool(context, "enabled");
+                            ServerPlayerEntity player = context.getSource().getPlayer();
+
+                            UserConfigStorage.setValue(player, CUSTOMPACKID, String.valueOf(enabled));
+                            UserConfigStorage.syncPlayer(player);
+
+                            player.sendMessage(Text.translatable(enabled ? "lem.config.custompack.enable" : "lem.config.custompack.disable"));
+                            return 1;
+                        })));
     }
 
-    private int execute(CommandContext<ServerCommandSource> commandContext, String packname, Collection<ServerPlayerEntity> players) {
-        if (execute(packname, players)) {
-            commandContext.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Enabled pack: " + packname), false);
-        } else {
-            commandContext.getSource().sendFeedback(CMDHelper.getFeedbackLiteral("Packname: " + packname + " was not found"), false);
-        }
-        return 1;
+    public static boolean isCustomPackEnabled(ServerPlayerEntity player) {
+        return Boolean.parseBoolean(UserConfigStorage.getValue(player, CUSTOMPACKID));
     }
 
-    private static boolean execute(String packname, Collection<ServerPlayerEntity> players) {
-        ResourcePackConfig.RPOption rpOption = rpOptionHashMap.get(packname);
-        if (rpOption == null) {
-            return false;
+    private void execute(ResourcePackConfig.RPOption rpOption, ServerPlayerEntity player) {
+        if (isCustomPackEnabled(player)) {
+            addPackStatus(player, CUSTOMPACKUUID, false);
+            packStatusUpdate(player, CUSTOMPACKUUID, PackStatus.LoadingStatus.FINISHED);
+            return;
         }
 
-        UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8));
-        for (ServerPlayerEntity player : players) {
-            if (playerLoaded.containsKey(player.getUuid()) && playerLoaded.get(player.getUuid()).getPacks().containsKey(packUUID))
-                continue;
+        UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packID.toString().getBytes(StandardCharsets.UTF_8));
+        if (playerLoaded.containsKey(player.getUuid()) && playerLoaded.get(player.getUuid()).getPacks().containsKey(packUUID))
+            return;
 
-            addPackStatus(player, packUUID, false);
-            player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(packUUID, rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
-        }
-        return true;
+        addPackStatus(player, packUUID, false);
+        player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(packUUID, rpOption.url, rpOption.hash, true, Text.literal(getConfig().message)));
     }
 
     public static void addPacks(List<ResourcePackConfig.RPOption> packList, ServerPlayerEntity player) {
+        if (isCustomPackEnabled(player)) {
+            addPackStatus(player, CUSTOMPACKUUID, false);
+            packStatusUpdate(player, CUSTOMPACKUUID, PackStatus.LoadingStatus.FINISHED);
+            return;
+        }
+
         for (ResourcePackConfig.RPOption rpOption : packList) {
-            UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packname.getBytes(StandardCharsets.UTF_8));
+            UUID packUUID = UUID.nameUUIDFromBytes(rpOption.packID.toString().getBytes(StandardCharsets.UTF_8));
             addPackStatus(player, packUUID, true);
-            player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(packUUID, rpOption.url, rpOption.hash, rpOption.required, rpOption.hasPrompt ? Text.literal(rpOption.message) : null));
+            player.networkHandler.sendPacket(new ResourcePackSendS2CPacket(packUUID, rpOption.url, rpOption.hash, true, Text.literal(ServerUtilsMod.SwitchableResourcepacksModule.getConfig().message)));
         }
     }
 

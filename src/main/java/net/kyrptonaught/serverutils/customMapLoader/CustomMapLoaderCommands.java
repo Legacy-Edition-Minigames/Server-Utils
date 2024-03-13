@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.kyrptonaught.serverutils.customMapLoader.voting.HostOptions;
 import net.kyrptonaught.serverutils.customMapLoader.voting.Votebook;
 import net.kyrptonaught.serverutils.customMapLoader.voting.Voter;
+import net.kyrptonaught.serverutils.userConfig.UserConfigStorage;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -14,6 +15,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.FunctionCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Collection;
@@ -28,13 +30,14 @@ public class CustomMapLoaderCommands {
                 .then(CommandManager.literal("openBook")
                         .executes(context -> {
                             Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
-                            Votebook.openPage(context.getSource().getPlayer(), "title");
+                            Votebook.getPage(context.getSource().getPlayer(), "title", null).open();
                             return 1;
                         }))
                 .then(CommandManager.literal("giveBook")
                         .executes(context -> {
-                            Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
-                            Votebook.giveBook(context.getSource().getPlayer(), "title");
+                            //Votebook.generateBookLibrary(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
+                            ServerPlayerEntity player = context.getSource().getPlayer();
+                            player.giveItemStack(Votebook.getPage(player, "title", null).getBook());
                             return 1;
                         }))
                 .then(CommandManager.literal("showBookPage")
@@ -42,15 +45,34 @@ public class CustomMapLoaderCommands {
                                 .executes(context -> {
                                     String page = StringArgumentType.getString(context, "page");
 
-                                    Votebook.openPage(context.getSource().getPlayer(), page);
+                                    Votebook.getPage(context.getSource().getPlayer(), page, null).open();
                                     return 1;
                                 })
+                                .then(CommandManager.literal("arg")
+                                        .then(CommandManager.argument("arg", StringArgumentType.string())
+                                                .executes(context -> {
+                                                    String page = StringArgumentType.getString(context, "page");
+                                                    String arg = StringArgumentType.getString(context, "arg");
+
+                                                    Votebook.getPage(context.getSource().getPlayer(), page, arg).open();
+                                                    return 1;
+                                                })
+                                                .then(CommandManager.literal("after")
+                                                        .fork(dispatcher.getRoot(), context -> {
+                                                            context.getChild().getCommand().run(context.getChild());
+
+                                                            String page = StringArgumentType.getString(context, "page");
+                                                            String arg = StringArgumentType.getString(context, "arg");
+                                                            Votebook.getPage(context.getSource().getPlayer(), page, arg).open();
+
+                                                            return List.of();
+                                                        }))))
                                 .then(CommandManager.literal("after")
                                         .fork(dispatcher.getRoot(), (context -> {
                                             context.getChild().getCommand().run(context.getChild());
 
                                             String page = StringArgumentType.getString(context, "page");
-                                            Votebook.openPage(context.getSource().getPlayer(), page);
+                                            Votebook.getPage(context.getSource().getPlayer(), page, null).open();
 
                                             return List.of();
                                         })))))
@@ -120,6 +142,59 @@ public class CustomMapLoaderCommands {
                                             HostOptions.enableDisableMap(context.getSource().getServer(), id, enabled);
                                             return 1;
                                         })))));
+
+        cmd.then(CommandManager.literal("playerOptions")
+                .then(CommandManager.literal("optionalPacks")
+                        .then(CommandManager.argument("mapID", IdentifierArgumentType.identifier())
+                                .then(CommandManager.literal("accept")
+                                        .then(CommandManager.argument("packID", IdentifierArgumentType.identifier())
+                                                .then(CommandManager.argument("accepted", BoolArgumentType.bool())
+                                                        .executes(context -> {
+                                                            ServerPlayerEntity player = context.getSource().getPlayer();
+                                                            Identifier mapID = IdentifierArgumentType.getIdentifier(context, "mapID");
+                                                            Identifier packID = IdentifierArgumentType.getIdentifier(context, "packID");
+                                                            boolean accepted = BoolArgumentType.getBool(context, "accepted");
+
+                                                            UserConfigStorage.setValue(player, HostOptions.getMapResourcePackKey(mapID, packID), String.valueOf(accepted));
+                                                            UserConfigStorage.syncPlayer(player);
+
+                                                            //Votebook.generateOptionalPack(context.getSource().getPlayer(), CustomMapLoaderMod.BATTLE_MAPS.get(mapID)).open();
+                                                            return 1;
+                                                        }))))
+                                .then(CommandManager.literal("showPrompt")
+                                        .executes(context -> {
+                                            Identifier mapID = IdentifierArgumentType.getIdentifier(context, "mapID");
+                                            //Votebook.generateOptionalPack(context.getSource().getPlayer(), CustomMapLoaderMod.BATTLE_MAPS.get(mapID)).open();
+                                            return 1;
+                                        })))
+                        .then(CommandManager.literal("policy")
+                                .then(CommandManager.argument("policy", StringArgumentType.string())
+                                        .executes(context -> {
+                                            ServerPlayerEntity player = context.getSource().getPlayer();
+                                            String policy = StringArgumentType.getString(context, "policy");
+
+                                            UserConfigStorage.setValue(player, HostOptions.getPromptKey(), policy);
+                                            UserConfigStorage.syncPlayer(player);
+                                            return 1;
+                                        }))
+                                .then(CommandManager.argument("mapID", IdentifierArgumentType.identifier())
+                                        .then(CommandManager.argument("dontAsk", BoolArgumentType.bool())
+                                                .executes(context -> {
+                                                    ServerPlayerEntity player = context.getSource().getPlayer();
+                                                    Identifier mapID = IdentifierArgumentType.getIdentifier(context, "mapID");
+                                                    boolean dontAsk = BoolArgumentType.getBool(context, "dontAsk");
+
+                                                    UserConfigStorage.setValue(player, HostOptions.getPromptKey(mapID), String.valueOf(dontAsk));
+                                                    UserConfigStorage.syncPlayer(player);
+
+                                                    //Votebook.generateOptionalPack(context.getSource().getPlayer(), CustomMapLoaderMod.BATTLE_MAPS.get(mapID)).open();
+                                                    return 1;
+                                                }))))
+                        .then(CommandManager.literal("reset")
+                                .executes(context -> {
+                                    context.getSource().sendMessage(Text.literal("no worky yet"));
+                                    return 1;
+                                }))));
 
         cmd.then(CommandManager.literal("battle")
                 .then(CommandManager.literal("tp")

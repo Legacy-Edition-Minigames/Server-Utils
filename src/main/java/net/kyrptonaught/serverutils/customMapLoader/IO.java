@@ -16,6 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
@@ -87,17 +88,22 @@ public class IO {
         try (ZipFile zip = new ZipFile(filepath.toFile())) {
 
             Enumeration<? extends ZipEntry> entries = zip.entries();
-
             while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                if (entry.getName().startsWith(baseDirectory)) {
-                    Path newOut = outputPath.resolve(entry.getName().replace(baseDirectory, ""));
-                    if (entry.isDirectory()) {
-                        Files.createDirectories(newOut);
-                    } else {
-                        Files.createDirectories(newOut.getParent());
-                        Files.copy(zip.getInputStream(entry), newOut);
+                try {
+                    ZipEntry entry = entries.nextElement();
+                    if (entry.getName().startsWith(baseDirectory)) {
+                        Path newOut = outputPath.resolve(entry.getName().replace(baseDirectory, ""));
+                        if (entry.isDirectory()) {
+                            Files.createDirectories(newOut);
+                        } else {
+                            Files.createDirectories(newOut.getParent());
+                            Files.copy(zip.getInputStream(entry), newOut);
+                        }
                     }
+                }catch (FileAlreadyExistsException ignored){
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         } catch (Exception e) {

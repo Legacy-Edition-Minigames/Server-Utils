@@ -1,10 +1,13 @@
 package net.kyrptonaught.serverutils.customMapLoader.voting;
 
+import eu.pb4.sgui.api.gui.BookGui;
 import net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod;
 import net.kyrptonaught.serverutils.customMapLoader.MapSize;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.kyrptonaught.serverutils.customMapLoader.voting.pages.BookPage;
 import net.kyrptonaught.serverutils.customMapLoader.voting.pages.DynamicBookPage;
+import net.kyrptonaught.serverutils.customMapLoader.voting.pages.DynamicData;
+import net.kyrptonaught.serverutils.switchableresourcepacks.ResourcePackConfig;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -55,6 +58,8 @@ public class Votebook {
 
         bookLibrary.put("host_map_settings", createDynamicPage().setRunner(Votebook::generateHostSettings));
         bookLibrary.put("host_map_enable_disable", createDynamicPage().setRunner(Votebook::generateMapEnableDisable));
+        bookLibrary.put("player_rp_settings", createDynamicPage().setRunner(Votebook::generatePlayerPackPolicy));
+        bookLibrary.put("map_player_rp_settings", createDynamicPage().setRunner(Votebook::generateMapOptionalPacks));
 
         generateMapPacks(false, addons.stream().filter(config -> !config.isBaseAddon).toList());
         generateMapPacks(true, addons.stream().filter(config -> config.isBaseAddon).toList());
@@ -69,7 +74,7 @@ public class Votebook {
         return new DynamicBookPage("Voting Book", "LEM");
     }
 
-    public static void openPage(ServerPlayerEntity player, String page) {
+    public static BookGui getPage(ServerPlayerEntity player, String page, String arg) {
         BookPage book = bookLibrary.get(page);
 
         if (book == null) book = createBasicPage().addPage(
@@ -80,22 +85,9 @@ public class Votebook {
         );
 
         if (book instanceof DynamicBookPage dynamic)
-            dynamic.update(CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList());
+            return dynamic.build(new DynamicData(player, CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList(), arg));
 
-        book.build(player).open();
-    }
-
-    public static void giveBook(ServerPlayerEntity player, String page) {
-        BookPage book = bookLibrary.get(page);
-
-        if (book == null) book = createBasicPage().addPage(
-                Text.translatable("lem.mapdecider.menu.missing"),
-                Text.literal(page),
-                Text.empty(),
-                backButton("title")
-        );
-
-        player.giveItemStack(book.build(player).getBook());
+        return book.build(player);
     }
 
     public static void generateMapPacks(boolean isBase, List<BattleMapAddon> addons) {
@@ -197,7 +189,7 @@ public class Votebook {
             mapText.add(config.getDescriptionText().formatted(Formatting.DARK_AQUA));
             mapText.add(Text.empty());
 
-            mapText.add(voteButton(config.addon_id).append(" ").append(backButton("mapPack_" + config.addon_pack)));
+            mapText.add(voteButton(config.addon_id).append(" ").append(backButton("mapPack_" + config.addon_pack).append(" ").append(withOpenCmd(bracketLit("More"), "map_player_rp_settings", config.addon_id.toString()))));
 
             bookLibrary.put("map_" + config.addon_id, createBasicPage().addPage(mapText.toArray(Text[]::new)));
         }
@@ -222,10 +214,10 @@ public class Votebook {
                 .append(Text.translatable("lem.mapdecider.menu.voting.typelist", availableTypes));
     }
 
-    public static void generateHostSettings(List<BattleMapAddon> packMods, DynamicBookPage dynamicBookPage) {
+    public static void generateHostSettings(DynamicData data, BookPage bookPage) {
         MapSize selected = HostOptions.selectedMapSize;
 
-        dynamicBookPage.addPage(
+        bookPage.addPage(
                 dashTrans("lem.mapdecider.menu.mapsettings"),
                 Text.empty(),
                 withOpenCmd(withHover(bracketTrans("lem.menu.host.config.maps.enabled.header"), Text.translatable("lem.menu.host.config.maps.enabled.tooltip")), "host_map_enable_disable"),
@@ -240,7 +232,8 @@ public class Votebook {
                 backButton("hostConfig"));
     }
 
-    public static void generateMapEnableDisable(List<BattleMapAddon> packMods, DynamicBookPage dynamicBookPage) {
+    public static void generateMapEnableDisable(DynamicData data, BookPage bookPage) {
+        List<BattleMapAddon> packMods = data.addons();
         int maxPerPage = 10;
         int lastUsed = 0;
         int pages = 0;
@@ -267,9 +260,81 @@ public class Votebook {
             if (lastUsed < packMods.size())
                 ((MutableText) pageText.get(pageText.size() - 1)).append(" ").append(nextButton("createWorld.customize.custom.next", pages + 2));
 
-            dynamicBookPage.addPage(pageText.toArray(Text[]::new));
+            bookPage.addPage(pageText.toArray(Text[]::new));
             pages++;
         }
+    }
+
+    public static void generateMapOptionalPacks(DynamicData data, BookPage bookPage) {
+        BattleMapAddon addon = CustomMapLoaderMod.BATTLE_MAPS.get(new Identifier(data.arg()));
+
+        int maxPerPage = 2;
+        int lastUsed = 0;
+        int pages = 0;
+
+        while (lastUsed < addon.optional_packs.packs.size()) {
+            List<Text> pageText = new ArrayList<>();
+
+            pageText.add(withHover(dashLit("Optional Packs"), trimName(addon.getNameText(), 20)));
+            pageText.add(Text.empty());
+
+            for (; lastUsed < addon.optional_packs.packs.size() && lastUsed - (pages * maxPerPage) < maxPerPage; lastUsed++) {
+                ResourcePackConfig.RPOption rpOption = addon.optional_packs.packs.get(lastUsed);
+
+                boolean overwrite = HostOptions.getPromptValue(data.player(), addon.addon_id);
+
+                if (lastUsed == 0) {
+                    String cmd = "custommaploader playerOptions optionalPacks policy " + addon.addon_id;
+                    MutableText enabled = toggleCheckBox(overwrite, "map_player_rp_settings", addon.addon_id.toString(), cmd);
+                    pageText.add(colored("Overwrite Global: ", Formatting.DARK_GRAY).append(enabled));
+                    pageText.add(Text.empty());
+                }
+
+                if (overwrite) {
+                    MutableText hover = rpOption.getNameText().append("\n").append(rpOption.getDescriptionText());
+                    String cmd = "custommaploader playerOptions optionalPacks " + addon.addon_id + " accept " + rpOption.packID;
+                    MutableText enabled = toggleCheckBox(HostOptions.getMapResourcePackValue(data.player(), addon.addon_id, rpOption.packID), "map_player_rp_settings", addon.addon_id.toString(), cmd).append(" ");
+                    pageText.add(enabled.append(colored(withHover(trimName(rpOption.getNameText(), 20), hover), Formatting.DARK_GRAY)));
+                } else {
+                    MutableText hover = Text.literal("Enable overwrite to modify");
+                    pageText.add(colored(withHover(toggleCheckBox(false).append(" ").append(trimName(rpOption.getNameText(), 20)), hover), Formatting.GRAY));
+                }
+            }
+
+            pageText.add(Text.empty());
+            if (pages == 0) pageText.add(backButton("map_" + addon.addon_id));
+            else pageText.add(nextButton("gui.back", pages));
+
+            if (lastUsed < addon.optional_packs.packs.size())
+                ((MutableText) pageText.get(pageText.size() - 1)).append(" ").append(nextButton("createWorld.customize.custom.next", pages + 2));
+
+            bookPage.addPage(pageText.toArray(Text[]::new));
+            pages++;
+        }
+    }
+
+    public static void generatePlayerPackPolicy(DynamicData data, BookPage bookPage) {
+        String policy = HostOptions.getPromptValue(data.player());
+        bookPage.addPage(
+                dashTrans("Optional Packs"),
+                Text.empty(),
+                withHover(colored("Prompt Policy", Formatting.GOLD), Text.translatable("lem.battle.menu.host.config.maps.option.selectedsize.tooltip")),
+                withOpenAfterCmd(colored(bracketLit("Always Ask"), "ask".equals(policy) ? Formatting.GREEN : Formatting.BLUE), "player_rp_settings", "custommaploader playerOptions optionalPacks policy ask"),
+                withOpenAfterCmd(colored(bracketLit("Always Accept"), "accept".equals(policy) ? Formatting.GREEN : Formatting.BLUE), "player_rp_settings", "custommaploader playerOptions optionalPacks policy accept"),
+                withOpenAfterCmd(colored(bracketLit("Always Deny"), "deny".equals(policy) ? Formatting.GREEN : Formatting.BLUE), "player_rp_settings", "custommaploader playerOptions optionalPacks policy deny"),
+                Text.empty(),
+                Text.empty(),
+                withOpenAfterCmd(colored(bracketLit("Reset All Packs"), Formatting.DARK_RED), "player_rp_settings", "custommaploader playerOptions optionalPacks reset"),
+                Text.empty(),
+                backButton("hostConfig"));
+    }
+
+    public static MutableText toggleCheckBox(boolean value, String page, String arg, String cmd) {
+        return colored(withOpenAfterCmd(toggleCheckBox(value), page, arg, cmd + (value ? " false" : " true")), value ? Formatting.GREEN : Formatting.RED);
+    }
+
+    public static MutableText toggleCheckBox(boolean value) {
+        return withHover(Text.literal(value ? "[✔]" : "[❌]"), Text.literal("Click to toggle"));
     }
 
     public static MutableText trimName(MutableText text, int maxLength) {
@@ -342,12 +407,20 @@ public class Votebook {
         return withCmd(text, "/custommaploader voting showBookPage \"" + page + "\"");
     }
 
+    public static MutableText withOpenCmd(MutableText text, String page, String arg) {
+        return withCmd(text, "/custommaploader voting showBookPage \"" + page + "\" arg \"" + arg + "\"");
+    }
+
     public static MutableText withOpenCmd(MutableText text, String page, Text hover) {
         return withHover(withOpenCmd(text, page), hover);
     }
 
     public static MutableText withOpenAfterCmd(MutableText text, String page, String afterCmd) {
         return withCmd(text, "/custommaploader voting showBookPage \"" + page + "\" after " + afterCmd);
+    }
+
+    public static MutableText withOpenAfterCmd(MutableText text, String page, String arg, String afterCmd) {
+        return withCmd(text, "/custommaploader voting showBookPage \"" + page + "\" arg \"" + arg + "\" after " + afterCmd);
     }
 
     public static MutableText withCmd(MutableText text, String cmd) {
