@@ -14,10 +14,6 @@ public class BookPage {
                 .setAuthor(author);
     }
 
-    public BookPage() {
-        builder = null;
-    }
-
     public BookGui build(ServerPlayerEntity player) {
         return new BookGui(player, builder);
     }

@@ -5,7 +5,6 @@ import net.kyrptonaught.serverutils.customMapLoader.CustomMapLoaderMod;
 import net.kyrptonaught.serverutils.customMapLoader.MapSize;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.kyrptonaught.serverutils.customMapLoader.voting.pages.BookPage;
-import net.kyrptonaught.serverutils.customMapLoader.voting.pages.DynamicBookPage;
 import net.kyrptonaught.serverutils.customMapLoader.voting.pages.DynamicData;
 import net.kyrptonaught.serverutils.switchableresourcepacks.ResourcePackConfig;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,13 +15,16 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class Votebook {
 
     public static HashMap<String, BookPage> bookLibrary = new HashMap<>();
+    public static HashMap<String, BiConsumer<DynamicData,BookPage>> dynamicLibrary = new HashMap<>();
 
     public static void generateBookLibrary(List<BattleMapAddon> addons) {
         bookLibrary.clear();
+        dynamicLibrary.clear();
 
         bookLibrary.put("title", createBasicPage().addPage(
                 Text.literal("Legacy Edition Battle").formatted(Formatting.BLUE),
@@ -56,10 +58,10 @@ public class Votebook {
                 backButton("title")
         ));
 
-        bookLibrary.put("host_map_settings", createDynamicPage().setRunner(Votebook::generateHostSettings));
-        bookLibrary.put("host_map_enable_disable", createDynamicPage().setRunner(Votebook::generateMapEnableDisable));
-        bookLibrary.put("player_rp_settings", createDynamicPage().setRunner(Votebook::generatePlayerPackPolicy));
-        bookLibrary.put("map_player_rp_settings", createDynamicPage().setRunner(Votebook::generateMapOptionalPacks));
+        dynamicLibrary.put("host_map_settings", Votebook::generateHostSettings);
+        dynamicLibrary.put("host_map_enable_disable", Votebook::generateMapEnableDisable);
+        dynamicLibrary.put("player_rp_settings", Votebook::generatePlayerPackPolicy);
+        dynamicLibrary.put("map_player_rp_settings", Votebook::generateMapOptionalPacks);
 
         generateMapPacks(false, addons.stream().filter(config -> !config.isBaseAddon).toList());
         generateMapPacks(true, addons.stream().filter(config -> config.isBaseAddon).toList());
@@ -70,23 +72,20 @@ public class Votebook {
         return new BookPage("Voting Book", "LEM");
     }
 
-    private static DynamicBookPage createDynamicPage() {
-        return new DynamicBookPage("Voting Book", "LEM");
-    }
-
     public static BookGui getPage(ServerPlayerEntity player, String page, String arg) {
-        BookPage book = bookLibrary.get(page);
+        if (dynamicLibrary.containsKey(page)) {
+            BookPage book = createBasicPage();
+            dynamicLibrary.get(page).accept(new DynamicData(player, CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList(), arg), book);
+            return book.build(player);
+        }
 
+        BookPage book = bookLibrary.get(page);
         if (book == null) book = createBasicPage().addPage(
                 Text.translatable("lem.mapdecider.menu.missing"),
                 Text.literal(page),
                 Text.empty(),
                 backButton("title")
         );
-
-        if (book instanceof DynamicBookPage dynamic)
-            return dynamic.build(new DynamicData(player, CustomMapLoaderMod.BATTLE_MAPS.values().stream().toList(), arg));
-
         return book.build(player);
     }
 
@@ -268,7 +267,7 @@ public class Votebook {
     public static void generateMapOptionalPacks(DynamicData data, BookPage bookPage) {
         BattleMapAddon addon = CustomMapLoaderMod.BATTLE_MAPS.get(new Identifier(data.arg()));
 
-        int maxPerPage = 2;
+        int maxPerPage = 8;
         int lastUsed = 0;
         int pages = 0;
 
