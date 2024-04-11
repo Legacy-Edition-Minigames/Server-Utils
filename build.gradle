@@ -41,10 +41,10 @@ dependencies {
 	modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 
 	//Fabric Proxy Lite
-	//modImplementation('maven.modrinth:fabricproxy-lite:v2.7.0') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:fabricproxy-lite:v2.7.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Crossstitch
-	//modImplementation('maven.modrinth:crossstitch:0.1.6') { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation('maven.modrinth:crossstitch:0.1.6') { exclude group: "net.fabricmc.fabric-api" }
 
 	//Floodgate
 	//modImplementation('maven.modrinth:floodgate:2.2.0-SNAPSHOT-8') { exclude group: "net.fabricmc.fabric-api" }

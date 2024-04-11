@@ -9,6 +9,7 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.kyrptonaught.serverutils.CMDHelper;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -179,7 +180,7 @@ public class CustomUI extends Module {
         } else if (action.startsWith("back/")) {
             showLastScreen(player);
         } else if (action.startsWith("kick/")) {
-            player.networkHandler.disconnect(Text.literal(cmd));
+            VelocityProxyHelper.kickPlayer(player.networkHandler, player.getGameProfile(), Text.literal(cmd));
         }
 
         if (slot.refreshOnInteract()) {

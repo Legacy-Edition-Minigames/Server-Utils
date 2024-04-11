@@ -107,6 +107,7 @@ public class ServerUtilsMod implements ModInitializer {
     @Override
     public void onInitialize() {
         registerPresence();
+        VelocityProxyHelper.registerReceive();
 
         backendModule.setConfig(config.load(backendModule.getMOD_ID(), backendModule.getDefaultConfig()));
         backendModule.saveConfig();
