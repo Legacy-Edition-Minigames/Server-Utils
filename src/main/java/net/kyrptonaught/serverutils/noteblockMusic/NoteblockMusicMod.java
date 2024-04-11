@@ -130,7 +130,7 @@ public class NoteblockMusicMod extends Module {
     private static void primeSongPlayer(SongPlayer songPlayer, CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "listeners");
         boolean looping = BoolArgumentType.getBool(context, "looping");
-        String songFile = StringArgumentType.getString(context, "song");
+        String songFile = StringArgumentType.getString(context, "song").toLowerCase().replaceAll("[^a-z0-9_.-]", "");
 
         songPlayer.setEnable10Octave(true);
         songPlayer.setAutoDestroy(true);
