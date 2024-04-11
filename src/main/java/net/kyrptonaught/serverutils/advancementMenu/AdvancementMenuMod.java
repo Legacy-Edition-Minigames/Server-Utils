@@ -12,6 +12,12 @@ public class AdvancementMenuMod extends Module {
     public static String EXECUTE_COMMAND;
 
     @Override
+    public void onInitialize() {
+        super.onInitialize();
+
+    }
+
+    @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("advancementmenu")
                 .requires((source) -> source.hasPermissionLevel(2))
