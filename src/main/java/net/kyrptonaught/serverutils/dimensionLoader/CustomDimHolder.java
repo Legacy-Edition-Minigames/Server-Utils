@@ -8,12 +8,12 @@ import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.Collection;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class CustomDimHolder {
     public Identifier dimID;
     public Identifier copyFromID;
-    private BiConsumer<MinecraftServer, CustomDimHolder> completionTask;
+    private Consumer<MinecraftServer> completionTask;
 
     public RuntimeWorldHandle world;
     private boolean scheduleDelete = false;
@@ -24,7 +24,7 @@ public class CustomDimHolder {
         setFunctions(functions);
     }
 
-    public CustomDimHolder(Identifier dimID, Identifier copyFromID, BiConsumer<MinecraftServer, CustomDimHolder> functions) {
+    public CustomDimHolder(Identifier dimID, Identifier copyFromID, Consumer<MinecraftServer> functions) {
         this.dimID = dimID;
         this.copyFromID = copyFromID;
         setFunctions(functions);
@@ -55,12 +55,12 @@ public class CustomDimHolder {
         this.world = handle;
     }
 
-    public void setFunctions(BiConsumer<MinecraftServer, CustomDimHolder> execute) {
+    public void setFunctions(Consumer<MinecraftServer> execute) {
         this.completionTask = execute;
     }
 
     public void setFunctions(Collection<CommandFunction<ServerCommandSource>> functions) {
-        setFunctions((server, customDimHolder) -> {
+        setFunctions(server -> {
             if (functions != null) {
                 for (CommandFunction<ServerCommandSource> commandFunction : functions) {
                     server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
@@ -70,6 +70,6 @@ public class CustomDimHolder {
     }
 
     public void executeFunctions(MinecraftServer server) {
-        if (completionTask != null) completionTask.accept(server, this);
+        if (completionTask != null) completionTask.accept(server);
     }
 }

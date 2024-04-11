@@ -9,7 +9,6 @@ import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyAddon;
 import net.kyrptonaught.serverutils.customMapLoader.voting.HostOptions;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
-import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
 import net.kyrptonaught.serverutils.dimensionLoader.CustomDimHolder;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.discordBridge.MessageSender;
@@ -54,7 +53,7 @@ public class CustomMapLoaderMod extends Module {
         Path path = server.getSavePath(WorldSavePath.ROOT).resolve("dimensions").resolve(dimID.getNamespace()).resolve(dimID.getPath());
         IO.unZipMap(path, config, mapSize);
 
-        DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id, (server1, customDimHolder) -> {
+        DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id, server2 -> {
             LoadedBattleMapInstance instance = new LoadedBattleMapInstance(centralSpawnEnabled, mapSize, config, dimID);
             battlePrepare(instance, players);
             battleSpawn(instance, players);
@@ -83,8 +82,7 @@ public class CustomMapLoaderMod extends Module {
             ChestTrackerMod.trackedChests.add(parseBlockPos(pos));
         }
 
-        DatapackInteractables.addToBlockList(instance.getWorld().getRegistryKey(),instance.getAddon().interactable_blocklist);
-        DatapackInteractables.addToBlockList(instance.getWorld().getRegistryKey(),sizedConfig.interactable_blocklist);
+        //todo datapack interactables
 
         for (ServerPlayerEntity player : players) {
             Collection<ServerPlayerEntity> single = Collections.singleton(player);
@@ -144,9 +142,7 @@ public class CustomMapLoaderMod extends Module {
         Path path = server.getSavePath(WorldSavePath.ROOT).resolve("dimensions").resolve(dimID.getNamespace()).resolve(dimID.getPath());
         IO.unZipMap(path, config, null);
 
-        DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id, (server1, customDimHolder) -> {
-            DatapackInteractables.addToBlockList(customDimHolder.world.getRegistryKey(), config.interactable_blocklist);
-
+        DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id, server2 -> {
             teleportToLobby(dimID, players, null);
 
             if (functions != null) {
@@ -197,15 +193,9 @@ public class CustomMapLoaderMod extends Module {
         player.teleport(world, pos.x, pos.y, pos.z, yaw, pitch);
     }
 
-    public static void unloadLobbyMap(MinecraftServer server, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {
-        LOADED_LOBBIES.remove(dimID);
-
-        DimensionLoaderMod.unLoadDimension(server, dimID, functions);
-    }
-
-    public static void unloadBattleMap(MinecraftServer server, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {
+    public static void unloadMap(MinecraftServer server, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {
         LOADED_BATTLE_MAPS.remove(dimID);
-
+        LOADED_LOBBIES.remove(dimID);
         DimensionLoaderMod.unLoadDimension(server, dimID, functions);
     }
 

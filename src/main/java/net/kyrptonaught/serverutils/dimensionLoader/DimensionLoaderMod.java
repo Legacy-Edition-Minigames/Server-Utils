@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyrptonaught.serverutils.FileHelper;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
-import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -32,7 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class DimensionLoaderMod extends Module {
     public static final HashMap<Identifier, CustomDimHolder> loadedWorlds = new HashMap<>();
@@ -47,7 +46,7 @@ public class DimensionLoaderMod extends Module {
         DimensionLoaderCommand.registerCommands(dispatcher);
     }
 
-    public static void loadDimension(Identifier id, Identifier dimID, BiConsumer<MinecraftServer,CustomDimHolder> onComplete) {
+    public static void loadDimension(Identifier id, Identifier dimID, Consumer<MinecraftServer> onComplete) {
         loadedWorlds.put(id, new CustomDimHolder(id, dimID, onComplete));
     }
 
@@ -111,7 +110,6 @@ public class DimensionLoaderMod extends Module {
                 if (holder.deleteFinished(fantasy)) {
                     holder.executeFunctions(server);
                     CustomWorldBorderMod.onDimensionUnload(holder.world.asWorld());
-                    DatapackInteractables.unloadWorld(holder.world.getRegistryKey());
                     it.remove();
                 }
             } else if (!holder.wasRegistered()) {

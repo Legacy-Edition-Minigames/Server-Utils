@@ -1,7 +1,6 @@
 package net.kyrptonaught.serverutils.customMapLoader.addons;
 
 import net.kyrptonaught.serverutils.customMapLoader.MapSize;
-import net.kyrptonaught.serverutils.datapackInteractables.BlockList;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -37,8 +36,9 @@ public class BattleMapAddon extends BaseAddon {
         public String[] random_spawn_coords;
         public String world_border_coords_1;
         public String world_border_coords_2;
-        public String[] chest_tracker_coords;
-        public BlockList interactable_blocklist;
 
+        public String[] chest_tracker_coords;
+        //datapack interactables
     }
+
 }
