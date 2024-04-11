@@ -31,7 +31,7 @@ public class ScreenConfig extends AbstractConfigFile {
 
         public Boolean refreshOnInteract;
 
-        public DynamicItem dynamicItem;
+        public DynamicModel dynamicModel;
 
         public boolean replaceOpenScreen() {
             return replaceOpenScreen != null && replaceOpenScreen;
@@ -46,7 +46,7 @@ public class ScreenConfig extends AbstractConfigFile {
         }
 
         public boolean isDynamic() {
-            return dynamicItem != null;
+            return dynamicModel != null;
         }
 
         public SlotDefinition copyFrom(SlotDefinition other) {
@@ -80,8 +80,8 @@ public class ScreenConfig extends AbstractConfigFile {
             if (isFieldBlank(customModelData))
                 customModelData = other.customModelData;
 
-            if (dynamicItem == null)
-                dynamicItem = other.dynamicItem;
+            if (dynamicModel == null)
+                dynamicModel = other.dynamicModel;
 
             if (refreshOnInteract == null)
                 refreshOnInteract = other.refreshOnInteract;
@@ -89,14 +89,11 @@ public class ScreenConfig extends AbstractConfigFile {
             return this;
         }
 
-        public static class DynamicItem {
+        public static class DynamicModel {
             public String score;
             public String player;
 
-            public HashMap<Integer, SlotDefinition> items;
-
+            public HashMap<Integer, String> models;
         }
-
-        public static DynamicItem EMPTY_ITEM = new DynamicItem();
     }
 }
