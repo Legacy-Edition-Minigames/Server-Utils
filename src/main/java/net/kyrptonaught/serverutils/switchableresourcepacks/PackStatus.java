@@ -19,14 +19,6 @@ public class PackStatus {
         return packs;
     }
 
-    public boolean isComplete(UUID pack) {
-        return packs.get(pack).getLoadingStatus() == LoadingStatus.FINISHED || packs.get(pack).getLoadingStatus() == LoadingStatus.FAILED;
-    }
-
-    public boolean didFail(UUID pack) {
-        return packs.get(pack).getLoadingStatus() == LoadingStatus.FAILED;
-    }
-
     public static class Status {
         private boolean tempPack;
         private LoadingStatus loadingStatus;
@@ -53,6 +45,7 @@ public class PackStatus {
         PENDING,
         STARTED,
         FAILED,
-        FINISHED
+        FINISHED,
+        REMOVED
     }
 }

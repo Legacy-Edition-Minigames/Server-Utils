@@ -18,9 +18,16 @@ public class CustomDimHolder {
     public RuntimeWorldHandle world;
     private boolean scheduleDelete = false;
 
-    public CustomDimHolder(Identifier dimID, Identifier copyFromID) {
+    public CustomDimHolder(Identifier dimID, Identifier copyFromID, Collection<CommandFunction<ServerCommandSource>> functions) {
         this.dimID = dimID;
         this.copyFromID = copyFromID;
+        setFunctions(functions);
+    }
+
+    public CustomDimHolder(Identifier dimID, Identifier copyFromID, BiConsumer<MinecraftServer, CustomDimHolder> functions) {
+        this.dimID = dimID;
+        this.copyFromID = copyFromID;
+        setFunctions(functions);
     }
 
     public void scheduleToDelete() {
@@ -48,23 +55,21 @@ public class CustomDimHolder {
         this.world = handle;
     }
 
-    public CustomDimHolder setCompleteTask(BiConsumer<MinecraftServer, CustomDimHolder> execute) {
+    public void setFunctions(BiConsumer<MinecraftServer, CustomDimHolder> execute) {
         this.completionTask = execute;
-        return this;
     }
 
-    public CustomDimHolder setCompleteTask(Collection<CommandFunction<ServerCommandSource>> functions) {
-        setCompleteTask((server, customDimHolder) -> {
+    public void setFunctions(Collection<CommandFunction<ServerCommandSource>> functions) {
+        setFunctions((server, customDimHolder) -> {
             if (functions != null) {
                 for (CommandFunction<ServerCommandSource> commandFunction : functions) {
                     server.getCommandFunctionManager().execute(commandFunction, server.getCommandSource().withLevel(2).withSilent());
                 }
             }
         });
-        return this;
     }
 
-    public void executeComplete(MinecraftServer server) {
+    public void executeFunctions(MinecraftServer server) {
         if (completionTask != null) completionTask.accept(server, this);
     }
 }

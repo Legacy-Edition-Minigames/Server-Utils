@@ -48,7 +48,7 @@ public class DimensionLoaderMod extends Module {
     }
 
     public static void loadDimension(Identifier id, Identifier dimID, BiConsumer<MinecraftServer, CustomDimHolder> onComplete) {
-        loadedWorlds.put(id, new CustomDimHolder(id, dimID).setCompleteTask(onComplete));
+        loadedWorlds.put(id, new CustomDimHolder(id, dimID, onComplete));
     }
 
     public static Text loadDimension(MinecraftServer server, Identifier id, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {
@@ -65,7 +65,7 @@ public class DimensionLoaderMod extends Module {
             return Text.literal("Failed creating temp directory");
         }
 
-        loadedWorlds.put(id, new CustomDimHolder(id, dimID).setCompleteTask(functions));
+        loadedWorlds.put(id, new CustomDimHolder(id, dimID, functions));
         return Text.literal("Preparing Dimension");
     }
 
@@ -74,7 +74,7 @@ public class DimensionLoaderMod extends Module {
         if (holder == null)
             return Text.literal("Dimension not found");
 
-        holder.setCompleteTask(functions);
+        holder.setFunctions(functions);
         holder.scheduleToDelete();
         return Text.literal("Unloading Dimension");
     }
@@ -109,12 +109,13 @@ public class DimensionLoaderMod extends Module {
 
             if (holder.scheduledDelete()) {
                 if (holder.deleteFinished(fantasy)) {
-                    holder.executeComplete(server);
+                    holder.executeFunctions(server);
                     CustomWorldBorderMod.onDimensionUnload(holder.world.asWorld());
                     DatapackInteractables.unloadWorld(holder.world.getRegistryKey());
                     it.remove();
                 }
             } else if (!holder.wasRegistered()) {
+                //I don't really understand how mc registry key/entry shit works, but this does somehow work
                 Registry<DimensionType> registry = server.getRegistryManager().get(RegistryKeys.DIMENSION_TYPE);
                 RegistryEntry<DimensionType> entry = registry.getEntry(registry.getKey(registry.get(holder.copyFromID)).get()).get();
 
@@ -124,7 +125,7 @@ public class DimensionLoaderMod extends Module {
                         .setGenerator(new VoidChunkGenerator(server.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.THE_VOID)));
 
                 holder.register(fantasy.openTemporaryWorld(holder.dimID, worldConfig));
-                holder.executeComplete(server);
+                holder.executeFunctions(server);
             }
         }
     }
