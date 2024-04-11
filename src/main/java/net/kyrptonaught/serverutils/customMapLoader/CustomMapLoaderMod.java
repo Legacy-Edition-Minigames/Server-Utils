@@ -3,10 +3,10 @@ package net.kyrptonaught.serverutils.customMapLoader;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.Module;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
-import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyMapAddon;
-import net.kyrptonaught.serverutils.customMapLoader.addons.ResourcePackList;
+import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyAddon;
 import net.kyrptonaught.serverutils.customMapLoader.voting.HostOptions;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.datapackInteractables.DatapackInteractables;
@@ -14,7 +14,6 @@ import net.kyrptonaught.serverutils.dimensionLoader.CustomDimHolder;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
 import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
-import net.kyrptonaught.serverutils.switchableresourcepacks.SwitchableResourcepacksMod;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
@@ -33,10 +32,10 @@ import java.util.*;
 public class CustomMapLoaderMod extends Module {
 
     public static final HashMap<Identifier, BattleMapAddon> BATTLE_MAPS = new HashMap<>();
-    public static final HashMap<Identifier, LobbyMapAddon> LOBBY_MAPS = new HashMap<>();
+    public static final HashMap<Identifier, LobbyAddon> LOBBY_MAPS = new HashMap<>();
 
     private static final HashMap<Identifier, LoadedBattleMapInstance> LOADED_BATTLE_MAPS = new HashMap<>();
-    private static final HashMap<Identifier, LobbyMapAddon> LOADED_LOBBIES = new HashMap<>();
+    private static final HashMap<Identifier, LobbyAddon> LOADED_LOBBIES = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -53,7 +52,7 @@ public class CustomMapLoaderMod extends Module {
         MapSize mapSize = CustomMapLoaderMod.autoSelectMapSize(config, server.getCurrentPlayerCount());
 
         Path path = server.getSavePath(WorldSavePath.ROOT).resolve("dimensions").resolve(dimID.getNamespace()).resolve(dimID.getPath());
-        IO.unZipMap(path, config.filePath, config.getDirectoryInZip(mapSize));
+        IO.unZipMap(path, config, mapSize);
 
         DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id, (server1, customDimHolder) -> {
             LoadedBattleMapInstance instance = new LoadedBattleMapInstance(centralSpawnEnabled, mapSize, config, dimID);
@@ -88,10 +87,10 @@ public class CustomMapLoaderMod extends Module {
         DatapackInteractables.addToBlockList(instance.getWorld().getRegistryKey(), sizedConfig.interactable_blocklist);
 
         for (ServerPlayerEntity player : players) {
-            loadResourcePacks(instance.getAddon().required_packs, player);
-
             Collection<ServerPlayerEntity> single = Collections.singleton(player);
             ParsedPlayerCoords playerPos = centerPos.fillPlayer(player);
+
+            ServerUtilsMod.SwitchableResourcepacksModule.execute(instance.getAddon().resource_pack, single);
 
             player.teleport(world, playerPos.x(), playerPos.y(), playerPos.z(), 0, 0);
 
@@ -106,7 +105,7 @@ public class CustomMapLoaderMod extends Module {
         instance.setInitialSpawns(instance.isCentralSpawnEnabled());
 
         for (ServerPlayerEntity player : players) {
-            battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), instance.getAddon().required_packs, false, true);
+            battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), null, true);
         }
     }
 
@@ -117,18 +116,18 @@ public class CustomMapLoaderMod extends Module {
 
         if (initialSpawn) {
             for (ServerPlayerEntity player : players) {
-                battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), instance.getAddon().required_packs,true, true);
+                battleTP(player, instance.getWorld(), centerPos, instance.getNextInitialSpawn(), instance.getAddon().resource_pack, true);
             }
         } else {
             for (ServerPlayerEntity player : players) {
-                battleTP(player, instance.getWorld(), centerPos, instance.getUnusedRandomSpawn(), instance.getAddon().required_packs, true,false);
+                battleTP(player, instance.getWorld(), centerPos, instance.getUnusedRandomSpawn(), instance.getAddon().resource_pack, false);
             }
         }
     }
 
-    private static void battleTP(ServerPlayerEntity player, ServerWorld world, ParsedPlayerCoords centerPos, String rawCoords, ResourcePackList rp, boolean loadResources, boolean freezePlayer) {
-        if (loadResources)
-            loadResourcePacks(rp, player);
+    private static void battleTP(ServerPlayerEntity player, ServerWorld world, ParsedPlayerCoords centerPos, String rawCoords, String rp, boolean freezePlayer) {
+        if (rp != null)
+            ServerUtilsMod.SwitchableResourcepacksModule.execute(rp, Collections.singleton(player));
 
         ParsedPlayerCoords playerPos = parseVec3D(rawCoords);
 
@@ -140,10 +139,10 @@ public class CustomMapLoaderMod extends Module {
     }
 
     public static void prepareLobby(MinecraftServer server, Identifier addon, Identifier dimID, Collection<ServerPlayerEntity> players, Collection<CommandFunction<ServerCommandSource>> functions) {
-        LobbyMapAddon config = CustomMapLoaderMod.LOBBY_MAPS.get(addon);
+        LobbyAddon config = CustomMapLoaderMod.LOBBY_MAPS.get(addon);
 
         Path path = server.getSavePath(WorldSavePath.ROOT).resolve("dimensions").resolve(dimID.getNamespace()).resolve(dimID.getPath());
-        IO.unZipMap(path, config.filePath, config.getDirectoryInZip());
+        IO.unZipMap(path, config, null);
 
         DimensionLoaderMod.loadDimension(dimID, config.dimensionType_id, (server1, customDimHolder) -> {
             DatapackInteractables.addToBlockList(customDimHolder.world.getRegistryKey(), config.interactable_blocklist);
@@ -161,7 +160,7 @@ public class CustomMapLoaderMod extends Module {
     }
 
     public static void teleportToLobby(Identifier dimID, Collection<ServerPlayerEntity> players, ServerPlayerEntity winner) {
-        LobbyMapAddon config = LOADED_LOBBIES.get(dimID);
+        LobbyAddon config = LOADED_LOBBIES.get(dimID);
         CustomDimHolder holder = DimensionLoaderMod.loadedWorlds.get(dimID);
         Random random = new Random();
 
@@ -169,7 +168,7 @@ public class CustomMapLoaderMod extends Module {
 
         if (winner != null) {
             if (config.winner_coords != null) {
-                lobbyTP(holder.world.asWorld(), winner, config.winner_coords.split(" "), config.required_packs);
+                tpPlayer(holder.world.asWorld(), winner, config.winner_coords.split(" "), config.resource_pack);
             } else {
                 players.add(winner);
             }
@@ -179,12 +178,12 @@ public class CustomMapLoaderMod extends Module {
             if (availCoords.isEmpty())
                 availCoords = new ArrayList<>(Arrays.asList(config.spawn_coords));
 
-            lobbyTP(holder.world.asWorld(), player, availCoords.remove(random.nextInt(availCoords.size())).split(" "), config.required_packs);
+            tpPlayer(holder.world.asWorld(), player, availCoords.remove(random.nextInt(availCoords.size())).split(" "), config.resource_pack);
         }
     }
 
-    private static void lobbyTP(ServerWorld world, ServerPlayerEntity player, String[] coords, ResourcePackList resourcePack) {
-        loadResourcePacks(resourcePack, player);
+    private static void tpPlayer(ServerWorld world, ServerPlayerEntity player, String[] coords, String resourcePack) {
+        ServerUtilsMod.SwitchableResourcepacksModule.execute(resourcePack, Collections.singleton(player));
 
         float yaw = player.getYaw();
         float pitch = player.getPitch();
@@ -196,13 +195,6 @@ public class CustomMapLoaderMod extends Module {
 
         Vec3d pos = new Vec3d(Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2]));
         player.teleport(world, pos.x, pos.y, pos.z, yaw, pitch);
-    }
-
-    private static void loadResourcePacks(ResourcePackList resourcePackList, ServerPlayerEntity player) {
-        SwitchableResourcepacksMod.clearTempPacks(player);
-
-        if (resourcePackList == null || resourcePackList.packs == null) return;
-        SwitchableResourcepacksMod.addPacks(resourcePackList.packs, player);
     }
 
     public static void unloadLobbyMap(MinecraftServer server, Identifier dimID, Collection<CommandFunction<ServerCommandSource>> functions) {
