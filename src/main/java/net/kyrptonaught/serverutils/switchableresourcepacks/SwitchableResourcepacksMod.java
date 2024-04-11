@@ -26,11 +26,7 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
 
     public static final HashMap<UUID, PackStatus> playerLoaded = new HashMap<>();
 
-    private static Collection<CommandFunction<ServerCommandSource>> RP_FAILED_FUNCTIONS, RP_LOADED_FUNCTIONS;
-
     public void onConfigLoad(ResourcePackConfig config) {
-        RP_FAILED_FUNCTIONS = null;
-        RP_LOADED_FUNCTIONS = null;
         rpOptionHashMap.clear();
         config.packs.forEach(rpOption -> rpOptionHashMap.put(rpOption.packname, rpOption));
 
@@ -88,15 +84,10 @@ public class SwitchableResourcepacksMod extends ModuleWConfig<ResourcePackConfig
         playerLoaded.get(player.getUuid()).setPackLoadStatus(packname, status);
 
         if (allPacksLoaded(player)) {
-            if(RP_LOADED_FUNCTIONS == null)
-                RP_LOADED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerCompleteFunction);
-            if(RP_FAILED_FUNCTIONS == null)
-                RP_FAILED_FUNCTIONS = getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerFailedFunction);
-
             if (didPackFail(player))
-                CMDHelper.executeAs(player, RP_FAILED_FUNCTIONS);
+                CMDHelper.executeAs(player, getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerFailedFunction));
             else
-                CMDHelper.executeAs(player, RP_LOADED_FUNCTIONS);
+                CMDHelper.executeAs(player, getFunctions(player.getServer(), ServerUtilsMod.SwitchableResourcepacksModule.getConfig().playerCompleteFunction));
         }
     }
 
