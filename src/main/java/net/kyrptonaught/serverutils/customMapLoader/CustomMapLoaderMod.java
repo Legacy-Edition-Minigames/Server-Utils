@@ -37,12 +37,12 @@ public class CustomMapLoaderMod extends Module {
 
     @Override
     public void onInitialize() {
-        ServerLifecycleEvents.SERVER_STARTING.register(IO::discoverAddons);
+        //ServerLifecycleEvents.SERVER_STARTING.register(IO::discoverAddons);
     }
 
     @Override
     public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        CustomMapLoaderCommands.registerCommands(dispatcher);
+        //CustomMapLoaderCommands.registerCommands(dispatcher);
     }
 
     public static void battleLoad(MinecraftServer server, Identifier addon, Identifier dimID, boolean centralSpawnEnabled, Collection<ServerPlayerEntity> players, Collection<CommandFunction<ServerCommandSource>> functions) {
