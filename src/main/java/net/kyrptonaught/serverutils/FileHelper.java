@@ -1,7 +1,5 @@
 package net.kyrptonaught.serverutils;
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -59,14 +57,6 @@ public class FileHelper {
     }
 
     public static String readFileFromZip(Path zipFile, String fileName) {
-        try (ZipFile zip = new ZipFile(zipFile)) {
-            ZipArchiveEntry entry = zip.getEntry(fileName);
-
-            return new String(zip.getInputStream(entry).readAllBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return null;
     }
 

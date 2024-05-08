@@ -6,6 +6,7 @@ import net.kyrptonaught.serverutils.scoreboardsuffix.SuffixFormat;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -45,8 +46,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         ScoreboardSuffixMod.playerSuffixStorage.suffixFormat.scoreboardSuffixes.forEach(newSuffix -> {
             if (newSuffix instanceof SuffixFormat.ScoreboardSuffix) {
                 String scoreboardName = newSuffix.suffix;
-                int score = scoreboard.getOrCreateScore(ScoreHolder.fromName(player), scoreboard.getNullableObjective(scoreboardName)).getScore();
-                ((SuffixFormat.ScoreboardSuffix) newSuffix).updateText(score);
+                ScoreboardObjective obj = scoreboard.getNullableObjective(scoreboardName);
+                if (obj != null) {
+                    int score = scoreboard.getOrCreateScore(ScoreHolder.fromName(player), obj).getScore();
+                    ((SuffixFormat.ScoreboardSuffix) newSuffix).updateText(score);
+                }
             }
 
             Style style = newSuffix.displayText.getStyle();

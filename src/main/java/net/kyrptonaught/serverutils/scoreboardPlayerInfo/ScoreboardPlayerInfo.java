@@ -107,7 +107,7 @@ public class ScoreboardPlayerInfo extends Module {
     }
 
     public static void checkBrand(ServerPlayerEntity player, String brand) {
-        if(brand == null) return;
+        if (brand == null) return;
 
         if (brand.contains("forge"))
             setForgeClient(player, true);

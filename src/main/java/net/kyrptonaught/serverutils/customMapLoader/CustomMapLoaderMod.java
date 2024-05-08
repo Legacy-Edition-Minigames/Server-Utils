@@ -1,7 +1,6 @@
 package net.kyrptonaught.serverutils.customMapLoader;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
