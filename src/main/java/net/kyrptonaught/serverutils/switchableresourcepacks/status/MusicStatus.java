@@ -29,6 +29,8 @@ public class MusicStatus {
         if (pack == null) {
             this.masterPack = null;
             this.playingPack = null;
+            this.currentSong = null;
+            this.endTime = 0;
             return;
         }
 
@@ -37,6 +39,12 @@ public class MusicStatus {
         this.playingPack.songs = new LinkedHashMap<>();
         this.playingPack.play_order = pack.play_order;
         this.playingPack.delay = pack.delay;
+        this.currentSong = null;
+        this.endTime = 0;
+    }
+
+    public void play() {
+        tickMusic = true;
     }
 
     public boolean isSongFinished(long currentTime) {
@@ -86,6 +94,7 @@ public class MusicStatus {
         Vec3d vec3d = player.getPos();
 
         player.networkHandler.sendPacket(new PlaySoundS2CPacket(registryEntry, SoundCategory.MUSIC, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 1, 1, player.getRandom().nextLong()));
+        System.out.println("Playing " + songID + " for " + player.getName().getString());
     }
 
     private void stopSong(ServerPlayerEntity player) {

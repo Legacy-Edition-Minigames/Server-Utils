@@ -18,7 +18,7 @@ public class PlayerStatus {
     }
 
     public void startMusic() {
-        musicStatus.tickMusic = true;
+        musicStatus.play();
     }
 
     public void skipSong(ServerPlayerEntity player) {
