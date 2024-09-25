@@ -28,7 +28,7 @@ dependencies {
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}")
 
 	//SGui
-	modImplementation include("eu.pb4:sgui:1.6.0+1.21") { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include("eu.pb4:sgui:1.6.1+") { exclude group: "net.fabricmc.fabric-api" }
 
 	//Fantasy
 	modImplementation include('xyz.nucleoid:fantasy:0.6.3+1.21') { exclude group: "net.fabricmc.fabric-api" }
