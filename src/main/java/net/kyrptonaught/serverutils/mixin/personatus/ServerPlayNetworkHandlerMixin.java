@@ -1,8 +1,8 @@
 package net.kyrptonaught.serverutils.mixin.personatus;
 
 import com.mojang.authlib.GameProfile;
-import net.kyrptonaught.serverutils.personatus.PacketCopier;
-import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
+import net.kyrptonaught.serverutils.backendLink.personatus.PacketCopier;
+import net.kyrptonaught.serverutils.backendLink.personatus.PersonatusProfile;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.Packet;

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class DatapackLoader implements SimpleSynchronousResourceReloadListener {
-    public static final Identifier ID = new Identifier(ServerUtilsMod.MOD_ID, ServerUtilsMod.DatapackInteractablesModule.getMOD_ID());
+    public static final Identifier ID = new Identifier(ServerUtilsMod.ID, ServerUtilsMod.DatapackInteractablesModule.getMOD_ID());
 
     @Override
     public Identifier getFabricId() {

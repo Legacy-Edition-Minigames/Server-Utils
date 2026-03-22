@@ -1,6 +1,7 @@
 package net.kyrptonaught.serverutils.mixin.personatus;
 
-import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
+
+import net.kyrptonaught.serverutils.backendLink.personatus.PersonatusProfile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;

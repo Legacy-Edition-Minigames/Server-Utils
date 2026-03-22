@@ -1,7 +1,7 @@
 package net.kyrptonaught.serverutils.mixin.discordBridge;
 
 import com.mojang.authlib.GameProfile;
-import net.kyrptonaught.serverutils.discordBridge.Integrations;
+import net.kyrptonaught.serverutils.backendLink.discordBridge.Integrations;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;

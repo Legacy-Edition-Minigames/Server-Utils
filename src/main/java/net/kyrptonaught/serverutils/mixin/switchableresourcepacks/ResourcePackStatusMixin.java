@@ -25,12 +25,9 @@ public abstract class ResourcePackStatusMixin extends ServerCommonNetworkHandler
     public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
         super.onResourcePackStatus(packet);
         switch (packet.status()) {
-            case ACCEPTED ->
-                    SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.STARTED);
-            case SUCCESSFULLY_LOADED ->
-                    SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.FINISHED);
-            case FAILED_DOWNLOAD ->
-                    SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.FAILED);
+            case ACCEPTED -> SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.STARTED);
+            case SUCCESSFULLY_LOADED -> SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.FINISHED);
+            case FAILED_DOWNLOAD -> SwitchableResourcepacksMod.grantAdvancement(this.player, SwitchableResourcepacksMod.FAILED);
         }
     }
 }

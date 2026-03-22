@@ -1,6 +1,6 @@
 package net.kyrptonaught.serverutils.mixin.brandblocker;
 
-import net.kyrptonaught.serverutils.discordBridge.Integrations;
+import net.kyrptonaught.serverutils.backendLink.discordBridge.Integrations;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;

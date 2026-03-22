@@ -2,7 +2,6 @@ package net.kyrptonaught.serverutils.userConfig;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.kyrptonaught.serverutils.Module;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -30,8 +29,7 @@ public class UserConfigMod extends Module {
 
     @Override
     public void onInitialize() {
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> UserConfigStorage.loadPlayer(handler.player));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> UserConfigStorage.unloadPlayer(handler.player));
+        // ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> UserConfigStorage.unloadPlayer(handler.player));
     }
 
     @Override

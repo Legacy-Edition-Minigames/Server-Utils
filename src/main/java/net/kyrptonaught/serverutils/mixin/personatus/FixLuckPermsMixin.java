@@ -3,7 +3,7 @@ package net.kyrptonaught.serverutils.mixin.personatus;
 import com.mojang.authlib.GameProfile;
 import me.lucko.luckperms.fabric.listeners.FabricConnectionListener;
 import me.lucko.luckperms.fabric.mixin.ServerLoginNetworkHandlerAccessor;
-import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
+import net.kyrptonaught.serverutils.backendLink.personatus.PersonatusProfile;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;

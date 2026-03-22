@@ -135,7 +135,7 @@ public class NoteblockMusicMod extends Module {
         songPlayer.setEnable10Octave(true);
         songPlayer.setAutoDestroy(true);
         songPlayer.setRepeatMode(looping ? RepeatMode.ALL : RepeatMode.NONE);
-        songPlayer.setId(new Identifier(ServerUtilsMod.MOD_ID, songFile));
+        songPlayer.setId(new Identifier(ServerUtilsMod.ID, songFile));
         players.forEach(songPlayer::addPlayer);
 
         if (songPlayers.containsKey(songFile)) songPlayers.remove(songFile).destroy();

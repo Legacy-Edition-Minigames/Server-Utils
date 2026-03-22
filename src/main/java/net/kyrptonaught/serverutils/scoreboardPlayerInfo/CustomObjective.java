@@ -19,7 +19,7 @@ public class CustomObjective {
     private final HashMap<String, Integer> savedPlayerValues = new HashMap<>();
 
     public CustomObjective(String objName, String displayName) {
-        this.objName = ServerUtilsMod.MOD_ID + "." + objName;
+        this.objName = ServerUtilsMod.ID + "." + objName;
         this.displayName = displayName;
     }
 

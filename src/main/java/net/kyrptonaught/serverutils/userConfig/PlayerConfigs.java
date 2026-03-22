@@ -1,10 +1,12 @@
 package net.kyrptonaught.serverutils.userConfig;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,9 +14,22 @@ public class PlayerConfigs {
 
     public final HashMap<Identifier, String> configs = new HashMap<>();
     public final HashMap<Identifier, HashMap<Identifier, String>> presets = new HashMap<>();
+    public final Set<String> advancements = new HashSet<>();
 
     public void setValue(Identifier key, String value) {
         configs.put(key, value);
+    }
+
+    public void addAdvancement(String advancement) {
+        advancements.add(advancement);
+    }
+
+    public void removeAdvancement(String advancement) {
+        advancements.remove(advancement);
+    }
+
+    public boolean hasAdvancement(String advancement) {
+        return advancements.contains(advancement);
     }
 
     public String getValue(Identifier key) {
@@ -59,6 +74,11 @@ public class PlayerConfigs {
             for (Map.Entry<String, JsonElement> innerEntry : presets.entrySet())
                 for (Map.Entry<String, JsonElement> innerEntry2 : innerEntry.getValue().getAsJsonObject().entrySet())
                     playerConfigs.setPresetValueInternal(new Identifier(innerEntry.getKey()), new Identifier(innerEntry2.getKey()), innerEntry2.getValue().getAsString());
+
+        JsonArray advancements = jsonObject.getAsJsonArray("advancements");
+        if (advancements != null)
+            for (JsonElement advancement : advancements)
+                playerConfigs.addAdvancement(advancement.getAsString());
 
         return playerConfigs;
     }

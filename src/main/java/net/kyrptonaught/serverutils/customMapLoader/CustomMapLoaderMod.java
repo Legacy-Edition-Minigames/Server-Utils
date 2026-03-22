@@ -3,13 +3,13 @@ package net.kyrptonaught.serverutils.customMapLoader;
 import com.mojang.brigadier.CommandDispatcher;
 import net.kyrptonaught.serverutils.Module;
 import net.kyrptonaught.serverutils.ServerUtilsMod;
+import net.kyrptonaught.serverutils.backendLink.Broadcaster;
 import net.kyrptonaught.serverutils.chestTracker.ChestTrackerMod;
 import net.kyrptonaught.serverutils.customMapLoader.addons.BattleMapAddon;
 import net.kyrptonaught.serverutils.customMapLoader.addons.LobbyAddon;
 import net.kyrptonaught.serverutils.customWorldBorder.CustomWorldBorderMod;
 import net.kyrptonaught.serverutils.dimensionLoader.CustomDimHolder;
 import net.kyrptonaught.serverutils.dimensionLoader.DimensionLoaderMod;
-import net.kyrptonaught.serverutils.discordBridge.MessageSender;
 import net.kyrptonaught.serverutils.playerlockdown.PlayerLockdownMod;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -64,8 +64,7 @@ public class CustomMapLoaderMod extends Module {
             LOADED_BATTLE_MAPS.put(dimID, instance);
         });
 
-        server.getPlayerManager().broadcast(Text.literal("Loading map: ").append(config.getNameText()), false);
-        MessageSender.sendGameMessageWMentions(Text.literal("Loading map: ").append(config.getNameText()));
+        Broadcaster.broadcast2(server, Text.literal("Loading map: ").append(config.getNameText()));
     }
 
     private static void battlePrepare(LoadedBattleMapInstance instance, Collection<ServerPlayerEntity> players) {

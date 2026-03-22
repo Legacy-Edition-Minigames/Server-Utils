@@ -21,7 +21,7 @@ public abstract class ModuleWConfig<T extends AbstractConfigFile> extends Module
     }
 
     public void saveConfig() {
-        ServerUtilsMod.config.save(getMOD_ID(), getConfig());
+        ConfigManager.save(getMOD_ID(), getConfig());
     }
 
     public abstract T createDefaultConfig();

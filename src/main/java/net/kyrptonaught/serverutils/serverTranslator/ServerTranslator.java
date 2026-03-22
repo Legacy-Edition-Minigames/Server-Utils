@@ -7,10 +7,8 @@ import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.mixin.serverTranslator.ServerPlayerEntityLanguageAccessor;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextVisitFactory;
+import net.minecraft.text.*;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Language;
 
 import java.io.InputStream;
@@ -20,6 +18,7 @@ import java.util.Optional;
 public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
 
     public static String getLanguage(ServerPlayerEntity player) {
+        if (player == null) return TranslationStorage.EN_US;
         return ((ServerPlayerEntityLanguageAccessor) player).getLanguage();
     }
 
@@ -34,6 +33,35 @@ public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
     @Override
     public void onInitialize() {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new TranslationLoader());
+    }
+
+    public static Text translate(Text text) {
+        MutableText output = Text.empty();
+        if (text.getContent() instanceof TranslatableTextContent trans) {
+            String out = translate(trans.getKey());
+            for (Object arg : trans.getArgs()) {
+                if (arg instanceof MutableText argText) {
+
+                    StringBuilder sb = new StringBuilder();
+                    if (argText.getStyle().getColor() != null)
+                        sb.append(Formatting.byName(argText.getStyle().getColor().getName().toUpperCase()));
+                    if (argText.getStyle().isBold()) sb.append(Formatting.BOLD);
+                    if (argText.getStyle().isItalic()) sb.append(Formatting.ITALIC);
+                    if (argText.getStyle().isUnderlined()) sb.append(Formatting.UNDERLINE);
+                    if (argText.getStyle().isStrikethrough()) sb.append(Formatting.STRIKETHROUGH);
+                    if (argText.getStyle().isObfuscated()) sb.append(Formatting.OBFUSCATED);
+                    sb.append(translate(argText).getString());
+                    sb.append(Formatting.RESET);
+
+                    out = out.replace("%s", sb.toString());
+                } else out = out.replace("%s", arg.toString());
+            }
+            output.append(Text.translatable(out).setStyle(text.getStyle()));
+        } else output.append(MutableText.of(text.getContent()).setStyle(text.getStyle()));
+
+        for (Text sibling : text.getSiblings()) output.append(translate(sibling));
+
+        return output;
     }
 
     public static void injectTranslations() {

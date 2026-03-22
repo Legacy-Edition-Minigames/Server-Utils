@@ -1,7 +1,7 @@
 package net.kyrptonaught.serverutils.mixin.personatus;
 
 import com.mojang.authlib.GameProfile;
-import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
+import net.kyrptonaught.serverutils.backendLink.personatus.PersonatusProfile;
 import net.minecraft.server.ServerConfigList;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;

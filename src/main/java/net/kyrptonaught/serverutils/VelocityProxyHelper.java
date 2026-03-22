@@ -3,7 +3,7 @@ package net.kyrptonaught.serverutils;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.kyrptonaught.serverutils.personatus.PersonatusProfile;
+import net.kyrptonaught.serverutils.backendLink.personatus.PersonatusProfile;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerCommonNetworkHandler;

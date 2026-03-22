@@ -77,7 +77,7 @@ public class ScoreboardPlayerInfo extends Module {
         ServerScoreboard scoreboard = server.getScoreboard();
         ScoreboardObjective[] objectives = scoreboard.getObjectives().toArray(ScoreboardObjective[]::new);
         for (int i = objectives.length - 1; i >= 0; i--) {
-            if (objectives[i].getName().startsWith(ServerUtilsMod.MOD_ID + "."))
+            if (objectives[i].getName().startsWith(ServerUtilsMod.ID + "."))
                 scoreboard.removeObjective(objectives[i]);
         }
 

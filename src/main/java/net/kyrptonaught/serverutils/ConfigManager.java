@@ -12,15 +12,15 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public class ConfigManager {
-    private final Path dir;
+    public static Path dir;
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .setLenient()
             .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
             .create();
 
-    public ConfigManager(String MOD_ID) {
-        dir = Path.of(FabricLoader.getInstance().getConfigDir() + "/" + MOD_ID);
+    public static void onInitialize() {
+        dir = FabricLoader.getInstance().getConfigDir().resolve(ServerUtilsMod.ID);
         if (!Files.exists(dir)) {
             try {
                 Files.createDirectories(dir);
@@ -29,15 +29,11 @@ public class ConfigManager {
         }
     }
 
-    public Gson getGSON() {
+    public static Gson getGSON() {
         return GSON;
     }
 
-    public Path getDir() {
-        return dir;
-    }
-
-    public void save(String MOD_ID, AbstractConfigFile config) {
+    public static void save(String MOD_ID, AbstractConfigFile config) {
         Path saveFile = dir.resolve(MOD_ID + ".json5");
         try (OutputStream os = Files.newOutputStream(saveFile); OutputStreamWriter out = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
             out.write(GSON.toJson(config));
@@ -47,7 +43,7 @@ public class ConfigManager {
         }
     }
 
-    public AbstractConfigFile load(String MOD_ID, AbstractConfigFile defaultConfig) {
+    public static AbstractConfigFile load(String MOD_ID, AbstractConfigFile defaultConfig) {
         Path saveFile = dir.resolve(MOD_ID + ".json5");
         if (!Files.exists(saveFile) || !Files.isReadable(saveFile)) {
             System.out.println(getConfigName(MOD_ID, "Unable to find config!"));
@@ -65,7 +61,20 @@ public class ConfigManager {
         return null;
     }
 
-    private String getConfigName(String MOD_ID, String message) {
+    private static String getConfigName(String MOD_ID, String message) {
         return "[" + MOD_ID + "]: " + message;
+    }
+
+    public static <T> T readFileJson(String file, Class<T> clazz) {
+        Path saveFile = FabricLoader.getInstance().getConfigDir().resolve("serverutils").resolve(file);
+        if (Files.exists(saveFile) && Files.isReadable(saveFile)) {
+            try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(saveFile, StandardOpenOption.READ), StandardCharsets.UTF_8)) {
+                return GSON.fromJson(reader, clazz);
+            } catch (Exception e) {
+                System.out.println("Error opening file: " + saveFile);
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

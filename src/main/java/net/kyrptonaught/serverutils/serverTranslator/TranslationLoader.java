@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class TranslationLoader implements SimpleSynchronousResourceReloadListener {
-    public static final Identifier ID = new Identifier(ServerUtilsMod.MOD_ID, ServerUtilsMod.ServerTranslatorModule.getMOD_ID());
+    public static final Identifier ID = new Identifier(ServerUtilsMod.ID, ServerUtilsMod.ServerTranslatorModule.getMOD_ID());
 
     @Override
     public Identifier getFabricId() {
