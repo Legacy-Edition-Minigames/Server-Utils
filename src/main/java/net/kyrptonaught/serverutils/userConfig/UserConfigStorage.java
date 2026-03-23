@@ -137,7 +137,7 @@ public class UserConfigStorage {
                     player.getAdvancementTracker().grantCriterion(entry, criterion);
             }
         }
-
+        player.getAdvancementTracker().sendUpdate(player);
         ((AdvancementNoDisplay) player.getAdvancementTracker()).setForceAdding(false);
     }
 
