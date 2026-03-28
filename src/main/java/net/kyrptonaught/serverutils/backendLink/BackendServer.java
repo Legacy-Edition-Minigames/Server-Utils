@@ -5,13 +5,12 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.ConfigManager;
-import net.kyrptonaught.serverutils.VelocityProxyHelper;
 import net.kyrptonaught.serverutils.backendLink.discordBridge.DiscordBridge;
 import net.kyrptonaught.serverutils.backendLink.personatus.PersonatusModule;
 import net.kyrptonaught.serverutils.backendLink.prohibitor.ProhibitorModule;
 import net.kyrptonaught.serverutils.serverTranslator.ServerTranslator;
 import net.kyrptonaught.serverutils.userConfig.UserConfigStorage;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
@@ -51,16 +50,18 @@ public class BackendServer {
     }
 
 
-    public static GameProfile earlyLogin(ServerPlayNetworkHandler handler, GameProfile profile) {
+    public static GameProfile earlyLogin(ServerLoginNetworkHandler handler, GameProfile profile) {
         JsonObject result = ProhibitorModule.canJoin(handler, profile);
         if (result == null) {
-            VelocityProxyHelper.kickPlayer(handler, handler.player.getGameProfile(), ServerTranslator.translate(Text.translatable("disconnect.backend")));
+            handler.disconnect(ServerTranslator.translate(Text.translatable("disconnect.backend")));
+            //VelocityProxyHelper.kickPlayer(handler, profile, ServerTranslator.translate(Text.translatable("disconnect.backend")));
             return profile;
         }
 
         if (result.get("isBanned").getAsBoolean()) {
             Text reason = ServerTranslator.translate(TextCodecs.CODEC.parse(JsonOps.INSTANCE, result.get("banMessage")).result().get());
-            VelocityProxyHelper.kickPlayer(handler, handler.player.getGameProfile(), ServerTranslator.translate(reason));
+            handler.disconnect(ServerTranslator.translate(reason));
+            //VelocityProxyHelper.kickPlayer(handler, profile, ServerTranslator.translate(reason));
             return profile;
         }
 

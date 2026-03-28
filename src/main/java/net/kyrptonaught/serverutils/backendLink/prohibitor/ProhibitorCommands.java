@@ -71,7 +71,7 @@ public class ProhibitorCommands {
 
 
         for (ChronoUnit unit : ChronoUnit.values()) {
-            if (unit != ChronoUnit.SECONDS && unit != ChronoUnit.MINUTES && unit != ChronoUnit.HOURS && unit != ChronoUnit.DAYS && unit != ChronoUnit.MONTHS && unit != ChronoUnit.YEARS)
+            if (unit != ChronoUnit.MINUTES && unit != ChronoUnit.HOURS && unit != ChronoUnit.DAYS && unit != ChronoUnit.MONTHS && unit != ChronoUnit.YEARS)
                 continue;
 
             root.then(CommandManager.literal("ban")

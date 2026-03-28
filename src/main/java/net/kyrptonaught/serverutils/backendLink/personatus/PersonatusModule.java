@@ -17,7 +17,7 @@ import net.kyrptonaught.serverutils.mixin.personatus.ServerLoginNetworkHandlerAc
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.UUID;
@@ -114,7 +114,7 @@ public class PersonatusModule extends Module {
         return enabled;
     }
 
-    public static GameProfile checkProfile(ServerPlayNetworkHandler handler, GameProfile profile, JsonObject loginObj) {
+    public static GameProfile checkProfile(ServerLoginNetworkHandler handler, GameProfile profile, JsonObject loginObj) {
         if (isEnabled()) {
             if (((ServerLoginNetworkHandlerAccessor) handler).getServer().getSessionService() instanceof YggdrasilMinecraftSessionService sessionService) {
                 String responseName = URLGetValue(false, "kvs/get/personatus/" + profile.getName(), "value");

@@ -39,6 +39,7 @@ public class ServerTranslator extends ModuleWConfig<ServerTranslationConfig> {
         MutableText output = Text.empty();
         if (text.getContent() instanceof TranslatableTextContent trans) {
             String out = translate(trans.getKey());
+            if (out.equals(trans.getKey()) && trans.getFallback() != null) out = trans.getFallback();
             for (Object arg : trans.getArgs()) {
                 if (arg instanceof MutableText argText) {
 
