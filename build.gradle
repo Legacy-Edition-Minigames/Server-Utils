@@ -58,8 +58,8 @@ dependencies {
 	modImplementation('maven.modrinth:no-chat-reports:Fabric-1.20.4-v2.5.0') { exclude group: "net.fabricmc.fabric-api" }
 
 	//SVC
-	implementation "de.maxhenkel.voicechat:voicechat-api:2.6.0"
-	modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:2.6.0:fabric-stub"
+	implementation "de.maxhenkel.voicechat:voicechat-api:2.6.13"
+	modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:2.6.13:fabric-stub"
 	modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-1.20.4-2.5.22"
 
 	//NOTA
