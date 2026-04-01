@@ -78,11 +78,16 @@ public class ProhibitorModule extends ModuleWConfig<ProhibitorConfig> {
     }
 
     public static void sendJoinMessages(ServerPlayerEntity player) {
-        if (UserConfigStorage.getValue(player, new Identifier("ismuted")).equals("true")) {
+        if (!UserConfigStorage.playerLoaded(player)) {
+            System.out.println("Player data not loaded during Prohibitor check: " + player.getNameForScoreboard());
+            return;
+        }
+
+        if ("true".equals(UserConfigStorage.getValue(player, new Identifier("ismuted")))) {
             JsonObject obj = ServerUtilsMod.getGson().fromJson(UserConfigStorage.getValue(player, new Identifier("mutemessage")), JsonObject.class);
             player.sendMessage(TextCodecs.CODEC.parse(JsonOps.INSTANCE, obj).result().get(), false);
         }
-        if (UserConfigStorage.getValue(player, new Identifier("isskinbanned")).equals("true")) {
+        if ("true".equals(UserConfigStorage.getValue(player, new Identifier("isskinbanned")))) {
             JsonObject obj = ServerUtilsMod.getGson().fromJson(UserConfigStorage.getValue(player, new Identifier("skinmessage")), JsonObject.class);
             player.sendMessage(TextCodecs.CODEC.parse(JsonOps.INSTANCE, obj).result().get(), false);
         }

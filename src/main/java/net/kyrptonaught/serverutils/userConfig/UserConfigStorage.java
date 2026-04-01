@@ -19,6 +19,10 @@ public class UserConfigStorage {
     private static final HashMap<UUID, PlayerConfigs> playerCache = new HashMap<>();
     private static final HashMap<Identifier, Set<Identifier>> groups = new HashMap<>();
 
+    public static boolean playerLoaded(ServerPlayerEntity player) {
+        return playerCache.containsKey(player.getUuid());
+    }
+
     public static void setValue(ServerPlayerEntity player, Identifier key, String value) {
         setValue(player.getUuid(), key, value);
     }
