@@ -32,7 +32,11 @@ public class UserConfigStorage {
     }
 
     public static String getValue(ServerPlayerEntity player, Identifier key) {
-        return playerCache.get(player.getUuid()).getValue(key);
+        return getValue(player.getUuid(),key);
+    }
+
+    public static String getValue(UUID player, Identifier key) {
+        return playerCache.get(player).getValue(key);
     }
 
     public static void removeValue(ServerPlayerEntity player, Identifier key) {

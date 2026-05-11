@@ -4,6 +4,8 @@ import net.kyrptonaught.serverutils.AbstractConfigFile;
 
 public class BackendServerConfig extends AbstractConfigFile {
 
+    public boolean backendConnection = false;
+
     public String apiUrl = "http://localhost:7070";
     public String secretKey = "changeme";
 

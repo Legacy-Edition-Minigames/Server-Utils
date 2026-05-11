@@ -1,10 +1,12 @@
 package net.kyrptonaught.serverutils.backendLink;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyrptonaught.serverutils.ConfigManager;
+import net.kyrptonaught.serverutils.ServerUtilsMod;
 import net.kyrptonaught.serverutils.backendLink.discordBridge.DiscordBridge;
 import net.kyrptonaught.serverutils.backendLink.personatus.PersonatusModule;
 import net.kyrptonaught.serverutils.backendLink.prohibitor.ProhibitorModule;
@@ -33,25 +35,35 @@ public class BackendServer {
     public static void onPreLaunch() {
         config = ConfigManager.readFileJson("backend.json5", BackendServerConfig.class);
 
-        executorService = Executors.newFixedThreadPool(2);
-        client = HttpClient.newBuilder()
-                .executor(executorService)
-                .version(HttpClient.Version.HTTP_1_1)
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
+        if (config.backendConnection) {
+            executorService = Executors.newFixedThreadPool(2);
+            client = HttpClient.newBuilder()
+                    .executor(executorService)
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .connectTimeout(Duration.ofSeconds(10))
+                    .build();
 
-        DiscordBridge.earlyInit();
+            DiscordBridge.earlyInit();
+        }
     }
 
     public static void init() {
         DiscordBridge.init();
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> executorService.shutdown());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            if (executorService != null) executorService.shutdown();
+        });
     }
 
 
     public static GameProfile earlyLogin(ServerLoginNetworkHandler handler, GameProfile profile) {
+        if (!BackendServer.config.backendConnection) {
+            UserConfigStorage.loadPlayer(profile);
+            return profile;
+        }
+
         JsonObject result = ProhibitorModule.canJoin(handler, profile);
+
         if (result == null) {
             handler.disconnect(ServerTranslator.translate(Text.translatable("disconnect.backend")));
             //VelocityProxyHelper.kickPlayer(handler, profile, ServerTranslator.translate(Text.translatable("disconnect.backend")));
@@ -64,6 +76,13 @@ public class BackendServer {
             //VelocityProxyHelper.kickPlayer(handler, profile, ServerTranslator.translate(reason));
             return profile;
         }
+
+        if (UserConfigStorage.getValue(profile.getId(), new Identifier("last_log")) != null && System.currentTimeMillis() - Long.parseLong(UserConfigStorage.getValue(profile.getId(), new Identifier("last_log"))) < 60000) {
+            JsonArray arr = ServerUtilsMod.getGson().fromJson(UserConfigStorage.getValue(profile.getId(), new Identifier("unack")), JsonArray.class);
+            result.add("unack", arr);
+        }
+
+        UserConfigStorage.setValue(profile.getId(), new Identifier("last_log"), "" + System.currentTimeMillis());
 
         UserConfigStorage.loadPlayer(profile);
         for (String s : result.keySet()) {
@@ -91,6 +110,10 @@ public class BackendServer {
     }
 
     public static void asyncPost(String url, String json, BiConsumer<Boolean, HttpResponse<String>> response) {
+        if(client == null){
+            response.accept(false, null);
+            return;
+        }
         HttpRequest request = buildPostRequest(getApiUrl(url), json);
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .exceptionally(throwable -> null)

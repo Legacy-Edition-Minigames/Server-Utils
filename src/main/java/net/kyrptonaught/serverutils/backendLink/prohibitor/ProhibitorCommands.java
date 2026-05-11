@@ -13,6 +13,8 @@ import net.kyrptonaught.serverutils.backendLink.BackendServer;
 import net.kyrptonaught.serverutils.backendLink.Broadcaster;
 import net.kyrptonaught.serverutils.backendLink.discordBridge.Integrations;
 import net.kyrptonaught.serverutils.backendLink.prohibitor.actions.*;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -103,6 +105,14 @@ public class ProhibitorCommands {
                             return LinkingDisablerAction.linkDisabler(Integrations.getSenderName(context.getSource()), enabled, text -> context.getSource().sendFeedback(() -> text, false));
                         })));
 
+        root.then(CommandManager.literal("sendMissedMessages")
+                .then(CommandManager.argument("player", EntityArgumentType.player())
+                        .executes(ctx ->{
+                            ServerPlayerEntity player = EntityArgumentType.getPlayer(ctx, "player");
+                            ProhibitorModule.sendMissedMessages(player);
+                            return 1;
+                        })));
+
         dispatcher.register(root);
 
         dispatcher.register(CommandManager.literal("discordLink").executes(context -> {
@@ -147,6 +157,7 @@ public class ProhibitorCommands {
                             context.getSource().getServer().getPlayerManager().broadcast(Texts.parse(context.getSource(), text, null, 0), false);
                             return 1;
                         })));
+
     }
 
     private static Collection<GameProfile> players(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

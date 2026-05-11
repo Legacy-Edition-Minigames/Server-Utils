@@ -37,7 +37,7 @@ public class Integrations {
 
     public static void sendJoinMessage(ServerPlayerEntity player, Text message) {
         DiscordBridge.sendMessage(Text.literal("➡️ ").append(message), 0x6332a8);
-        if (UserConfigStorage.getValue(player, new Identifier("lem.base", "suspicious")).equals("true"))
+        if ("true".equals(UserConfigStorage.getValue(player, new Identifier("lem.base", "suspicious"))))
             DiscordBridge.sendLogMessage(Text.literal("A suspicious player joined the server: **" + player.getNameForScoreboard() + "**"), true);
     }
 

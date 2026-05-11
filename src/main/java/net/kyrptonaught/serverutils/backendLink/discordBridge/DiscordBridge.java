@@ -75,7 +75,7 @@ public class DiscordBridge {
         ServerLifecycleEvents.SERVER_STOPPED.register(server2 -> {
             sendMessage(Text.literal("Server Stopped"), 0xffffff);
             server.sendMessage(Text.literal("Server Stopped"));
-            socket.close();
+            if (socket != null) socket.close();
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server2) -> {
@@ -95,11 +95,7 @@ public class DiscordBridge {
     private static void onReceivedMessage(String message) {
         JsonObject obj = ServerUtilsMod.getGson().fromJson(message, JsonObject.class);
 
-        if (obj.get("type").getAsString().equals("chat_approved")) {
-            Text player = TextCodecs.CODEC.parse(JsonOps.INSTANCE, obj.get("name_text")).result().get();
-            Text msg = TextCodecs.CODEC.parse(JsonOps.INSTANCE, obj.get("msg")).result().get();
-            server.getPlayerManager().broadcast(Text.literal("<").append(player).append("> ").append(msg), false);
-        } else if (obj.get("type").getAsString().equals("chat")) {
+        if (obj.get("type").getAsString().equals("chat")) {
             Text msg = TextCodecs.CODEC.parse(JsonOps.INSTANCE, obj.get("msg")).result().get();
             server.getPlayerManager().broadcast(msg, false);
         } else if (obj.get("type").getAsString().equals("info_request")) {
@@ -154,7 +150,7 @@ public class DiscordBridge {
         socket.send(obj.toString());
     }
 
-    public static void sendChatMessage(ServerPlayerEntity player, String message, boolean isMuted) {
+    public static void sendChatMessage(ServerPlayerEntity player, String message, boolean isMuted, boolean inappropriate) {
         if (!canSendMessage()) return;
 
         JsonObject obj = new JsonObject();
@@ -164,6 +160,7 @@ public class DiscordBridge {
         obj.addProperty("player_uuid", player.getUuidAsString());
         obj.addProperty("msg", message);
         obj.addProperty("muted", isMuted);
+        obj.addProperty("inappropriate", inappropriate);
         socket.send(obj.toString());
     }
 
@@ -256,4 +253,3 @@ public class DiscordBridge {
         socket.send(obj.toString());
     }
 }
-

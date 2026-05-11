@@ -1,6 +1,8 @@
 package net.kyrptonaught.serverutils.backendLink.prohibitor;
 
 import com.google.common.net.InetAddresses;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
@@ -23,6 +25,7 @@ import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -33,24 +36,32 @@ public class ProhibitorModule extends ModuleWConfig<ProhibitorConfig> {
 
     @Override
     public void onInitialize() {
-        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, player, params) -> {
-            if (!config().globalChatEnabled) {
-                player.sendMessage(Text.translatable("chatdisabler.chatdisabled"), false);
-                return false;
-            }
-            DiscordBridge.sendChatMessage(player, message.getSignedContent(), !canChat(player));
-            return false;
-        });
-
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            //BackendServer.earlyLogin(handler, handler.player.getGameProfile());
             server.execute(() -> {
                 sendJoinMessages(handler.player);
                 UserConfigStorage.onLoad(handler.player);
             });
         });
 
+        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, player, params) -> {
+            if (!config().globalChatEnabled) {
+                player.sendMessage(Text.translatable("chatdisabler.chatdisabled"), false);
+                return false;
+            }
+
+            boolean isClean = !ChatFilter.containsProfanity(message.getSignedContent());
+            boolean canChat = canChat(player);
+
+            if (!canChat) {
+                player.sendMessage(Text.translatable("prohibitor.mute.cannotsent"), false);
+            }
+
+            DiscordBridge.sendChatMessage(player, message.getSignedContent(), !canChat(player), !isClean);
+
+            return isClean && canChat;
+        });
         ServerTickEvents.END_SERVER_TICK.register(TickMuteAction::tick);
+        ChatFilter.syncFromBackend();
     }
 
     @Override
@@ -66,7 +77,7 @@ public class ProhibitorModule extends ModuleWConfig<ProhibitorConfig> {
     }
 
     public static boolean canChat(ServerPlayerEntity player) {
-        return !UserConfigStorage.getValue(player, new Identifier("ismuted")).equals("true");
+        return !"true".equals(UserConfigStorage.getValue(player, new Identifier("ismuted")));
     }
 
     public static GameProfile checkProfile(ServerLoginNetworkHandler handler, GameProfile profile, JsonObject loginObj) {
@@ -90,6 +101,20 @@ public class ProhibitorModule extends ModuleWConfig<ProhibitorConfig> {
         if ("true".equals(UserConfigStorage.getValue(player, new Identifier("isskinbanned")))) {
             JsonObject obj = ServerUtilsMod.getGson().fromJson(UserConfigStorage.getValue(player, new Identifier("skinmessage")), JsonObject.class);
             player.sendMessage(TextCodecs.CODEC.parse(JsonOps.INSTANCE, obj).result().get(), false);
+        }
+    }
+
+    public static void sendMissedMessages(ServerPlayerEntity player) {
+        if (!UserConfigStorage.playerLoaded(player)) {
+            System.out.println("Player data not loaded during Prohibitor check: " + player.getNameForScoreboard());
+            return;
+        }
+
+        if (UserConfigStorage.getValue(player, new Identifier("unack")) != null && UserConfigStorage.getValue(player, new Identifier("unack")) != "[]") {
+            player.sendMessage(Text.translatableWithFallback("prohibitor.punishment.missed", "Missed Messages").formatted(Formatting.YELLOW));
+            for (JsonElement msgObj : ServerUtilsMod.getGson().fromJson(UserConfigStorage.getValue(player, new Identifier("unack")), JsonArray.class)) {
+                player.sendMessage(Text.literal("\n").append(TextCodecs.CODEC.parse(JsonOps.INSTANCE, msgObj).result().get()));
+            }
         }
     }
 
