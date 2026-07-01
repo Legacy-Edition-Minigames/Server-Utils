@@ -1,15 +1,20 @@
 
 # Server Utils
 
-For Fabric 1.20.1
+For Fabric 1.20.4
 
-A group of utilities for fabric servers.
+A group of utilities for fabric servers, intended for use with LEM 1.0.
 
 # Installation
 
-You can download a binary from the [Releases page](https://github.com/kyrptonaught/Server-Utils/releases) or compile it yourself with `./gradlew build`
+The intended way to install this is with [LEM Toolbox](https://github.com/Legacy-Edition-Minigames/ToolBox) when creating a LEM 1.0 server and is the way you should install it.
+
+If you need to install it manually for any reason, you can download a binary from the [Releases page](https://github.com/kyrptonaught/Server-Utils/releases) or compile it yourself with `./gradlew build`
 
 # Modules
+
+**Note: This information might be outdated!**
+* As Server Utils evolved into being a core component of LEM, we haven't really kept the README file up to date with all the changes thats been made to it over the years. Information is potentially outdated.
 
 This mod has multiple modules, their usage instructions can be found below.
 
